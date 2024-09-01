@@ -1,0 +1,12 @@
+*.Rhistory
+*.Rmd
+*.RData
+*.pdf
+*.png
+*.jpg
+*.csv
+*.xlsx
+*.py
+.idea
+
+imgs
