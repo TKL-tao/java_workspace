@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-09-01" />
+        <meta name="date" content="2024-09-04" />
     
     <title>Hadoop Learning</title>
 
@@ -2057,6 +2057,7 @@ margin-left: 0 !important;
             <ul>
             <li><a href="#目标配置情况" id="toc-目标配置情况">目标配置情况</a></li>
             <li><a href="#修改用户自定义配置" id="toc-修改用户自定义配置">修改用户自定义配置</a></li>
+            <li><a href="#启动集群" id="toc-启动集群">启动集群</a></li>
             </ul></li>
             <li><a href="#其他问题的解决方案" id="toc-其他问题的解决方案">其他问题的解决方案</a>
             <ul>
@@ -2076,7 +2077,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-01</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-04</p>
            
 
    
@@ -2331,6 +2332,7 @@ ssh-keygen -t rsa
 ssh-copy-id hadoop103</code></pre>
 <p>在<code>.ssh/authorized_keys</code>中可以看到哪些节点可以无密访问本节点。</p>
 <p>注意“公钥-私钥”对对于每一个用户都是不同的。比如在zt用户下配置了本节点的公钥-密钥且传送到了hadoop104，但是切换到root用户后，依然不能对hadoop104进行无密访问。</p>
+<p>hadoop102也需要自己对自己设置无密访问。</p>
 </div>
 <div id="配置hadoop集群" class="section level1">
 <h1>配置Hadoop集群</h1>
@@ -2356,13 +2358,13 @@ hadoop104
 HDFS
 </td>
 <td style="text-align:center;">
-NameNode + DataNode
+NameNode, DataNode
 </td>
 <td style="text-align:center;">
 DataNode
 </td>
 <td style="text-align:center;">
-SecondaryNameNode + DataNode
+SecondaryNameNode, DataNode
 </td>
 </tr>
 <tr>
@@ -2373,7 +2375,7 @@ YARN
 NodeManager
 </td>
 <td style="text-align:center;">
-ResourceManager + NodeManager
+ResourceManager, NodeManager
 </td>
 <td style="text-align:center;">
 NodeManager
@@ -2396,15 +2398,103 @@ NodeManager
 <h2>修改用户自定义配置</h2>
 <div id="core配置" class="section level3">
 <h3>core配置</h3>
+<pre class="xml"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;
+
+&lt;configuration&gt;
+    &lt;!-- 指定NameNode的地址 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;fs.defaultFS&lt;/name&gt;
+        &lt;value&gt;hdfs://hadoop102:8020&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 指定hadoop数据的存储目录 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+        &lt;value&gt;/home/zt/development/Hadoop336/data&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 配置HDFS网页登录使用的静态用户为zt --&gt;
+    &lt;property&gt;
+        &lt;name&gt;hadoop.http.staticuser.user&lt;/name&gt;
+        &lt;value&gt;zt&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;</code></pre>
 </div>
 <div id="hdfs配置" class="section level3">
 <h3>HDFS配置</h3>
+<pre class="xml"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;
+
+&lt;configuration&gt;
+    &lt;!-- 暴露NameNode的Web访问地址 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.http-address&lt;/name&gt;
+        &lt;value&gt;hadoop102:9870&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 暴露Secondary NameNode的Web访问地址 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;
+        &lt;value&gt;hadoop104:9868&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;</code></pre>
 </div>
 <div id="yarn配置" class="section level3">
 <h3>YARN配置</h3>
+<pre class="xml"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;
+
+&lt;configuration&gt;
+    &lt;!-- 指定MR走Shuffle --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
+        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 指定ResourceManaer的地址 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;
+        &lt;value&gt;hadoop103&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 环境变量的继承 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.env-whitelist&lt;/name&gt;
+        &lt;value&gt;JAVA_HOME,HADOOP_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME&lt;/value&gt;
+    &lt;/property&gt;
+    
+&lt;/configuration&gt;</code></pre>
 </div>
-<div id="section" class="section level3">
-<h3></h3>
+<div id="mapreduce配置文件" class="section level3">
+<h3>MapReduce配置文件</h3>
+<pre class="xml"><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;
+
+&lt;configuration&gt;
+    &lt;!-- 指定MapReduce运行在YARN上 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;mapreduce.framework.name&lt;/name&gt;
+        &lt;value&gt;yarn&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+<div id="启动集群" class="section level2">
+<h2>启动集群</h2>
+<p>在<code>$HADOOP_HOME/etc/hadoop/workers</code>中将localhost修改为：</p>
+<pre class="txt"><code>hadoop102
+hadoop103
+hadoop104</code></pre>
+<p>在<code>$HADOOP_HOME</code>下执行命令<code>hdfs namenode -format</code>初始化。初始化完成后会在<code>$HADOOP_HOME</code>目录下出现<code>logs</code>文件夹，以及在.xml配置文件中指定的hadoop数据存储目录下生成<code>data</code>文件夹。在这个<code>data</code>文件夹中的<code>data/dfs/name/current/VERSION</code>存放的是版本号：</p>
+<pre class="txt"><code>#Wed Sep 04 09:06:26 EDT 2024
+blockpoolID=BP-1667933497-192.168.10.102-1725455186531
+cTime=1725455186531
+clusterID=CID-95dd7d98-be69-4b43-a791-7adc3ee4b196
+layoutVersion=-66
+namespaceID=1642564378
+storageType=NAME_NODE</code></pre>
+<div id="启动集群-1" class="section level3">
+<h3>启动集群</h3>
+<p>在<code>$HADOOP_HOME</code>下执行命令<code>sbin/start-dfs.sh</code>。</p>
+<p>在指向上面的命名是我出现了一个报错说三个节点上都找不到JAVA_HOME。打开<code>$HADOOP_HOME/etc/hadoop/hadoop-env.sh</code>，追加下述内容即可。</p>
+<pre class="txt"><code>export JAVA_HOME=/home/zt/development/JDK17/jdk-22.0.1</code></pre>
+<p>执行<code>jps</code>可以显示正在运行的Java进程。</p>
 </div>
 </div>
 </div>
