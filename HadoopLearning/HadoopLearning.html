@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-09-04" />
+        <meta name="date" content="2024-09-06" />
     
     <title>Hadoop Learning</title>
 
@@ -2058,6 +2058,7 @@ margin-left: 0 !important;
             <li><a href="#目标配置情况" id="toc-目标配置情况">目标配置情况</a></li>
             <li><a href="#修改用户自定义配置" id="toc-修改用户自定义配置">修改用户自定义配置</a></li>
             <li><a href="#启动集群" id="toc-启动集群">启动集群</a></li>
+            <li><a href="#测试集群" id="toc-测试集群">测试集群</a></li>
             </ul></li>
             <li><a href="#其他问题的解决方案" id="toc-其他问题的解决方案">其他问题的解决方案</a>
             <ul>
@@ -2077,7 +2078,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-04</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-06</p>
            
 
    
@@ -2477,6 +2478,8 @@ NodeManager
 </div>
 <div id="启动集群" class="section level2">
 <h2>启动集群</h2>
+<div id="集群初始化" class="section level3">
+<h3>集群初始化</h3>
 <p>在<code>$HADOOP_HOME/etc/hadoop/workers</code>中将localhost修改为：</p>
 <pre class="txt"><code>hadoop102
 hadoop103
@@ -2489,13 +2492,25 @@ clusterID=CID-95dd7d98-be69-4b43-a791-7adc3ee4b196
 layoutVersion=-66
 namespaceID=1642564378
 storageType=NAME_NODE</code></pre>
-<div id="启动集群-1" class="section level3">
-<h3>启动集群</h3>
-<p>在<code>$HADOOP_HOME</code>下执行命令<code>sbin/start-dfs.sh</code>。</p>
+</div>
+<div id="启动hdfs" class="section level3">
+<h3>启动HDFS</h3>
+<p>在<strong>节点hadoop102</strong>的<code>$HADOOP_HOME</code>目录下执行命令<code>sbin/start-dfs.sh</code>可以启动HDFS。Web端hdfs位于http://hadoop102:9870。</p>
 <p>在指向上面的命名是我出现了一个报错说三个节点上都找不到JAVA_HOME。打开<code>$HADOOP_HOME/etc/hadoop/hadoop-env.sh</code>，追加下述内容即可。</p>
 <pre class="txt"><code>export JAVA_HOME=/home/zt/development/JDK17/jdk-22.0.1</code></pre>
 <p>执行<code>jps</code>可以显示正在运行的Java进程。</p>
 </div>
+<div id="启动yarn" class="section level3">
+<h3>启动YARN</h3>
+<p>在<strong>节点hadoop103</strong>的<code>$HADOOP_HOME</code>目录下执行命令<code>sbin/start-yarn.sh</code>可以启动YARN。Web端hdfs位于http://hadoop103:8088。</p>
+<p>Java22版本在启动yarn时会出错，尝试使用Java8版本，并更改环境变量<code>my_env.sh</code>和hadoop环境变量<code>hadoop-env.sh</code>后再次启动YARN则不会出现问题。</p>
+<p>执行<code>jps</code>可以显示正在运行的Java进程。</p>
+</div>
+</div>
+<div id="测试集群" class="section level2">
+<h2>测试集群</h2>
+<pre class="bash"><code># 在根目录下创建新文件夹
+hadoop fs -mkdir /myfolder</code></pre>
 </div>
 </div>
 <div id="其他问题的解决方案" class="section level1">
