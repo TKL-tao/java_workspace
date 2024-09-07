@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-09-06" />
+        <meta name="date" content="2024-09-07" />
     
     <title>Hadoop Learning</title>
 
@@ -2059,10 +2059,12 @@ margin-left: 0 !important;
             <li><a href="#修改用户自定义配置" id="toc-修改用户自定义配置">修改用户自定义配置</a></li>
             <li><a href="#启动集群" id="toc-启动集群">启动集群</a></li>
             <li><a href="#测试集群" id="toc-测试集群">测试集群</a></li>
+            <li><a href="#集群异常处理" id="toc-集群异常处理">集群异常处理</a></li>
             </ul></li>
             <li><a href="#其他问题的解决方案" id="toc-其他问题的解决方案">其他问题的解决方案</a>
             <ul>
             <li><a href="#vmware虚拟机间歇性宕机" id="toc-vmware虚拟机间歇性宕机">VMWare虚拟机间歇性宕机</a></li>
+            <li><a href="#未关闭集群直接关机节点" id="toc-未关闭集群直接关机节点">未关闭集群直接关机节点</a></li>
             </ul></li>
             </ul>
           </div>
@@ -2078,7 +2080,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-06</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-07</p>
            
 
    
@@ -2495,22 +2497,40 @@ storageType=NAME_NODE</code></pre>
 </div>
 <div id="启动hdfs" class="section level3">
 <h3>启动HDFS</h3>
-<p>在<strong>节点hadoop102</strong>的<code>$HADOOP_HOME</code>目录下执行命令<code>sbin/start-dfs.sh</code>可以启动HDFS。Web端hdfs位于http://hadoop102:9870。</p>
+<p>在<strong>节点hadoop102</strong>的<code>$HADOOP_HOME</code>目录下执行命令<code>sbin/start-dfs.sh</code>可以启动HDFS。Web端hdfs位于<a href="http://hadoop102:9870">http://hadoop102:9870</a>。</p>
 <p>在指向上面的命名是我出现了一个报错说三个节点上都找不到JAVA_HOME。打开<code>$HADOOP_HOME/etc/hadoop/hadoop-env.sh</code>，追加下述内容即可。</p>
 <pre class="txt"><code>export JAVA_HOME=/home/zt/development/JDK17/jdk-22.0.1</code></pre>
 <p>执行<code>jps</code>可以显示正在运行的Java进程。</p>
 </div>
 <div id="启动yarn" class="section level3">
 <h3>启动YARN</h3>
-<p>在<strong>节点hadoop103</strong>的<code>$HADOOP_HOME</code>目录下执行命令<code>sbin/start-yarn.sh</code>可以启动YARN。Web端hdfs位于http://hadoop103:8088。</p>
+<p>在<strong>节点hadoop103</strong>的<code>$HADOOP_HOME</code>目录下执行命令<code>sbin/start-yarn.sh</code>可以启动YARN。Web端yarn位于<a href="http://hadoop103:8088">http://hadoop103:8088</a>。</p>
 <p>Java22版本在启动yarn时会出错，尝试使用Java8版本，并更改环境变量<code>my_env.sh</code>和hadoop环境变量<code>hadoop-env.sh</code>后再次启动YARN则不会出现问题。</p>
 <p>执行<code>jps</code>可以显示正在运行的Java进程。</p>
 </div>
 </div>
 <div id="测试集群" class="section level2">
 <h2>测试集群</h2>
-<pre class="bash"><code># 在根目录下创建新文件夹
-hadoop fs -mkdir /myfolder</code></pre>
+<div id="测试hdfs" class="section level3">
+<h3>测试HDFS</h3>
+<pre class="bash"><code># 在hadoop根目录下创建新文件夹
+hadoop fs -mkdir /myfolder
+# 上传本节点文件到myfolder文件夹
+hadoop fs -put /home/zt/mytest.txt /myfolder</code></pre>
+<p>上传到hadoop的上述文件实际上是被分成了多个数据块被存储到了每一个DataNode中，每个DataNode都有一份该文件的副本。具体路径为:</p>
+<p><code>Hadoop336/data/dfs/data/current/BP-1433059334-192.168.10.102-1725551956628/current/finalized/subdir0/subdir0</code></p>
+<p>每一个DataNode中都有所上传的mytest.txt文件的完整版。如果是一个大文件，它可能被拆分并存储到几个”blk_…“文件中。</p>
+</div>
+<div id="测试yarn" class="section level3">
+<h3>测试YARN</h3>
+<pre class="bash"><code># 在$HADOOP_HOME路径下执行下述命令。
+# 确保在/myfolder下有一个用于被统计单词数量的.txt文件
+# /myfolderOutput为输出文件夹
+hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar wordcount /myfolder /myfolderOutput</code></pre>
+</div>
+</div>
+<div id="集群异常处理" class="section level2">
+<h2>集群异常处理</h2>
 </div>
 </div>
 <div id="其他问题的解决方案" class="section level1">
@@ -2518,6 +2538,11 @@ hadoop fs -mkdir /myfolder</code></pre>
 <div id="vmware虚拟机间歇性宕机" class="section level2">
 <h2>VMWare虚拟机间歇性宕机</h2>
 <p>跟一个网络相关的程序有关</p>
+</div>
+<div id="未关闭集群直接关机节点" class="section level2">
+<h2>未关闭集群直接关机节点</h2>
+<p>此操作会可能会造成再次启动hdfs时datanode的clusterID与NameNode的clusterID不匹配。导致后续无法正常启动datanode。</p>
+<p>可以在每一个节点上使用<code>rm -rf /home/zt/development/Hadoop336/data/dfs/data/*</code>来使datanode可以被正常启动。</p>
 </div>
 </div>
 </div>
