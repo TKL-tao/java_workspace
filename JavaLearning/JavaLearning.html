@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-08-13" />
+        <meta name="date" content="2024-09-09" />
     
     <title>Java Learning</title>
 
@@ -1847,13 +1847,19 @@ margin-left: 0 !important;
       <li><a href="#建造者模式" id="toc-建造者模式">“建造者”模式</a></li>
       <li><a href="#适配器模式" id="toc-适配器模式">“适配器”模式</a></li>
       </ul></li>
+      <li><a href="#java基础知识" id="toc-java基础知识">Java基础知识</a>
+      <ul>
+      <li><a href="#jvm-jdk-jre-字节码" id="toc-jvm-jdk-jre-字节码">JVM,
+      JDK, JRE, 字节码</a></li>
+      <li><a href="#移位运算符" id="toc-移位运算符">移位运算符</a></li>
       <li><a href="#java知识点记录" id="toc-java知识点记录">Java知识点记录</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-08-13</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-09</p>
           </div>
    </div>
      
@@ -2753,11 +2759,33 @@ methods unique to the subclass.</p>
 <span id="cb24-36"><a href="#cb24-36" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
-<div id="java知识点记录" class="section level1">
-<h1>Java知识点记录</h1>
+<div id="java基础知识" class="section level1">
+<h1>Java基础知识</h1>
+<div id="jvm-jdk-jre-字节码" class="section level2">
+<h2>JVM, JDK, JRE, 字节码</h2>
+<p>JVM是运行Java字节码的虚拟机，可以让Java实现“一次编译，随处可运行”</p>
+<p><a href="https://oss.javaguide.cn/github/javaguide/java/basis/jdk-include-jre.png" class="uri">https://oss.javaguide.cn/github/javaguide/java/basis/jdk-include-jre.png</a></p>
+<p><strong>.java -&gt; .class -&gt; 机器码</strong></p>
+<p>javac编译器负责Java源代码到字节码的转换.java -&gt; .class</p>
+<p>解释器或JIT负责将字节码转换为机器码。</p>
+</div>
+<div id="移位运算符" class="section level2">
+<h2>移位运算符</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 101</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(-</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 11111111111111111111111111111011</span></span></code></pre></div>
+<p><span class="math display">\[5 &lt;&lt; 3 = 5\times2^3 =
+40\]</span></p>
+<p><span class="math inline">\(&lt;&lt;\)</span>为左移运算符，高位丢弃，低位补零。</p>
+<p><span class="math inline">\(&gt;&gt;\)</span>为右移运算符，高位补符号位，低位丢弃。</p>
+<p><span class="math inline">\(&gt;&gt;&gt;\)</span>无符号右移，忽略符号位，空位以0补齐。</p>
+<p>例：对int类型左移40位的处理过程为：40%32=8，即左移8位。</p>
+</div>
+<div id="java知识点记录" class="section level2">
+<h2>Java知识点记录</h2>
 <ol style="list-style-type: decimal">
 <li>子类不能缩小父类的访问权限，不然有违多态性。例如父类的<code>public</code>方法不能被子类重写为<code>private</code>方法。</li>
 </ol>
+</div>
 </div>
 </div>
 

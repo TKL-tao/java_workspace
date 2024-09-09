@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tom Zou" />
     
-        <meta name="date" content="2024-08-13" />
+        <meta name="date" content="2024-09-09" />
     
     <title>MySQL Learning</title>
 
@@ -1889,12 +1889,16 @@ margin-left: 0 !important;
       <li><a href="#profiles查询每条sql执行时间" id="toc-profiles查询每条sql执行时间">profiles查询每条SQL执行时间</a></li>
       <li><a href="#explain解释sql语句执行详情" id="toc-explain解释sql语句执行详情">EXPLAIN解释SQL语句执行详情</a></li>
       </ul></li>
+      <li><a href="#sql优化" id="toc-sql优化">SQL优化</a>
+      <ul>
+      <li><a href="#插入数据优化" id="toc-插入数据优化">插入数据优化</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tom
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-08-13</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-09</p>
           </div>
    </div>
      
@@ -2653,8 +2657,10 @@ correspondingly.</p>
 <li><p>对索引列使用运算函数会导致索引失效。</p></li>
 <li><p>尾部模糊匹配，索引列不是失效；头部模糊匹配，索引列失效。</p></li>
 <li><p>如果在某些情况下使用索引的查询速度更慢，MySQL会选择使用全局扫描不使用索引。</p></li>
-<li><p>当使用OR连接符时，若左右两个条件一个有索引一个没有，则MySQL可能不会使用索引查询；相同情况下，当使用OR连接符时，MySQL会使用索引查询。</p></li>
+<li><p>当使用<code>OR</code>连接符时，若左右两个条件一个有索引一个没有，则MySQL可能不会使用索引查询；相同情况下，当使用<code>AND</code>连接符时，MySQL会使用索引查询。</p></li>
 <li><p>尽量避免使用<code>SELECT *</code>，因为它会涉及到回表查询。</p></li>
+<li><p>某列不存储NULL值，则最好声明其NOT
+NULL属性，这样可以优化器可以更好地确定使用最有地索引。</p></li>
 </ul>
 <div id="强制使用索引" class="section level3">
 <h3>强制使用索引</h3>
@@ -2715,6 +2721,13 @@ SIMPLE(最普通的查询)、PRIMARY（主查询）、UNION、SUBQUERY。</p></l
 <li><p>Extra:
 如果出现<code>using index condition</code>，意味着查询使用了索引但是需要回表查询；如果出现<code>using where; using index</code>，意味着数据能在索引中找到，不需要回表查询。</p></li>
 </ul>
+</div>
+</div>
+<div id="sql优化" class="section level1">
+<h1>SQL优化</h1>
+<div id="插入数据优化" class="section level2">
+<h2>插入数据优化</h2>
+<p>建议优先使用批量插入而不是单条数据插入</p>
 </div>
 </div>
 </div>
