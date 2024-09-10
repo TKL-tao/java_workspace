@@ -83,3 +83,19 @@ SELECT id, age, phone ... ORDER BY phone, age; -- filesort & index：对于phone
 当遇到大数据量排序时，且不可避免要使用filesort时，可以手动通过`SET sort_buffer_size=1048576  -- 1MB`来增加缓冲区大小（默认为256K）。
 
 ## GROUP BY 优化
+
+### BFS
+```python
+from collections import deque
+
+dq = deque()
+dq.append(root)
+while dq:
+    # 处理队列中最左侧的节点，纳入其左右子节点，然后移除该最最左侧的节点。
+    popped_node = dq.popleft()
+    if popped_node.left is not None:
+        dq.append(popped_node.left)
+    if popped_node.right is not None:
+        dq.append(popped_node.right)
+    print(popped_node.val)
+```
