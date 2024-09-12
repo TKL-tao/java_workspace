@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tom Zou" />
     
-        <meta name="date" content="2024-09-09" />
+        <meta name="date" content="2024-09-12" />
     
     <title>MySQL Learning</title>
 
@@ -1892,13 +1892,18 @@ margin-left: 0 !important;
       <li><a href="#sql优化" id="toc-sql优化">SQL优化</a>
       <ul>
       <li><a href="#插入数据优化" id="toc-插入数据优化">插入数据优化</a></li>
+      <li><a href="#主键优化" id="toc-主键优化">主键优化</a></li>
+      <li><a href="#order-by-优化" id="toc-order-by-优化">ORDER BY
+      优化</a></li>
+      <li><a href="#group-by-优化" id="toc-group-by-优化">GROUP BY
+      优化</a></li>
       </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tom
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-09</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-12</p>
           </div>
    </div>
      
@@ -2727,7 +2732,62 @@ SIMPLE(最普通的查询)、PRIMARY（主查询）、UNION、SUBQUERY。</p></l
 <h1>SQL优化</h1>
 <div id="插入数据优化" class="section level2">
 <h2>插入数据优化</h2>
-<p>建议优先使用批量插入而不是单条数据插入</p>
+<div id="建议使用批量插入而不要使用单条数据插入" class="section level3">
+<h3>建议使用批量插入而不要使用单条数据插入</h3>
+<div class="sourceCode" id="cb59"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="co">-- 批量插入</span></span>
+<span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="st">&#39;Tom&#39;</span>), (<span class="dv">2</span>, <span class="st">&#39;Jack&#39;</span>), (<span class="dv">3</span>, <span class="st">&#39;Lucas&#39;</span>);</span></code></pre></div>
+</div>
+<div id="执行一条sql语句该语句会被自动提交事务并执行可采用手动提交事务的方式实现以单条数据插入的方式插入多条数据" class="section level3">
+<h3>执行一条SQL语句，该语句会被自动提交事务并执行。可采用手动提交事务的方式实现以单条数据插入的方式插入多条数据。</h3>
+<div class="sourceCode" id="cb60"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a><span class="co">-- 手动提交事务</span></span>
+<span id="cb60-2"><a href="#cb60-2" tabindex="-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb60-3"><a href="#cb60-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="st">&#39;Tom&#39;</span>);</span>
+<span id="cb60-4"><a href="#cb60-4" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">2</span>, <span class="st">&#39;Jack&#39;</span>);</span>
+<span id="cb60-5"><a href="#cb60-5" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">3</span>, <span class="st">&#39;Lucas&#39;</span>);</span>
+<span id="cb60-6"><a href="#cb60-6" tabindex="-1"></a><span class="kw">COMMIT</span>;</span></code></pre></div>
+</div>
+<div id="按照主键的顺序插入" class="section level3">
+<h3>按照主键的顺序插入</h3>
+<p>由InnoDB的聚集索引特点所决定。</p>
+</div>
+<div id="大量数据的.sql文件插入用load插入" class="section level3">
+<h3>大量数据的.sql文件插入用<code>LOAD</code>插入</h3>
+<p>假设下述文件是<code>sql1.sql</code></p>
+<pre class="text"><code>1, Tom
+2, Jack
+3, Lucas</code></pre>
+<div class="sourceCode" id="cb62"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="co">## 在客户端连接MySQL服务器时，加上参数--local-infile</span></span>
+<span id="cb62-2"><a href="#cb62-2" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">--local-infile</span> <span class="at">-u</span> root <span class="at">-p</span></span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="co">-- 开启在本从本地加载文件导入数据的开关。通过SELECT @@local_infile可以查看开关状态。</span></span>
+<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a><span class="kw">SET</span> <span class="kw">GLOBAL</span> local_infile<span class="op">=</span><span class="dv">1</span>;</span>
+<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a><span class="co">-- 将.sql文件加载到目标表中</span></span>
+<span id="cb63-4"><a href="#cb63-4" tabindex="-1"></a>LOAD <span class="kw">DATA</span> <span class="kw">LOCAL</span> INFILE <span class="st">&#39;/root/sql1.sql&#39;</span> <span class="kw">INTO</span> <span class="kw">TABLE</span> `mytable` FIELDS TERMINATED <span class="kw">BY</span> <span class="st">&#39;,&#39;</span> LINES TERMINATED <span class="kw">BY</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>;</span></code></pre></div>
+</div>
+</div>
+<div id="主键优化" class="section level2">
+<h2>主键优化</h2>
+<ol style="list-style-type: decimal">
+<li>主键的长度尽可能小，UID和身份证号等过长不宜作为主键。</li>
+<li>插入数据时选择顺序插入，选择使用AUTO_INCREMENT自增主键。</li>
+<li>尽量避免对主键的修改。</li>
+</ol>
+</div>
+<div id="order-by-优化" class="section level2">
+<h2>ORDER BY 优化</h2>
+<p><strong>filesort</strong>单独设立缓存区对查询的所有数据进行排序，这种排序的效率较低。</p>
+<p><strong>index</strong>直接通过字段索引返回了有序的数据，这种排序的效率较高。</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a><span class="co">-- 假设对age,phone创建了一个联合索引（默认以升序构建索引）</span></span>
+<span id="cb64-2"><a href="#cb64-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age;  <span class="co">-- index</span></span>
+<span id="cb64-3"><a href="#cb64-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age, phone;  <span class="co">-- index</span></span>
+<span id="cb64-4"><a href="#cb64-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">DESC</span>, phone, <span class="kw">DESC</span>;  <span class="co">-- index (backward scan)</span></span>
+<span id="cb64-5"><a href="#cb64-5" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">ASC</span>, phone <span class="kw">DESC</span>; <span class="co">-- index &amp; filesort：对于age使用index，对于phone使用filesort。</span></span>
+<span id="cb64-6"><a href="#cb64-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> phone, age; <span class="co">-- filesort &amp; index：对于phone使用filesort，对于age使用index</span></span></code></pre></div>
+<p>对于上述第3条和第4条SQL的差异我暂时不理解。不过对两个联合索引使用顺序一致的查询可以避免filesort。
+为了解决第4条SQL的问题，可以创建联合索引并指定构建顺序：<code>CREATE INDEX idx_mytable_age_phone_ad ON mytable(age ASC, phone DESC);</code>。</p>
+<p>当遇到大数据量排序时，且不可避免要使用filesort时，可以手动通过<code>SET sort_buffer_size=1048576  -- 1MB</code>来增加缓冲区大小（默认为256K）。</p>
+</div>
+<div id="group-by-优化" class="section level2">
+<h2>GROUP BY 优化</h2>
 </div>
 </div>
 </div>
