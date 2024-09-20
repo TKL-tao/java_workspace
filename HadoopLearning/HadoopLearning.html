@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-09-07" />
+        <meta name="date" content="2024-09-20" />
     
     <title>Hadoop Learning</title>
 
@@ -2059,12 +2059,21 @@ margin-left: 0 !important;
             <li><a href="#修改用户自定义配置" id="toc-修改用户自定义配置">修改用户自定义配置</a></li>
             <li><a href="#启动集群" id="toc-启动集群">启动集群</a></li>
             <li><a href="#测试集群" id="toc-测试集群">测试集群</a></li>
+            <li><a href="#配置历史服务器和日志聚集" id="toc-配置历史服务器和日志聚集">配置历史服务器和日志聚集</a></li>
             <li><a href="#集群异常处理" id="toc-集群异常处理">集群异常处理</a></li>
+            <li><a href="#自定义hadoop集群启停命令" id="toc-自定义hadoop集群启停命令">自定义Hadoop集群启停命令</a></li>
+            <li><a href="#自定义查看所有节点java进程情况" id="toc-自定义查看所有节点java进程情况">自定义查看所有节点Java进程情况</a></li>
             </ul></li>
             <li><a href="#其他问题的解决方案" id="toc-其他问题的解决方案">其他问题的解决方案</a>
             <ul>
             <li><a href="#vmware虚拟机间歇性宕机" id="toc-vmware虚拟机间歇性宕机">VMWare虚拟机间歇性宕机</a></li>
             <li><a href="#未关闭集群直接关机节点" id="toc-未关闭集群直接关机节点">未关闭集群直接关机节点</a></li>
+            </ul></li>
+            <li><a href="#hdfs" id="toc-hdfs">HDFS</a>
+            <ul>
+            <li><a href="#hdfs的shell操作" id="toc-hdfs的shell操作">HDFS的Shell操作</a></li>
+            <li><a href="#hdfs的api操作" id="toc-hdfs的api操作">HDFS的API操作</a></li>
+            <li><a href="#hdfs的读写流程" id="toc-hdfs的读写流程">HDFS的读写流程</a></li>
             </ul></li>
             </ul>
           </div>
@@ -2080,7 +2089,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-07</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-09-20</p>
            
 
    
@@ -2529,8 +2538,81 @@ hadoop fs -put /home/zt/mytest.txt /myfolder</code></pre>
 hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar wordcount /myfolder /myfolderOutput</code></pre>
 </div>
 </div>
+<div id="配置历史服务器和日志聚集" class="section level2">
+<h2>配置历史服务器和日志聚集</h2>
+<p>在<code>$HADOOP_HOME/etc/hadoop/mapred-site.xml</code>中加入下述property，然后分发到其他节点。通过在<code>$HADOOP_HOME/bin</code>下执行命令<code>mapred -daemon start historyserver</code>运行历史服务器。在<a href="http://hadoop102:19888/jobhistory">http://hadoop102:19888/jobhistory</a>查看历史服务器的Web。</p>
+<pre class="xml"><code>&lt;property&gt;
+    &lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;
+    &lt;value&gt;hadoop102:10020&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;
+    &lt;value&gt;hadoop102:19888&lt;/value&gt;
+&lt;/property&gt;</code></pre>
+<p>通过历史服务器可以查看YARN任务的配置参数、任务细节、运行时间、程序运行的日志等。</p>
+<p>在<code>$HADOOP_HOME/etc/hadoop/mapred-site.xml</code>中加入下述property。然后分发到其他节点。通过这种方式配置日志聚集，使得可以在历史服务器中看到程序的运行日志。</p>
+<pre class="xml"><code>&lt;property&gt;
+  &lt;name&gt;yarn.log-aggregation-enable&lt;/name&gt;
+  &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+  &lt;name&gt;yarn.log.server.url&lt;/name&gt;
+  &lt;value&gt;http://hadoop102:19888/jobhistory/logs&lt;/value&gt;
+&lt;/property&gt;
+&lt;!--设置日志的保留时间为7天  --&gt;
+&lt;property&gt;
+  &lt;name&gt;yarn.log-aggregation.retain-seconds&lt;/name&gt;
+  &lt;value&gt;604800&lt;/value&gt;
+&lt;/property&gt;</code></pre>
+</div>
 <div id="集群异常处理" class="section level2">
 <h2>集群异常处理</h2>
+</div>
+<div id="自定义hadoop集群启停命令" class="section level2">
+<h2>自定义Hadoop集群启停命令</h2>
+<p>我将之命名为<code>hadoopstartstop.sh</code>。在<code>/home/zt/bin</code>目录下创建好<code>hadoopstartstop.sh</code>后，写入下述代码。之后执行<code>chmod 777 hadoopstartstop.sh</code>。之后使用<code>hadoopstartstop.sh start</code>和<code>hadoopstartstop.sh stop</code>即可启停。</p>
+<pre class="bash"><code>#!/bin/bash
+
+if [ $# -lt 1 ]
+then 
+    echo &quot;No Args Input...&quot;
+    exit ;
+fi
+
+case $1 in
+&quot;start&quot;)
+        echo &quot;====== 启动hadoop集群 ======&quot;
+        echo &quot;------ 启动hdfs ------&quot;
+        ssh hadoop102 &quot;/home/zt/development/Hadoop336/hadoop-3.3.6/sbin/start-dfs.sh&quot;
+        echo &quot;------ 启动yarn ------&quot;
+        ssh hadoop103 &quot;/home/zt/development/Hadoop336/hadoop-3.3.6/sbin/start-yarn.sh&quot;
+        echo &quot;------ 启动history server ------&quot;
+        ssh hadoop102 &quot;/home/zt/development/Hadoop336/hadoop-3.3.6/bin/mapred --daemon start historyserver&quot;
+;;
+&quot;stop&quot;)
+        echo &quot;====== 关闭hadoop集群 ======&quot;
+        echo &quot;------ 关闭history server ------&quot;
+        ssh hadoop102 &quot;/home/zt/development/Hadoop336/hadoop-3.3.6/bin/mapred --daemon stop historyserver&quot;
+        echo &quot;------ 关闭yarn ------&quot;
+        ssh hadoop103 &quot;/home/zt/development/Hadoop336/hadoop-3.3.6/sbin/stop-yarn.sh&quot;
+        echo &quot;------ 关闭hdfs ------&quot;
+        ssh hadoop102 &quot;/home/zt/development/Hadoop336/hadoop-3.3.6/sbin/stop-dfs.sh&quot;
+;;
+*)
+    echo &quot;Input Args Error...&quot;
+;;
+esac</code></pre>
+</div>
+<div id="自定义查看所有节点java进程情况" class="section level2">
+<h2>自定义查看所有节点Java进程情况</h2>
+<p>在<code>/home/zt/bin</code>下创建<code>jpsall</code>，并写入下述信息。然后执行<code>chmod 777 jpsall</code>。直接使用<code>jpsall</code>即可执行。</p>
+<pre class="bash"><code>#!/bin/bash
+
+for host in hadoop102 hadoop103 hadoop104
+do
+        echo ====== $host ======
+        ssh $host /home/zt/development/JDK8/jdk1.8.0_202/bin/jps
+done</code></pre>
 </div>
 </div>
 <div id="其他问题的解决方案" class="section level1">
@@ -2543,6 +2625,74 @@ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar wordcount 
 <h2>未关闭集群直接关机节点</h2>
 <p>此操作会可能会造成再次启动hdfs时datanode的clusterID与NameNode的clusterID不匹配。导致后续无法正常启动datanode。</p>
 <p>可以在每一个节点上使用<code>rm -rf /home/zt/development/Hadoop336/data/dfs/data/*</code>来使datanode可以被正常启动。</p>
+</div>
+</div>
+<div id="hdfs" class="section level1">
+<h1>HDFS</h1>
+<p>HDFS分布式存储系统具有<strong>一次写入，多次读出</strong>的特点：一个文件经过创建、写入、关闭之后就不再改变，除了追加。</p>
+<p>HDFS的文件在物理上时分块存储的（Block1, Block 2,
+…），一般100MB/S的磁盘传输速率设置块大小为128MB，200-300MB/s的磁盘传输速率设置块大小为256MB。</p>
+<p>HDFS缺点：</p>
+<ol style="list-style-type: decimal">
+<li><p>不适合低延时的数据访问。</p></li>
+<li><p>无法高效地对大量小文件进行存储。因为会占用大量NameNode内存（一般是128G）来存储文件目录。</p></li>
+<li><p>不能被多个线程并发地写。</p></li>
+</ol>
+<p>NameNode作用：</p>
+<ol style="list-style-type: decimal">
+<li><p>管理HDFS的名称空间。</p></li>
+<li><p>配置副本策略。</p></li>
+<li><p>管理数据块（Block）的映射信息。</p></li>
+<li><p>处理客户端读写请求。</p></li>
+</ol>
+<p>DataNode作用：</p>
+<ol style="list-style-type: decimal">
+<li><p>实际存储数据块。</p></li>
+<li><p>执行数据块的读写操作。</p></li>
+</ol>
+<div id="hdfs的shell操作" class="section level2">
+<h2>HDFS的Shell操作</h2>
+<p>HDFS的基本命令<code>hadoop fs &lt;命令&gt;</code>或<code>hdfs dfs &lt;命令&gt;</code>。</p>
+<div id="hdfs上传下载操作" class="section level3">
+<h3>HDFS上传、下载操作</h3>
+<pre class="shell"><code># 查看某一hadoop命令的帮助文档
+hadoop fs -help rm
+# 在hadoop的根目录下创建一个名为threekingdoms的空文件夹
+hadoop fs -mkdir /threekingdoms
+# 将本节点的当前目录下的本地文件剪切上传到HDFS中，本地被上传的文件会被删除
+hadoop fs -moveFromLocal ./shukingdom.txt /threekingdoms
+# 将本节点的当前目录下的本地文件复制上传到HDFS中，与-put命令效果相同
+hadoop fs -copyFromLocal ./shukingdom.txt /threekingdoms
+# 追加一个文件到目的文件的末尾
+hadoop fs -appendToFile ./jinkingdom.txt /threekingdoms/weikingdom.txt
+# 从HDFS拷贝到本地，与-get命令效果相同
+hadoop fs -copyToLocal /threekingdoms/shukingdom.txt ./</code></pre>
+</div>
+<div id="hdfs常用操作" class="section level3">
+<h3>HDFS常用操作</h3>
+<pre class="shell"><code># 将HDFS中一个文件拷贝到HDFS中的另一个路径中
+hadoop fs -cp /myfolder/mytest.txt /threekingdoms
+# 将HDFS中一个文件移动到HDFS中的另一个路径中
+hadoop fs -mv /myfolder/mytest.txt /threekingdoms
+# 递归删除一个目录中所有的内容
+hadoop fs -rm -r /threekingdoms
+# 将HDFS文件的所有者改为zt:ztgroup，冒号前时owner，冒号后是Group
+hadoop fs -chown zt:ztgroup /threekingdoms
+# 显示一个文件末尾1KB的数据
+hadoop fs -tail /threekingdoms/weikingdom.txt
+# 显示HDFS一个文件夹的大小，比如：44 132，44表示在一个datanode上的文件大小，132表示在所有datanode上的文件大小。
+hadoop fs -du -s -h /threekingdoms
+# 显示HDFS一个文件夹中所有文件和子文件夹的大小
+hadoop fs -du -h /threekingdoms
+# 设置副本数量为10，10会记录在NameNode元数据中，因为实际只有三个DataNode，因此最多只能有三个副本。不会对物理内存造成影响。
+hadoop fs -setrep 10 /threekingdoms</code></pre>
+</div>
+</div>
+<div id="hdfs的api操作" class="section level2">
+<h2>HDFS的API操作</h2>
+</div>
+<div id="hdfs的读写流程" class="section level2">
+<h2>HDFS的读写流程</h2>
 </div>
 </div>
 </div>
