@@ -1,0 +1,5 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "debug.inlineValues": "on",
+    "emmet.useInlineCompletions": false
+}

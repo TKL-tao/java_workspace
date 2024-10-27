@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "WordCountDriver",
+            "request": "launch",
+            "mainClass": "com.zt.mapreduce.finalwordcount.WordCountDriver",
+            "projectName": "Mapreduce_WordCount",
+            "args": "wordcount src/main/java/com/zt/mapreduce/finalwordcount/data/input src/main/java/com/zt/mapreduce/finalwordcount/data/output2"
+        },
+        {
+            "type": "java",
+            "name": "MobileDataDriver",
+            "request": "launch",
+            "mainClass": "com.zt.mapreduce.mobiledata.MobileDataDriver",
+            "projectName": "Mapreduce_WordCount"
+        },
+        {
+            "type": "java",
+            "name": "WordCountDriver(1)",
+            "request": "launch",
+            "mainClass": "com.zt.mapreduce.wordcount.WordCountDriver",
+            "projectName": "Mapreduce_WordCount"
+        }
+    ]
+}
