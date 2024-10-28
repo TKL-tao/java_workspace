@@ -1,7 +1,0 @@
-banana banana
-apple
-peach
-pear
-apple peach
-orange pear
-orange

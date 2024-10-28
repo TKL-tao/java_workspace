@@ -1,5 +1,0 @@
-Hadoop
-hadoop
-Python Java
-Java C
-Python
