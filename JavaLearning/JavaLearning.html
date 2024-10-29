@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-10-28" />
+        <meta name="date" content="2024-10-29" />
     
     <title>Java Learning</title>
 
@@ -1861,7 +1861,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-10-28</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-10-29</p>
           </div>
    </div>
      
@@ -1992,8 +1992,8 @@ char
 \color{green}{2^1}\)</span></p>
 <p>符号位：<span class="math inline">\(\color{green}{0}\)</span></p>
 <p>指数位：<span class="math inline">\(127+1 =
-\color{green}{01111111}+\color{green}{1}=10000000\)</span></p>
-<p>尾数：<span class="math display">\[\color{green}{001}\mathop{\rightarrow}^\text{补位}\color{green}{00100000000000000000000}\]</span></p>
+\color{green}{01111111}+\color{green}{1}=\color{green}{10000000}\)</span></p>
+<p>尾数：<span class="math inline">\(\color{green}{001}\mathop{\rightarrow}^\text{补位}\color{green}{00100000000000000000000}\)</span></p>
 <p>将符号位、指数为、尾数按顺序拼接在一起就是32位<code>float</code>类型数据。</p>
 </div>
 <div id="array" class="section level2">
@@ -2198,7 +2198,7 @@ are replaced by <em>newChar</em>.</p>
 <li><p>线程不安全：例如在两个线程中同时给一个<code>StringBuilder</code>追加元素会导致该<code>StringBuilder</code>增加的元素总数小于两个线程中增加元素的总和。</p></li>
 </ul>
 <p><code>StringBuilder</code>在单线程环境中性能较好，多线程环境中不安全。</p>
-<p><code>StringBuffer</code>在单线程环境中性能较差，多线程环境中安全。</p>
+<p><code>StringBuffer</code>在单线程环境中性能较差，多线程环境中安全。因为它的所有方法都设置了<code>synchronized</code>同步锁，当它被一个线程访问时，其他线程必须等待。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="bu">StringBuilder</span> sb <span class="op">=</span> <span class="kw">new</span> <span class="bu">StringBuilder</span><span class="op">(</span><span class="st">&quot;Hello, World&quot;</span><span class="op">);</span></span></code></pre></div>
 <div id="static-methods-1" class="section level3">
 <h3>static methods</h3>
