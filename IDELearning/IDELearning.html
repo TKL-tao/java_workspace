@@ -1917,9 +1917,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 <p>分别打印出Jupyter中python的运行环境和pip的运行环境。</p>
 <pre class="ipynb"><code>! which python
 ! which pip</code></pre>
-<p>通过下述命令可以新建Jupyter
+<p>方法一：通过下述命令可以新建Jupyter
 kernel（python运行环境），设置好后再jupyter的右上角选择新建的kernel就好了。<code>/usr/local/python3.9.2/bin/python3.9</code>使python解释器的位置，可以通过python代码的<code>sys.executable</code>获取。</p>
 <pre class="ipynb"><code>!/usr/local/python3.9.2/bin/python3.9 -m ipykernel install --user --name my_python392 --display-name &quot;Python 3.9.2&quot;</code></pre>
+<p>方法二：通过linux命令新建Jupyter
+kernel。<code>conda activate llm_env</code>激活目标环境，确保已经安装<code>pip install ipykernel</code>，然后执行下述命令即可创建新的Jupyter
+kernel，刷新Jupyter即可看见。</p>
+<pre class="bash"><code>python -m ipykernel install --user --name llm_env --display-name &quot;Python LLM env&quot;</code></pre>
 </div>
 </div>
 </div>
