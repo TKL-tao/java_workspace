@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-11-13" />
+        <meta name="date" content="2024-11-14" />
     
     <title>Kafka Learning</title>
 
@@ -1825,10 +1825,9 @@ margin-left: 0 !important;
             </ul></li>
             <li><a href="#生产者" id="toc-生产者">生产者</a>
             <ul>
+            <li><a href="#生产者数据流" id="toc-生产者数据流">生产者数据流</a></li>
             <li><a href="#生产者代码模板" id="toc-生产者代码模板">生产者代码模板</a></li>
-            <li><a href="#拦截器interceptor" id="toc-拦截器interceptor">拦截器（Interceptor）</a></li>
-            <li><a href="#序列化器serializer" id="toc-序列化器serializer">序列化器（Serializer）</a></li>
-            <li><a href="#分区器partitioner" id="toc-分区器partitioner">分区器（Partitioner）</a></li>
+            <li><a href="#异步发送" id="toc-异步发送">异步发送</a></li>
             </ul></li>
             <li><a href="#消费者" id="toc-消费者">消费者</a>
             <ul>
@@ -1852,7 +1851,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-13</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-14</p>
            
 
    
@@ -2012,10 +2011,12 @@ export PATH=$PATH:$KAFKA_HOME/bin</code></pre>
 <pre class="bash"><code>sudo vim $KAFKA_HOME/config/server.properties</code></pre>
 <p>修改<code>$KAFKA_HOME/config/server.properties</code>下述几个对应的参数：</p>
 <pre class="bash"><code># 每个服务器上的broker.id要设置得不同
-broker.id=0
+broker.id=102
 listeners=PLAINTEXT://192.168.10.102:9092
+advertised.listeners=PLAINTEXT://113.45.129.200:9092
 log.dirs=/tmp/kafaka-logs
 zookeeper.connect=192.168.10.102:2181,192.168.10.103:2181</code></pre>
+<p><code>listeners</code>设置为当前节点的私网IP；<code>advertised.listeners</code>设置为当前节点的公网IP。<code>PLAINTEXT</code>是一种protocol协议类型。</p>
 </div>
 <div id="启动kafka" class="section level2">
 <h2>启动Kafka</h2>
@@ -2046,6 +2047,35 @@ bin/kafka-console-producer.sh --broker-list 192.168.0.45:9092,192.168.11.210:909
 </div>
 <div id="生产者" class="section level1">
 <h1>生产者</h1>
+<div id="生产者数据流" class="section level2">
+<h2>生产者数据流</h2>
+<div id="拦截器interceptor" class="section level3">
+<h3>拦截器（Interceptor）</h3>
+</div>
+<div id="序列化器serializer" class="section level3">
+<h3>序列化器（Serializer）</h3>
+</div>
+<div id="分区器partitioner" class="section level3">
+<h3>分区器（Partitioner）</h3>
+<p>Partitioner把数据积累到<strong>RecordAccumulator</strong>中。<strong>RecordAccumulator</strong>与broker上的一个主题对应，它可以被视作是一个“暂存的主题”，它也有与主题对应的分区，它的每个分区是双向队列。<strong>RecordAccumulator</strong>的总大小是<span class="math inline">\(32\text{MB}\)</span>。</p>
+<p>在<strong>RecordAccumulator</strong>的分区中，数据是按照<strong>ProducerBatch</strong>（默认大小<span class="math inline">\(16\text{KB}\)</span>）的形式存储的。</p>
+</div>
+<div id="sender线程" class="section level3">
+<h3>sender线程</h3>
+<p>sender线程从<strong>RecordAccumulator</strong>读取消息发送到Kafka集群中。</p>
+<ul>
+<li><p><strong>batch.size</strong>：当数据积累到<strong>batch.size</strong>后，sender线程才会发送数据。默认大小<span class="math inline">\(16\text{KB}\)</span>。</p></li>
+<li><p><strong>linger.ms</strong>：sender线程等待<strong>linger.ms</strong>时间就会发送数据，不需要等数据积累到<strong>batch.size</strong>。单位<span class="math inline">\(\text{ms}\)</span>，默认<span class="math inline">\(0\text{ms}\)</span>。</p></li>
+</ul>
+<p>sender线程通过NetworkClient最多向Kafka集群中的每个节点缓存5个请求，用以处理Kafka集群没有及时应答的情况。</p>
+<p>sender线程使用Selector实现向集群发送数据和接收集群应答。如果应答成功，则清除NetworkClient中的请求，同时清理RecordAccumulator中的缓存批次数据；如果应答失败，则重试<span class="math inline">\(2^{32}-1\)</span>次发送。</p>
+<ul>
+<li><p>应答为<span class="math inline">\(0\)</span>：生产者发送过来的数据，不需要等待数据落盘应答。</p></li>
+<li><p>应答为<span class="math inline">\(1\)</span>：生产者发送过来的数据，Leader收到数据后应答。</p></li>
+<li><p>应答为<span class="math inline">\(-1\)</span>：生产者发送过来的数据，Leader和ISR队列里面的所有节点都收齐数据后应答。</p></li>
+</ul>
+</div>
+</div>
 <div id="生产者代码模板" class="section level2">
 <h2>生产者代码模板</h2>
 <div id="kafkaproduceranalysis" class="section level3">
@@ -2111,14 +2141,9 @@ public class KafkaProducerAnalysis {
 }</code></pre>
 </div>
 </div>
-<div id="拦截器interceptor" class="section level2">
-<h2>拦截器（Interceptor）</h2>
-</div>
-<div id="序列化器serializer" class="section level2">
-<h2>序列化器（Serializer）</h2>
-</div>
-<div id="分区器partitioner" class="section level2">
-<h2>分区器（Partitioner）</h2>
+<div id="异步发送" class="section level2">
+<h2>异步发送</h2>
+<p>在异步发送中，main线程将消息发送到<strong>RecordAccumulator</strong>中，而不管后续的sender线程处理发送消息的过程。</p>
 </div>
 </div>
 <div id="消费者" class="section level1">
