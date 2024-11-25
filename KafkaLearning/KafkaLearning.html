@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-11-19" />
+        <meta name="date" content="2024-11-25" />
     
     <title>Kafka Learning</title>
 
@@ -1623,6 +1623,8 @@ margin-left: 0 !important;
       <ul>
       <li><a href="#基本原理" id="toc-基本原理">基本原理</a></li>
       <li><a href="#客户端模板代码" id="toc-客户端模板代码">客户端模板代码</a></li>
+      <li><a href="#分区分配策略和再平衡" id="toc-分区分配策略和再平衡">分区分配策略和再平衡</a></li>
+      <li><a href="#offset" id="toc-offset">offset</a></li>
       <li><a href="#订阅主题与分区" id="toc-订阅主题与分区">订阅主题与分区</a></li>
       <li><a href="#consumerrecordk-v" id="toc-consumerrecordk-v">ConsumerRecord&lt;K, V&gt;</a></li>
       </ul></li>
@@ -1631,7 +1633,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-19</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-25</p>
           </div>
    </div>
      
@@ -1643,6 +1645,7 @@ Zou</p>
 <div id="main">
 <div id="kafka概览" class="section level1">
 <h1>Kafka概览</h1>
+<p><a href="http://kafka.apache.org/documentation">Kafka官方文档</a></p>
 <p>Kafaka是分布式消息队列处理架构，它的每一个broker存放在集群中的不同节点上。</p>
 <p>一个主题由各个分区组成，各个分区分布式地存储在不同地broker上。</p>
 <p>主题1：分区1_1（leader），分区1_2（follower），分区1_3（follower）</p>
@@ -2092,96 +2095,185 @@ Coordinator），用于将事务持久化到磁盘上。生产者在使用事务
 <span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">apache</span><span class="op">.</span><span class="im">kafka</span><span class="op">.</span><span class="im">clients</span><span class="op">.</span><span class="im">consumer</span><span class="op">.</span><span class="im">ConsumerRecord</span><span class="op">;</span></span>
 <span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">apache</span><span class="op">.</span><span class="im">kafka</span><span class="op">.</span><span class="im">clients</span><span class="op">.</span><span class="im">consumer</span><span class="op">.</span><span class="im">ConsumerRecords</span><span class="op">;</span></span>
 <span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">apache</span><span class="op">.</span><span class="im">kafka</span><span class="op">.</span><span class="im">clients</span><span class="op">.</span><span class="im">consumer</span><span class="op">.</span><span class="im">KafkaConsumer</span><span class="op">;</span></span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">time</span><span class="op">.</span><span class="im">Duration</span><span class="op">;</span></span>
-<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
-<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Properties</span><span class="op">;</span></span>
-<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">concurrent</span><span class="op">.</span><span class="im">atomic</span><span class="op">.</span><span class="im">AtomicBoolean</span><span class="op">;</span></span>
-<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a></span>
-<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> KafkaConsumerAnalysis <span class="op">{</span></span>
-<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a>    <span class="co">// public static final String brokerList = &quot;192.168.0.45:9092,192.168.11.210:9092,192.168.0.5:9092&quot;;</span></span>
-<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> brokerList <span class="op">=</span> <span class="st">&quot;localhost:9092&quot;</span><span class="op">;</span></span>
-<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> topic <span class="op">=</span> <span class="st">&quot;topic-demo&quot;</span><span class="op">;</span></span>
-<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> groupId <span class="op">=</span> <span class="st">&quot;consumer-group-0 &quot;</span><span class="op">;</span></span>
-<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">AtomicBoolean</span> isRunning <span class="op">=</span> <span class="kw">new</span> <span class="bu">AtomicBoolean</span><span class="op">(</span><span class="kw">true</span><span class="op">);</span></span>
-<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a></span>
-<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">Properties</span> <span class="fu">initConfig</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>        <span class="bu">Properties</span> props <span class="op">=</span> <span class="kw">new</span> <span class="bu">Properties</span><span class="op">();</span></span>
-<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">KEY_DESERIALIZER_CLASS_CONFIG</span><span class="op">,</span> <span class="st">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span><span class="op">);</span></span>
-<span id="cb31-21"><a href="#cb31-21" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">VALUE_DESERIALIZER_CLASS_CONFIG</span><span class="op">,</span> <span class="st">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span><span class="op">);</span></span>
-<span id="cb31-22"><a href="#cb31-22" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">BOOTSTRAP_SERVERS_CONFIG</span><span class="op">,</span> brokerList<span class="op">);</span></span>
-<span id="cb31-23"><a href="#cb31-23" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">GROUP_ID_CONFIG</span><span class="op">,</span> groupId<span class="op">);</span></span>
-<span id="cb31-24"><a href="#cb31-24" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">CLIENT_ID_CONFIG</span><span class="op">,</span> <span class="st">&quot;consumer-client-0&quot;</span><span class="op">);</span></span>
-<span id="cb31-25"><a href="#cb31-25" tabindex="-1"></a></span>
-<span id="cb31-26"><a href="#cb31-26" tabindex="-1"></a>        <span class="cf">return</span> props<span class="op">;</span></span>
-<span id="cb31-27"><a href="#cb31-27" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb31-28"><a href="#cb31-28" tabindex="-1"></a></span>
-<span id="cb31-29"><a href="#cb31-29" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-30"><a href="#cb31-30" tabindex="-1"></a>        <span class="bu">Properties</span> props <span class="op">=</span> <span class="fu">initConfig</span><span class="op">();</span></span>
-<span id="cb31-31"><a href="#cb31-31" tabindex="-1"></a>        KafkaConsumer<span class="op">&lt;</span><span class="bu">String</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> consumer <span class="op">=</span> <span class="kw">new</span> KafkaConsumer<span class="op">&lt;&gt;(</span>props<span class="op">);</span></span>
-<span id="cb31-32"><a href="#cb31-32" tabindex="-1"></a>        consumer<span class="op">.</span><span class="fu">subscribe</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">asList</span><span class="op">(</span>topic<span class="op">));</span></span>
-<span id="cb31-33"><a href="#cb31-33" tabindex="-1"></a>        <span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb31-34"><a href="#cb31-34" tabindex="-1"></a>            <span class="cf">while</span> <span class="op">(</span>isRunning<span class="op">.</span><span class="fu">get</span><span class="op">())</span> <span class="op">{</span></span>
-<span id="cb31-35"><a href="#cb31-35" tabindex="-1"></a>                ConsumerRecords<span class="op">&lt;</span><span class="bu">String</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> records <span class="op">=</span> consumer<span class="op">.</span><span class="fu">poll</span><span class="op">(</span><span class="bu">Duration</span><span class="op">.</span><span class="fu">ofMillis</span><span class="op">(</span><span class="dv">1000</span><span class="op">));</span></span>
-<span id="cb31-36"><a href="#cb31-36" tabindex="-1"></a>                <span class="cf">for</span> <span class="op">(</span>ConsumerRecord<span class="op">&lt;</span><span class="bu">String</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> record <span class="op">:</span> records<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-37"><a href="#cb31-37" tabindex="-1"></a>                    <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;topic = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">topic</span><span class="op">()</span> <span class="op">+</span> <span class="st">&quot;, partition = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">partition</span><span class="op">()</span> <span class="op">+</span> <span class="st">&quot;, offset = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">offset</span><span class="op">());</span></span>
-<span id="cb31-38"><a href="#cb31-38" tabindex="-1"></a>                    <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;key = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">key</span><span class="op">()</span> <span class="op">+</span> <span class="st">&quot;, value = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">value</span><span class="op">());</span></span>
-<span id="cb31-39"><a href="#cb31-39" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb31-40"><a href="#cb31-40" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb31-41"><a href="#cb31-41" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">Exception</span> e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-42"><a href="#cb31-42" tabindex="-1"></a>            e<span class="op">.</span><span class="fu">printStackTrace</span><span class="op">();</span></span>
-<span id="cb31-43"><a href="#cb31-43" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">finally</span> <span class="op">{</span></span>
-<span id="cb31-44"><a href="#cb31-44" tabindex="-1"></a>            consumer<span class="op">.</span><span class="fu">close</span><span class="op">();</span></span>
-<span id="cb31-45"><a href="#cb31-45" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb31-46"><a href="#cb31-46" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb31-47"><a href="#cb31-47" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">apache</span><span class="op">.</span><span class="im">kafka</span><span class="op">.</span><span class="im">common</span><span class="op">.</span><span class="im">TopicPartition</span><span class="op">;</span></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">time</span><span class="op">.</span><span class="im">Duration</span><span class="op">;</span></span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Properties</span><span class="op">;</span></span>
+<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">concurrent</span><span class="op">.</span><span class="im">atomic</span><span class="op">.</span><span class="im">AtomicBoolean</span><span class="op">;</span></span>
+<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> KafkaConsumerAnalysis <span class="op">{</span></span>
+<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>    <span class="co">// public static final String brokerList = &quot;192.168.0.45:9092,192.168.11.210:9092,192.168.0.5:9092&quot;;</span></span>
+<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> brokerList <span class="op">=</span> <span class="st">&quot;localhost:9092&quot;</span><span class="op">;</span></span>
+<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> topic <span class="op">=</span> <span class="st">&quot;topic-demo&quot;</span><span class="op">;</span></span>
+<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> groupId <span class="op">=</span> <span class="st">&quot;consumer-group-0 &quot;</span><span class="op">;</span></span>
+<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">AtomicBoolean</span> isRunning <span class="op">=</span> <span class="kw">new</span> <span class="bu">AtomicBoolean</span><span class="op">(</span><span class="kw">true</span><span class="op">);</span></span>
+<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a></span>
+<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">Properties</span> <span class="fu">initConfig</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a>        <span class="bu">Properties</span> props <span class="op">=</span> <span class="kw">new</span> <span class="bu">Properties</span><span class="op">();</span></span>
+<span id="cb31-21"><a href="#cb31-21" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">KEY_DESERIALIZER_CLASS_CONFIG</span><span class="op">,</span> <span class="st">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span><span class="op">);</span></span>
+<span id="cb31-22"><a href="#cb31-22" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">VALUE_DESERIALIZER_CLASS_CONFIG</span><span class="op">,</span> <span class="st">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span><span class="op">);</span></span>
+<span id="cb31-23"><a href="#cb31-23" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">BOOTSTRAP_SERVERS_CONFIG</span><span class="op">,</span> brokerList<span class="op">);</span></span>
+<span id="cb31-24"><a href="#cb31-24" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">GROUP_ID_CONFIG</span><span class="op">,</span> groupId<span class="op">);</span></span>
+<span id="cb31-25"><a href="#cb31-25" tabindex="-1"></a>        props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">CLIENT_ID_CONFIG</span><span class="op">,</span> <span class="st">&quot;consumer-client-0&quot;</span><span class="op">);</span></span>
+<span id="cb31-26"><a href="#cb31-26" tabindex="-1"></a></span>
+<span id="cb31-27"><a href="#cb31-27" tabindex="-1"></a>        <span class="cf">return</span> props<span class="op">;</span></span>
+<span id="cb31-28"><a href="#cb31-28" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb31-29"><a href="#cb31-29" tabindex="-1"></a></span>
+<span id="cb31-30"><a href="#cb31-30" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb31-31"><a href="#cb31-31" tabindex="-1"></a>        <span class="bu">Properties</span> props <span class="op">=</span> <span class="fu">initConfig</span><span class="op">();</span></span>
+<span id="cb31-32"><a href="#cb31-32" tabindex="-1"></a>        KafkaConsumer<span class="op">&lt;</span><span class="bu">String</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> consumer <span class="op">=</span> <span class="kw">new</span> KafkaConsumer<span class="op">&lt;&gt;(</span>props<span class="op">);</span></span>
+<span id="cb31-33"><a href="#cb31-33" tabindex="-1"></a>        <span class="co">// 订阅主题以及对应的分区</span></span>
+<span id="cb31-34"><a href="#cb31-34" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span>TopicPartition<span class="op">&gt;</span> topicPartitions <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb31-35"><a href="#cb31-35" tabindex="-1"></a>        topicPartitions<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="kw">new</span> <span class="fu">TopicPartition</span><span class="op">(</span>topic<span class="op">,</span> <span class="dv">0</span><span class="op">));</span></span>
+<span id="cb31-36"><a href="#cb31-36" tabindex="-1"></a>        consumer<span class="op">.</span><span class="fu">assign</span><span class="op">(</span>topicPartitions<span class="op">);</span></span>
+<span id="cb31-37"><a href="#cb31-37" tabindex="-1"></a>        <span class="co">// 仅订阅某个主题（分区自动分配）</span></span>
+<span id="cb31-38"><a href="#cb31-38" tabindex="-1"></a>        <span class="co">// consumer.subscribe(Arrays.asList(topic));</span></span>
+<span id="cb31-39"><a href="#cb31-39" tabindex="-1"></a>        <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb31-40"><a href="#cb31-40" tabindex="-1"></a>            <span class="cf">while</span> <span class="op">(</span>isRunning<span class="op">.</span><span class="fu">get</span><span class="op">())</span> <span class="op">{</span></span>
+<span id="cb31-41"><a href="#cb31-41" tabindex="-1"></a>                ConsumerRecords<span class="op">&lt;</span><span class="bu">String</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> records <span class="op">=</span> consumer<span class="op">.</span><span class="fu">poll</span><span class="op">(</span><span class="bu">Duration</span><span class="op">.</span><span class="fu">ofMillis</span><span class="op">(</span><span class="dv">1000</span><span class="op">));</span></span>
+<span id="cb31-42"><a href="#cb31-42" tabindex="-1"></a>                <span class="cf">for</span> <span class="op">(</span>ConsumerRecord<span class="op">&lt;</span><span class="bu">String</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> record <span class="op">:</span> records<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb31-43"><a href="#cb31-43" tabindex="-1"></a>                    <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;topic = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">topic</span><span class="op">()</span> <span class="op">+</span> <span class="st">&quot;, partition = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">partition</span><span class="op">()</span> <span class="op">+</span> <span class="st">&quot;, offset = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">offset</span><span class="op">());</span></span>
+<span id="cb31-44"><a href="#cb31-44" tabindex="-1"></a>                    <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;key = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">key</span><span class="op">()</span> <span class="op">+</span> <span class="st">&quot;, value = &quot;</span> <span class="op">+</span> record<span class="op">.</span><span class="fu">value</span><span class="op">());</span></span>
+<span id="cb31-45"><a href="#cb31-45" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb31-46"><a href="#cb31-46" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb31-47"><a href="#cb31-47" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">Exception</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb31-48"><a href="#cb31-48" tabindex="-1"></a>            e<span class="op">.</span><span class="fu">printStackTrace</span><span class="op">();</span></span>
+<span id="cb31-49"><a href="#cb31-49" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">finally</span> <span class="op">{</span></span>
+<span id="cb31-50"><a href="#cb31-50" tabindex="-1"></a>            consumer<span class="op">.</span><span class="fu">close</span><span class="op">();</span></span>
+<span id="cb31-51"><a href="#cb31-51" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb31-52"><a href="#cb31-52" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb31-53"><a href="#cb31-53" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="分区分配策略和再平衡" class="section level2">
+<h2>分区分配策略和再平衡</h2>
+<p>Kafka有四种分区分配策略：Range、RoundRobin、Sticky、CooperativeSticky，默认为：Range+CooperativeSticky。通过配置参数<code>partition.assignment.strategy</code>来实现。</p>
+<ol style="list-style-type: decimal">
+<li><p>每个消费者在初始化时都要向Broker中的leader
+corrdinator发送JoinGroup请求。</p></li>
+<li><p>leader
+corrdinator会在所有同属一个消费者组的消费者中选取一个leader
+consumer。</p></li>
+<li><p>leader consumer根据分区分配策略制定消费方案。</p></li>
+<li><p>leader consumer把消费方案发送给leader corrdinator。</p></li>
+<li><p>leader consumer把消费方案下发给各个consumer。</p></li>
+</ol>
+<p>每个消费者会和leader
+corrdinator保持心跳（3秒），一旦消费者的响应时间超过<code>session.timeout.ms=45s</code>或消费者处理消息的时间长于<code>max.poll.interval.ms=300s</code>，该消费者会被移除，再平衡触发</p>
+<div id="range策略" class="section level3">
+<h3>Range策略</h3>
+<p>通过<span class="math inline">\(\text{partitions数量}/\text{consumer数量}\)</span>来决定每个消费者应该消费多少个分区，若除不尽则排在前面的消费者多消费几个分区。</p>
+<p>缺点：若一个消费者组订阅了很多主题，那么除不尽的分区都会被放在前面的消费者上，导致前面的消费者负载过大（数据倾斜）。</p>
+<p>执行下述命令可以将已存在的主题的分区数增加为<span class="math inline">\(7\)</span>（分区数只能被增大，不能被减小）</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$KAFKA_HOME</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="ex">bin/kafka-topics.sh</span> <span class="at">--bootstrap-server</span> hadoop102:9092 <span class="at">--alter</span> <span class="at">--topic</span> mytopic <span class="at">--partitions</span> 7</span></code></pre></div>
+<p>测试：开启三个consumer客户端，然后启动生产者生产数据。之后关闭掉一个consumer客户端，再启动生产者生产数据，<span class="math inline">\(45\)</span>秒之后会触发<strong>再平衡</strong>，由由一个存活的消费者消费所有已经挂掉的消费者的数据。</p>
+</div>
+<div id="roundrobin策略" class="section level3">
+<h3>RoundRobin策略</h3>
+<p>将所有的主题的所有分区一起拿出来按照hashcode排序，然后按照轮巡的方式依次将分区均匀地分配到所有consumer上。</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co">// 修改分区分配策略</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">PARTITION_ASSIGNMENT_STRATEGY_CONFIG</span><span class="op">,</span> <span class="st">&quot;org.apache.kafka.clients.consumer.RoundRobinAssignor&quot;</span><span class="op">);</span></span></code></pre></div>
+</div>
+</div>
+<div id="offset" class="section level2">
+<h2>offset</h2>
+<div id="查看offset值" class="section level3">
+<h3>查看offset值</h3>
+<p><strong>offset</strong>保存在系统主题**__consumer_offsets**中，按照键值对<code>[group.id, topic, 分区号]: offset metadata</code>的形式存储（group.id为消费者组id）。</p>
+<p>查看offset值：</p>
+<ol style="list-style-type: decimal">
+<li><p>在config/consumer.properties中修改<code>exclude.internal.topics=true</code>以开启消费系统主题的权限。（记得分发）</p></li>
+<li><p>创建一个新的topic：</p></li>
+</ol>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="ex">bin/kafka-topics.sh</span> <span class="at">--bootstrap-server</span> hadoop102:9092 <span class="at">--create</span> <span class="at">--topic</span> mytopic2 <span class="at">--partitions</span> 2 <span class="at">--replication-factor</span> 2</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>生产者生产数据</li>
+</ol>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="ex">bin/kafka-console-producer.sh</span> <span class="at">--topic</span> mytopic2 <span class="at">--bootstrap-server</span> hadoop102:9092</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>消费者消费数据</li>
+</ol>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="ex">bin/kafka-console-consumer.sh</span> <span class="at">--bootstrap-server</span> hadoop102:9092 <span class="at">--topic</span> mytopic2 <span class="at">--group</span> consumer_group0</span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>消费系统主题以查看offset值的变化</li>
+</ol>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="ex">bin/kafka-console-consumer.sh</span> <span class="at">--topic</span> __consumer_offsets <span class="at">--bootstrap-server</span> hadoop102:9092 <span class="at">--consumer.config</span> config/consumer.properties <span class="at">--formatter</span> <span class="st">&quot;kafka.coordinator.group.GroupMetadataManager</span><span class="dt">\$</span><span class="st">OffsetsMessageFormatter&quot;</span> <span class="at">--from-beginning</span></span></code></pre></div>
+</div>
+<div id="自动提交offset" class="section level3">
+<h3>自动提交offset</h3>
+<p>自动提交offset值到系统主题默认开启<code>enable.auto.commit=true</code>，设置提交时间间隔<code>auto.commit.interval.ms=5s</code></p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">ENABLE_AUTO_COMMIT_CONFIG</span><span class="op">,</span> <span class="kw">true</span><span class="op">);</span></span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">AUTO_COMMIT_INTERVAL_MS_CONFIG</span><span class="op">,</span> <span class="dv">5000</span><span class="op">);</span></span></code></pre></div>
+</div>
+<div id="手动提交offset" class="section level3">
+<h3>手动提交offset</h3>
+<ol style="list-style-type: decimal">
+<li><p>同步提交（commitSync）</p></li>
+<li><p>异步提交（commitAsync）</p></li>
+</ol>
+<div class="sourceCode" id="cb39"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ConsumerConfig<span class="op">.</span><span class="fu">ENABLE_AUTO_COMMIT_CONFIG</span><span class="op">,</span> <span class="kw">false</span><span class="op">);</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="co">// 同步提交：在consumer.poll()之后添加下述代码以表示拉去一条消息之后就提交offset并等待提交完毕</span></span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">commitSync</span><span class="op">();</span></span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co">// 异步提交：在consumer.poll()之后添加下述代码以表示拉去一条消息之后就提交offset</span></span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">commitAsync</span><span class="op">();</span></span></code></pre></div>
+</div>
+<div id="指定offset进行消费" class="section level3">
+<h3>指定offset进行消费</h3>
+<p>在<code>consumer.subscribe()</code>下添加下述代码。（根据原视频的讲解，下述代码好像是有问题的）</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co">// 指定offset进行消费</span></span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a><span class="bu">Set</span><span class="op">&lt;</span>TopicPartition<span class="op">&gt;</span> assignment <span class="op">=</span> consumer<span class="op">.</span><span class="fu">assignment</span><span class="op">();</span>  <span class="co">// 获取所有的分区信息</span></span>
+<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span>TopicPartition topicPartition <span class="op">:</span> assignment<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a>    consumer<span class="op">.</span><span class="fu">seek</span><span class="op">(</span>topicPartition<span class="op">,</span> <span class="dv">100</span><span class="op">);</span></span>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
 </div>
 <div id="订阅主题与分区" class="section level2">
 <h2>订阅主题与分区</h2>
 <ol style="list-style-type: decimal">
 <li>按照集合的方式定于主题：</li>
 </ol>
-<div class="sourceCode" id="cb32"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">subscribe</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">asList</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">topic</span><span class="op">));</span></span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">subscribe</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">asList</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">topic</span><span class="op">));</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>按照正则表达式订阅主题：好处是按照正则规则可以订阅到后期新增的主题。</li>
 </ol>
-<div class="sourceCode" id="cb33"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">subscribe</span><span class="op">(</span><span class="bu">Pattern</span><span class="op">.</span><span class="fu">compile</span><span class="op">(</span><span class="st">&quot;topic-,*&quot;</span><span class="op">));</span></span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">subscribe</span><span class="op">(</span><span class="bu">Pattern</span><span class="op">.</span><span class="fu">compile</span><span class="op">(</span><span class="st">&quot;topic-,*&quot;</span><span class="op">));</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>订阅某主题下标号为0的分区：</li>
 </ol>
-<div class="sourceCode" id="cb34"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">assign</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">asList</span><span class="op">(</span><span class="kw">new</span> <span class="fu">TopicPartition</span><span class="op">(</span><span class="st">&quot;topic-demo&quot;</span><span class="op">,</span> <span class="dv">0</span><span class="op">)));</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">assign</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">asList</span><span class="op">(</span><span class="kw">new</span> <span class="fu">TopicPartition</span><span class="op">(</span><span class="st">&quot;topic-demo&quot;</span><span class="op">,</span> <span class="dv">0</span><span class="op">)));</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>订阅某主题下的所有分区（partitionFor()方法返回订阅主题的所有分区信息）：</li>
 </ol>
-<div class="sourceCode" id="cb35"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="bu">List</span><span class="op">&lt;</span>TopicPartition<span class="op">&gt;</span> partitions <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
-<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="bu">List</span><span class="op">&lt;</span>PartitionInfo<span class="op">&gt;</span> partitionInfos <span class="op">=</span> consumer<span class="op">.</span><span class="fu">partitionFor</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">topic</span><span class="op">);</span></span>
-<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>partitionInfos <span class="op">!=</span> <span class="kw">null</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>PartitionInfo tpInfo <span class="op">:</span> partitionInfos<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>        partitions<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="kw">new</span> <span class="fu">TopicPartition</span><span class="op">(</span>tpInfo<span class="op">.</span><span class="fu">topic</span><span class="op">(),</span> tpInfo<span class="op">.</span><span class="fu">partition</span><span class="op">()));</span></span>
-<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">assign</span><span class="op">(</span>partitions<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="bu">List</span><span class="op">&lt;</span>TopicPartition<span class="op">&gt;</span> partitions <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a><span class="bu">List</span><span class="op">&lt;</span>PartitionInfo<span class="op">&gt;</span> partitionInfos <span class="op">=</span> consumer<span class="op">.</span><span class="fu">partitionFor</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">topic</span><span class="op">);</span></span>
+<span id="cb44-3"><a href="#cb44-3" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>partitionInfos <span class="op">!=</span> <span class="kw">null</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb44-4"><a href="#cb44-4" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>PartitionInfo tpInfo <span class="op">:</span> partitionInfos<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb44-5"><a href="#cb44-5" tabindex="-1"></a>        partitions<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="kw">new</span> <span class="fu">TopicPartition</span><span class="op">(</span>tpInfo<span class="op">.</span><span class="fu">topic</span><span class="op">(),</span> tpInfo<span class="op">.</span><span class="fu">partition</span><span class="op">()));</span></span>
+<span id="cb44-6"><a href="#cb44-6" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb44-7"><a href="#cb44-7" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb44-8"><a href="#cb44-8" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">assign</span><span class="op">(</span>partitions<span class="op">);</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>取消订阅</li>
 </ol>
-<div class="sourceCode" id="cb36"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">unsubscribe</span><span class="op">();</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>consumer<span class="op">.</span><span class="fu">unsubscribe</span><span class="op">();</span></span></code></pre></div>
 </div>
 <div id="consumerrecordk-v" class="section level2">
 <h2>ConsumerRecord&lt;K, V&gt;</h2>
-<div class="sourceCode" id="cb37"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ConsumerRecord<span class="op">&lt;</span>K<span class="op">,</span> V<span class="op">&gt;</span> <span class="op">{</span></span>
-<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> topic<span class="op">;</span></span>
-<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> partition<span class="op">;</span></span>
-<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">long</span> offset<span class="op">;</span></span>
-<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">long</span> timestamp<span class="op">;</span></span>
-<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> TimestampType timestampType<span class="op">;</span></span>
-<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> serializedKeySize<span class="op">;</span></span>
-<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> serializedValueSize<span class="op">;</span></span>
-<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> Headers headers<span class="op">;</span></span>
-<span id="cb37-10"><a href="#cb37-10" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> K key<span class="op">;</span></span>
-<span id="cb37-11"><a href="#cb37-11" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> V value<span class="op">;</span></span>
-<span id="cb37-12"><a href="#cb37-12" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">volatile</span> <span class="bu">Long</span> checksum<span class="op">;</span></span>
-<span id="cb37-13"><a href="#cb37-13" tabindex="-1"></a>    <span class="co">// ...</span></span>
-<span id="cb37-14"><a href="#cb37-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ConsumerRecord<span class="op">&lt;</span>K<span class="op">,</span> V<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> topic<span class="op">;</span></span>
+<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> partition<span class="op">;</span></span>
+<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">long</span> offset<span class="op">;</span></span>
+<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">long</span> timestamp<span class="op">;</span></span>
+<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> TimestampType timestampType<span class="op">;</span></span>
+<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> serializedKeySize<span class="op">;</span></span>
+<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> serializedValueSize<span class="op">;</span></span>
+<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> Headers headers<span class="op">;</span></span>
+<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> K key<span class="op">;</span></span>
+<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> V value<span class="op">;</span></span>
+<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">volatile</span> <span class="bu">Long</span> checksum<span class="op">;</span></span>
+<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>    <span class="co">// ...</span></span>
+<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
 </div>
