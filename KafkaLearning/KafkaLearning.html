@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-11-25" />
+        <meta name="date" content="2024-11-26" />
     
     <title>Kafka Learning</title>
 
@@ -1628,12 +1628,17 @@ margin-left: 0 !important;
       <li><a href="#订阅主题与分区" id="toc-订阅主题与分区">订阅主题与分区</a></li>
       <li><a href="#consumerrecordk-v" id="toc-consumerrecordk-v">ConsumerRecord&lt;K, V&gt;</a></li>
       </ul></li>
+      <li><a href="#kafka-eagle安装" id="toc-kafka-eagle安装">Kafka-Eagle安装</a>
+      <ul>
+      <li><a href="#下载kafka-eagle" id="toc-下载kafka-eagle">下载Kafka-Eagle</a></li>
+      <li><a href="#配置mysql" id="toc-配置mysql">配置MySQL</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-25</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-26</p>
           </div>
    </div>
      
@@ -2274,6 +2279,68 @@ corrdinator保持心跳（3秒），一旦消费者的响应时间超过<code>se
 <span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">volatile</span> <span class="bu">Long</span> checksum<span class="op">;</span></span>
 <span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>    <span class="co">// ...</span></span>
 <span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+</div>
+<div id="kafka-eagle安装" class="section level1">
+<h1>Kafka-Eagle安装</h1>
+<div id="下载kafka-eagle" class="section level2">
+<h2>下载Kafka-Eagle</h2>
+<p><a href="https://kafka-eagle.org/">Kafka-Eagle下载地址</a></p>
+<p>解压Kafka-Eagle（有两层压缩包，需要解压两次），</p>
+<p>添加环境变量：</p>
+</div>
+<div id="配置mysql" class="section level2">
+<h2>配置MySQL</h2>
+<p>在hadoop102上安装MySQL</p>
+<pre><code>apt update
+apt install</code></pre>
+<ol style="list-style-type: decimal">
+<li>创建Kafka-Eagle数据库ke，以及对于该数据库的用户ke_user</li>
+</ol>
+<div class="sourceCode" id="cb48"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">DATABASE</span> ke <span class="kw">DEFAULT</span> CHARSET utf8mb4 COLLATE utf8mb4_general_ci;</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="fu">USER</span> <span class="st">&#39;ke_user&#39;</span>@<span class="st">&#39;%&#39;</span> <span class="kw">IDENTIFIED</span> <span class="kw">BY</span> <span class="st">&#39;000000&#39;</span>;</span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> ke.<span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;ke_user&#39;</span>@<span class="st">&#39;%&#39;</span>;</span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>初始化Kafka-Eagle所需的表</li>
+</ol>
+<p>在<code>$KE_HOME/db</code>中新建<code>ke.sql</code>文件并写入下述内容：</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="co">-- 创建表结构</span></span>
+<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> alarm_config (</span>
+<span id="cb50-3"><a href="#cb50-3" tabindex="-1"></a>  <span class="kw">id</span> BIGINT <span class="kw">NOT</span> <span class="kw">NULL</span> AUTO_INCREMENT <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" tabindex="-1"></a>  group_name <span class="dt">VARCHAR</span>(<span class="dv">64</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-5"><a href="#cb50-5" tabindex="-1"></a>  alarm_name <span class="dt">VARCHAR</span>(<span class="dv">128</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-6"><a href="#cb50-6" tabindex="-1"></a>  alarm_status <span class="dt">INT</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="dv">1</span>,</span>
+<span id="cb50-7"><a href="#cb50-7" tabindex="-1"></a>  alarm_type <span class="dt">VARCHAR</span>(<span class="dv">32</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-8"><a href="#cb50-8" tabindex="-1"></a>  alarm_level <span class="dt">VARCHAR</span>(<span class="dv">32</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-9"><a href="#cb50-9" tabindex="-1"></a>  alarm_condition <span class="dt">VARCHAR</span>(<span class="dv">512</span>),</span>
+<span id="cb50-10"><a href="#cb50-10" tabindex="-1"></a>  alarm_contact_group <span class="dt">VARCHAR</span>(<span class="dv">512</span>),</span>
+<span id="cb50-11"><a href="#cb50-11" tabindex="-1"></a>  alarm_create_time <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb50-12"><a href="#cb50-12" tabindex="-1"></a>  alarm_modify_time <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span> <span class="kw">ON</span> <span class="kw">UPDATE</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb50-13"><a href="#cb50-13" tabindex="-1"></a>);</span>
+<span id="cb50-14"><a href="#cb50-14" tabindex="-1"></a></span>
+<span id="cb50-15"><a href="#cb50-15" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> kafka_offsets (</span>
+<span id="cb50-16"><a href="#cb50-16" tabindex="-1"></a>  <span class="kw">id</span> BIGINT <span class="kw">NOT</span> <span class="kw">NULL</span> AUTO_INCREMENT <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb50-17"><a href="#cb50-17" tabindex="-1"></a>  cluster_name <span class="dt">VARCHAR</span>(<span class="dv">64</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-18"><a href="#cb50-18" tabindex="-1"></a>  group_name <span class="dt">VARCHAR</span>(<span class="dv">128</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-19"><a href="#cb50-19" tabindex="-1"></a>  topic_name <span class="dt">VARCHAR</span>(<span class="dv">128</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-20"><a href="#cb50-20" tabindex="-1"></a>  partition_id <span class="dt">INT</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-21"><a href="#cb50-21" tabindex="-1"></a>  log_size BIGINT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-22"><a href="#cb50-22" tabindex="-1"></a>  offsets BIGINT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-23"><a href="#cb50-23" tabindex="-1"></a>  `lag` BIGINT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-24"><a href="#cb50-24" tabindex="-1"></a>  create_time <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb50-25"><a href="#cb50-25" tabindex="-1"></a>);</span>
+<span id="cb50-26"><a href="#cb50-26" tabindex="-1"></a></span>
+<span id="cb50-27"><a href="#cb50-27" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="fu">user</span> (</span>
+<span id="cb50-28"><a href="#cb50-28" tabindex="-1"></a>  <span class="kw">id</span> BIGINT <span class="kw">NOT</span> <span class="kw">NULL</span> AUTO_INCREMENT <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb50-29"><a href="#cb50-29" tabindex="-1"></a>  username <span class="dt">VARCHAR</span>(<span class="dv">64</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-30"><a href="#cb50-30" tabindex="-1"></a>  <span class="kw">password</span> <span class="dt">VARCHAR</span>(<span class="dv">64</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb50-31"><a href="#cb50-31" tabindex="-1"></a>  email <span class="dt">VARCHAR</span>(<span class="dv">128</span>),</span>
+<span id="cb50-32"><a href="#cb50-32" tabindex="-1"></a>  <span class="kw">role</span> <span class="dt">VARCHAR</span>(<span class="dv">32</span>) <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;admin&#39;</span>,</span>
+<span id="cb50-33"><a href="#cb50-33" tabindex="-1"></a>  create_time <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb50-34"><a href="#cb50-34" tabindex="-1"></a>);</span></code></pre></div>
+<p>使用ke_user登录MySQL数据库并且使用上述<code>ke.sql</code>文件建表。</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> ke_user <span class="at">-p</span> ke <span class="op">&lt;</span> <span class="va">$KE_HOME</span>/db/ke.sql</span></code></pre></div>
 </div>
 </div>
 </div>
