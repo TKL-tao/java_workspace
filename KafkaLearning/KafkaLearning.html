@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-11-26" />
+        <meta name="date" content="2024-12-01" />
     
     <title>Kafka Learning</title>
 
@@ -1632,13 +1632,14 @@ margin-left: 0 !important;
       <ul>
       <li><a href="#下载kafka-eagle" id="toc-下载kafka-eagle">下载Kafka-Eagle</a></li>
       <li><a href="#配置mysql" id="toc-配置mysql">配置MySQL</a></li>
+      <li><a href="#使用kafka-eagle" id="toc-使用kafka-eagle">使用Kafka-Eagle</a></li>
       </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-11-26</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-01</p>
           </div>
    </div>
      
@@ -2341,6 +2342,11 @@ apt install</code></pre>
 <span id="cb50-34"><a href="#cb50-34" tabindex="-1"></a>);</span></code></pre></div>
 <p>使用ke_user登录MySQL数据库并且使用上述<code>ke.sql</code>文件建表。</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> ke_user <span class="at">-p</span> ke <span class="op">&lt;</span> <span class="va">$KE_HOME</span>/db/ke.sql</span></code></pre></div>
+</div>
+<div id="使用kafka-eagle" class="section level2">
+<h2>使用Kafka-Eagle</h2>
+<p>在本地Windows电脑通过在PowerShell输入下述命令建立与云服务器的连接，然后在浏览器访问localhost:8048即可打开Efka界面。</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 8048:192.168.0.45:8048 root@113.45.129.200</span></code></pre></div>
 </div>
 </div>
 </div>
