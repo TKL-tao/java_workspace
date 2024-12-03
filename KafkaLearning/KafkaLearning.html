@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-01" />
+        <meta name="date" content="2024-12-03" />
     
     <title>Kafka Learning</title>
 
@@ -1634,12 +1634,16 @@ margin-left: 0 !important;
       <li><a href="#配置mysql" id="toc-配置mysql">配置MySQL</a></li>
       <li><a href="#使用kafka-eagle" id="toc-使用kafka-eagle">使用Kafka-Eagle</a></li>
       </ul></li>
+      <li><a href="#调优" id="toc-调优">调优</a>
+      <ul>
+      <li><a href="#kafka硬件选择" id="toc-kafka硬件选择">Kafka硬件选择</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-01</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-03</p>
           </div>
    </div>
      
@@ -1773,10 +1777,10 @@ esac</code></pre>
 <p>修改<code>$KAFKA_HOME/config/server.properties</code>下述几个对应的参数：</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># 每个服务器上的broker.id要设置得不同</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">broker.id=102</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="va">listeners</span><span class="op">=</span>PLAINTEXT://192.168.10.102:9092</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="va">listeners</span><span class="op">=</span>PLAINTEXT://192.168.0.45:9092</span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="ex">advertised.listeners=PLAINTEXT://113.45.129.200:9092</span></span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="ex">log.dirs=/tmp/kafaka-logs</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="ex">zookeeper.connect=192.168.10.102:2181,192.168.10.103:2181</span></span></code></pre></div>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="ex">zookeeper.connect=192.168.0.45:2181,192.168.11.210:2181,192.168.0.5:2181/kafka</span></span></code></pre></div>
 <p><code>listeners</code>设置为当前节点的私网IP；<code>advertised.listeners</code>设置为当前节点的公网IP。<code>PLAINTEXT</code>是一种protocol协议类型。</p>
 </div>
 <div id="启动kafka" class="section level2">
@@ -2347,6 +2351,34 @@ apt install</code></pre>
 <h2>使用Kafka-Eagle</h2>
 <p>在本地Windows电脑通过在PowerShell输入下述命令建立与云服务器的连接，然后在浏览器访问localhost:8048即可打开Efka界面。</p>
 <div class="sourceCode" id="cb52"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 8048:192.168.0.45:8048 root@113.45.129.200</span></code></pre></div>
+</div>
+</div>
+<div id="调优" class="section level1">
+<h1>调优</h1>
+<div id="kafka硬件选择" class="section level2">
+<h2>Kafka硬件选择</h2>
+<p>场景：100万日活用户，每个用户100条日志数据，共1亿条日数据量。系统平均每秒钟需要处理1150条数据。一条日志的大小在0.5KB-2KB（取1KB）之间。因此，系统需要以1MB/s的平均速度处理日志数据，设最高峰值为20MB/s</p>
+<ol style="list-style-type: decimal">
+<li>节点数选择：</li>
+</ol>
+<p>经验公式：<span class="math display">\[\text{服务器台数} = 2\times
+(\text{生产者峰值MB/s} \times \text{副本数}  / 100) +1\]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>磁盘选择：</li>
+</ol>
+<p>Kafka为顺序读写，优先选择机械硬盘。（固态硬盘适合随机读写）。使用命令<code>lsblk -d -o name,rota</code>如果显示为0则是固态硬盘，如果显示为1则是机械硬盘。</p>
+<p><span class="math display">\[\text{1亿条}\times 1\text{KB} \times
+\text{2个副本} \times \text{3天}  /  0.7 \approx \text{1T}\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>内存选择：</li>
+</ol>
+<p><span class="math display">\[\text{Kafka内存}=\text{堆内存（Kafka内部设置）} +
+\text{页缓存}\]</span></p>
+<p>查看Kafka进程使用的堆大小<code>jmap -heap 6437</code></p>
+<ol start="4" style="list-style-type: decimal">
+<li>CPU选择</li>
+</ol>
+<p><code>num.io.threads=8</code>，负责写磁盘的线程数，占总核心数的50%</p>
 </div>
 </div>
 </div>
