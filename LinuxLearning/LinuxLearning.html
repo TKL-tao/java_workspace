@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-03" />
+        <meta name="date" content="2024-12-05" />
     
     <title>Linux Learning</title>
 
@@ -1816,9 +1816,16 @@ margin-left: 0 !important;
             <li><a href="#硬件" id="toc-硬件">硬件</a></li>
             <li><a href="#ip" id="toc-ip">IP</a></li>
             </ul></li>
-            <li><a href="#常用命令" id="toc-常用命令">常用命令</a>
+            <li><a href="#linux基础命令" id="toc-linux基础命令">Linux基础命令</a></li>
+            <li><a href="#用户和权限" id="toc-用户和权限">用户和权限</a>
             <ul>
-            <li><a href="#find命令" id="toc-find命令">find命令</a></li>
+            <li><a href="#用户与用户组" id="toc-用户与用户组">用户与用户组</a></li>
+            </ul></li>
+            <li><a href="#文件权限" id="toc-文件权限">文件权限</a>
+            <ul>
+            <li><a href="#查看文件权限" id="toc-查看文件权限">查看文件权限</a></li>
+            <li><a href="#修改文件权限chmod" id="toc-修改文件权限chmod">修改文件权限chmod</a></li>
+            <li><a href="#修改文件所属用户用户组" id="toc-修改文件所属用户用户组">修改文件所属用户/用户组</a></li>
             </ul></li>
             </ul>
           </div>
@@ -1834,7 +1841,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-03</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-05</p>
            
 
    
@@ -1956,15 +1963,117 @@ sudo vim /etc/netplan/01-netcfg.yaml</code></pre>
 </div>
 </div>
 </div>
-<div id="常用命令" class="section level1">
-<h1>常用命令</h1>
-<div id="find命令" class="section level2">
-<h2>find命令</h2>
-<ol style="list-style-type: decimal">
-<li>下述命令可以查找到正则形如”<em>-</em>-<em>-</em>-*“的文件（-type
-f）并删除。</li>
-</ol>
+<div id="linux基础命令" class="section level1">
+<h1>Linux基础命令</h1>
+<div id="ls" class="section level3">
+<h3>ls</h3>
+<p><code>ls [-a -l -h] /root</code></p>
+<p>-h需要与-l使用，列出易读文件大小，同时显示这些文件的总大小。<code>ls -alh</code>还会列出所有文件（包括隐藏文件）的总大小</p>
+</div>
+<div id="touch" class="section level3">
+<h3>touch</h3>
+<p><code>touch mytest.txt</code> 创建文件</p>
+<p><code>cat mytest.txt</code> 查看文件</p>
+<p><code>more mytest.txt</code> 翻页查看文件</p>
+</div>
+<div id="cp-mv-rm" class="section level3">
+<h3>cp, mv, rm</h3>
+<p>重命名和移动文件都用<code>mv</code>命令。</p>
+<p><code>rm *test</code>删除所有以”test”结尾的文件。</p>
+<p><code>rm *test*</code>删除所有包含test的文件。</p>
+<p><code>rm -rf /*</code>危险命令。</p>
+</div>
+<div id="which-find" class="section level3">
+<h3>which, find</h3>
+<p><code>which ls</code>查看ls命令存放在哪里。</p>
+<p><code>find 起始路径 -mindepth 2 -name 被查找的文件名</code>根据名称规则查找文件</p>
+<p>下述命令可以查找到正则形如”<em>-</em>-<em>-</em>-*“的文件（-type
+f）并删除。</p>
 <pre class="bash"><code>find -type f -name &quot;*-*-*-*-*&quot; -delete</code></pre>
+<p><code>find 起始路径 -size +|-n[kMG]</code>根据文件大小查找文件。例如<code>find /root -size +100M</code>在<code>/root</code>路径下查找文件大小大于<span class="math inline">\(100\text{MB}\)</span>的文件</p>
+</div>
+<div id="grep-wc" class="section level3">
+<h3>grep, wc</h3>
+<p><code>grep [-n] &quot;目标关键字&quot; 目标文件</code>在目标文件中查找目标关键字，显示出含有目标关键字的行，使用参数<code>-n</code>表示显示内容加上行号。</p>
+<p><code>wc [-c -m -l -w] 目标文件</code>。</p>
+<ul>
+<li><p><code>-c</code>表示统计Bytes数量</p></li>
+<li><p><code>-m</code>统计字符数量。“换行符”，“空格”都算字符，另外.txt文件统计出的字符数会<span class="math inline">\(+1\)</span>。英文中，一个字符就是一个Byte。</p></li>
+<li><p><code>-l</code>统计行数</p></li>
+<li><p><code>-w</code>统计单词数量</p></li>
+</ul>
+</div>
+<div id="管道符" class="section level3">
+<h3>管道符</h3>
+<p>管道符<code>|</code>将左侧的结果作为右侧的输入。凡是有内容输出的命令都可以和管道符<code>|</code>做配合。</p>
+<p>例如<code>grep &quot;American&quot; mytest.txt | wc -w</code>，查找<code>mytest.txt</code>的文件中包含有”American”的那些行，然后统计这些内容中的单词的总数。
+例如<code>ls -alh /root/bin | grep kafkastartstop.sh</code>只查看<code>kafkastartstop.sh</code>文件的信息。
+例如<code>ls -alh | wc -l</code>可以统计当前路径下的文件个数。
+例如<code>grep &quot;American&quot; mytest.txt | grep &quot;friends&quot;</code>连续两遍过滤。</p>
+</div>
+<div id="echo" class="section level3">
+<h3>echo</h3>
+<p><code>echo</code>命令类似于编程语言中的print命令，它可以在命令行中直接打印内容。</p>
+<p><code>echo \</code>pwd` &gt;
+mytest.txt<code>可以将</code>pwd`的执行结果输入到mytext.txt中。</p>
+<p><code>&gt;</code>是覆盖写；<code>&gt;&gt;</code>是追加写</p>
+</div>
+<div id="tail" class="section level3">
+<h3>tail</h3>
+<p><code>tail [-f -n] 文件路径</code></p>
+<ul>
+<li><p><code>-f</code>表示持续跟踪</p></li>
+<li><p><code>-n</code>表示查看尾部多少行，默认10行</p></li>
+</ul>
+</div>
+</div>
+<div id="用户和权限" class="section level1">
+<h1>用户和权限</h1>
+<div id="用户与用户组" class="section level2">
+<h2>用户与用户组</h2>
+<ul>
+<li><p>创建用户组：<code>groupadd myGroup</code></p></li>
+<li><p>在指定用户组中创建用户zt并且生成用户家目录：<code>useradd -g myGroup -m zt</code></p></li>
+<li><p>查看某用户的uid，gid，所属的用户组：<code>id zt</code></p></li>
+<li><p>把用户zt新加到用户组myGroup中：<code>usermod -aG myGroup2 zt</code></p></li>
+<li><p>删除用户zt并删除用户家目录和mail
+pool：<code>userdel -r zt</code></p></li>
+<li><p>删除用户组（仅在用户组为空时生效）：<code>groupdel myGroup</code></p></li>
+</ul>
+<p>文件<code>/etc/passwd</code>的尾部会展示新建的用户。例如当我用<code>useradd -m zt</code>后，<code>/home/zt</code>路径被生成，同时在<code>/etc/passwd</code>文件的尾部出现<strong>zt:x:1000:1001::/home/zt:/bin/sh</strong>。
+其中的<strong>x</strong>表示密码占位符，<strong>1000</strong>是用户ID，<strong>1001</strong>是用户组ID，<strong>/home/zt</strong>是用户主目录，<strong>/bin/sh</strong>是用户的默认shell。</p>
+<p>文件<code>/etc/group</code>的尾部会展示新建的用户组、例如当我用<code>groupadd myGroup</code>后，<code>/etc/group</code>的尾部会出现<strong>myGroup:x:1000:</strong>。
+其中<strong>x</strong>表示密码占位符，<strong>1000</strong>是用户组ID。</p>
+<p>使用下述命令切换到用户zt，并加载用户的</p>
+<pre><code>su - zt</code></pre>
+</div>
+</div>
+<div id="文件权限" class="section level1">
+<h1>文件权限</h1>
+<div id="查看文件权限" class="section level2">
+<h2>查看文件权限</h2>
+<p>举例<strong>drwxr-xr-x</strong></p>
+<ul>
+<li><p><strong>d</strong>：代表这是一个文件夹</p></li>
+<li><p><strong>rwx</strong>：代表所属的用户对它的权限是读、写、执行。</p></li>
+<li><p><strong>r-x</strong>：代表所属用户组对它的权限是读、执行。</p></li>
+<li><p><strong>r-x</strong>：代表其他用户对它的权限是读、执行。</p></li>
+</ul>
+</div>
+<div id="修改文件权限chmod" class="section level2">
+<h2>修改文件权限chmod</h2>
+<p><code>chmod [-R] 权限 文件或文件夹</code></p>
+<ul>
+<li>-R表示对文件夹内的全部内容执行相同的操作</li>
+</ul>
+<p>将文件权限修改为<strong>rwxr-x–x</strong>：<code>chmod u=rwx,g=rx,o=x mytest.txt</code></p>
+<p>将文件夹及其所有内容修改为<strong>rwxr-x–x</strong>：<code>chmod -R u=rwx,g=rx,o=x myfolder</code></p>
+<p>权限序号<span class="math inline">\(7\)</span>代表所有读写执行权限，<code>chmod 777 mytest.txt</code>表示在用户、用户组、其他用户上对mytest.txt文件赋予所有权限。</p>
+</div>
+<div id="修改文件所属用户用户组" class="section level2">
+<h2>修改文件所属用户/用户组</h2>
+<p><code>chown [-R] [用户][:][用户组] 文件或文件夹</code></p>
+<p>更改文件的用户组权限：<code>chown :myGroup1 mytest.txt</code></p>
 </div>
 </div>
 </div>
