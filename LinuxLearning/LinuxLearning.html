@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-09" />
+        <meta name="date" content="2024-12-10" />
     
     <title>Linux Learning</title>
 
@@ -1816,6 +1816,7 @@ margin-left: 0 !important;
             <li><a href="#硬件" id="toc-硬件">硬件</a></li>
             <li><a href="#ip" id="toc-ip">IP</a></li>
             </ul></li>
+            <li><a href="#linux组成" id="toc-linux组成">Linux组成</a></li>
             <li><a href="#linux基础命令" id="toc-linux基础命令">Linux基础命令</a></li>
             <li><a href="#用户和权限" id="toc-用户和权限">用户和权限</a>
             <ul>
@@ -1827,6 +1828,23 @@ margin-left: 0 !important;
             <li><a href="#修改文件权限chmod" id="toc-修改文件权限chmod">修改文件权限chmod</a></li>
             <li><a href="#修改文件所属用户用户组" id="toc-修改文件所属用户用户组">修改文件所属用户/用户组</a></li>
             </ul></li>
+            <li><a href="#软件安装systemctl" id="toc-软件安装systemctl">软件安装、systemctl</a>
+            <ul>
+            <li><a href="#软件安装" id="toc-软件安装">软件安装</a></li>
+            <li><a href="#systemctl" id="toc-systemctl">systemctl</a></li>
+            </ul></li>
+            <li><a href="#软连接快捷方式" id="toc-软连接快捷方式">软连接（快捷方式）</a></li>
+            <li><a href="#ip地址" id="toc-ip地址">IP地址</a>
+            <ul>
+            <li><a href="#域名解析" id="toc-域名解析">域名解析</a></li>
+            <li><a href="#端口" id="toc-端口">端口</a></li>
+            </ul></li>
+            <li><a href="#进程" id="toc-进程">进程</a>
+            <ul>
+            <li><a href="#ps" id="toc-ps">ps</a></li>
+            <li><a href="#top" id="toc-top">top</a></li>
+            </ul></li>
+            <li><a href="#磁盘网卡" id="toc-磁盘网卡">磁盘、网卡</a></li>
             </ul>
           </div>
           <div data-position="sidebar:post-end" class="InjectedComponents"><div class="dark-theme-toggler"><div class="toggle "><div class="toggle-track"><div class="toggle-track-check"><img src="data:image/png;base64,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" role="presentation" style="pointer-events: none;" width="16" height="16"></div> <div class="toggle-track-x"><img src="data:image/png;base64,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" role="presentation" style="pointer-events: none;" width="16" height="16"></div></div> <div class="toggle-thumb"></div></div> <input type="checkbox" aria-label="Switch between Dark and Default theme" class="toggler-screen-reader-only"></div></div>
@@ -1841,7 +1859,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-09</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-10</p>
            
 
    
@@ -1963,6 +1981,13 @@ sudo vim /etc/netplan/01-netcfg.yaml</code></pre>
 </div>
 </div>
 </div>
+<div id="linux组成" class="section level1">
+<h1>Linux组成</h1>
+<p><strong>Linux系统（发行版）</strong> =
+<strong>Linux系统内核（开源）</strong>+<strong>系统级应用程序</strong></p>
+<p><strong>Linux系统内核</strong>：调度CPU、调度内存、调度文件系统、调度网络通讯、调度IO等。</p>
+<p><strong>系统级应用程序</strong>：文件管理器、任务管理器、图片查看、音乐播放等。</p>
+</div>
 <div id="linux基础命令" class="section level1">
 <h1>Linux基础命令</h1>
 <div id="ls" class="section level3">
@@ -2075,6 +2100,86 @@ pool：<code>userdel -r zt</code></p></li>
 <p><code>chown [-R] [用户][:][用户组] 文件或文件夹</code></p>
 <p>更改文件的用户组权限：<code>chown :myGroup1 mytest.txt</code></p>
 </div>
+</div>
+<div id="软件安装systemctl" class="section level1">
+<h1>软件安装、systemctl</h1>
+<div id="软件安装" class="section level2">
+<h2>软件安装</h2>
+<pre><code>apt [-y] [install | remove | search] 软件名称</code></pre>
+<ul>
+<li><code>-y</code>：是否自动确认</li>
+</ul>
+<p>下载网络文件：例如下载hadoop安装包：</p>
+<pre class="bash"><code>wget [-b] url</code></pre>
+<ul>
+<li><code>-b</code>表示后台下载，下载日志写入到当前工作目录的wget-log文件。</li>
+</ul>
+</div>
+<div id="systemctl" class="section level2">
+<h2>systemctl</h2>
+<pre><code>systemctl start | stop | status | enable | disable 服务名</code></pre>
+<p>服务名可以是：NetworkManager, ssh, firewalld, network等。</p>
+</div>
+</div>
+<div id="软连接快捷方式" class="section level1">
+<h1>软连接（快捷方式）</h1>
+<pre><code>ln -s 原文件路径 快捷文件路径</code></pre>
+</div>
+<div id="ip地址" class="section level1">
+<h1>IP地址</h1>
+<p>使用<code>ifconfig</code>查看本机IP地址，这个IP地址是私网的IP地址。</p>
+<p>使用<code>curl ifconfig.me</code>可以查看本机的公网地址。</p>
+<p><code>ping -c 3 www.baidu.com</code>：检查www.baidu.com是否能够访问，检查3次。</p>
+<p><code>curl www.baidu.com</code>：向目标网站发送网络请求。</p>
+<div id="域名解析" class="section level2">
+<h2>域名解析</h2>
+<p>计算机会首先查找Windows系统中的<code>C:\Windows\System32\drivers\etc\hosts</code>和Linux中的<code>/etc/hosts</code>中记录的域名到ip地址的映射。之后才会查找公开的DNS服务器也会纪录域名到ip地址的映射。</p>
+</div>
+<div id="端口" class="section level2">
+<h2>端口</h2>
+<p>linux可以支持<span class="math inline">\(65,535(2^16-1)\)</span>个端口。</p>
+<p>公认端口<span class="math inline">\(1~1023\)</span>：例如ssh使用<span class="math inline">\(22\)</span>端口，HTTPS使用<span class="math inline">\(443\)</span>端口。</p>
+<p>注册端口<span class="math inline">\(1024~49151\)</span>：通常可以随意使用，用户松散绑定一些程序和服务。</p>
+<p>动态端口<span class="math inline">\(49152~65535\)</span>：程序对外进行网络连接时用于临时使用。</p>
+<p>查看一个IP地址目前被占用的端口有哪些：<code>nmap 127.0.0.1</code>（nmap需要提前下载）</p>
+<p>查看某个端口的占用情况：<code>netstat -anp | grep 端口号</code>（netstat需要提前下载）</p>
+</div>
+</div>
+<div id="进程" class="section level1">
+<h1>进程</h1>
+<div id="ps" class="section level2">
+<h2>ps</h2>
+<pre class="bash"><code>ps -ef</code></pre>
+<ul>
+<li><p><strong>PID</strong>：进程的进程号。</p></li>
+<li><p><strong>PPID</strong>：启动此进程的其他进程ID。</p></li>
+<li><p><strong>C</strong>：此进程的CPU占用率。</p></li>
+<li><p><strong>STIME</strong>：进程启动的时间。</p></li>
+<li><p><strong>TTY</strong>：系统的终端序号，如果是？则表示此进程由系统启动，不是由终端启动的。</p></li>
+<li><p><strong>TIME</strong>：累计所使用的的CPU的时间（单位秒）。</p></li>
+<li><p><strong>CMD</strong>：进程的启动命令或启动路径。</p></li>
+</ul>
+</div>
+<div id="top" class="section level2">
+<h2>top</h2>
+<ul>
+<li><p><strong>PR</strong>：进程的优先级，值越小优先级越高。</p></li>
+<li><p><strong>NI</strong>：负数表示高优先级，正值表示低优先级。</p></li>
+<li><p><strong>VIRT</strong>：使用的虚拟内存，单位KB。</p></li>
+<li><p><strong>RES</strong>：使用的物理内存，单位KB。</p></li>
+<li><p><strong>SHR</strong>：使用的共享内存，单位KB。</p></li>
+<li><p><strong>S</strong>：进程状态：S为休眠，R为运行，Z为僵死，I为空闲</p></li>
+<li><p><strong>%CPU</strong>：cpu占用率。</p></li>
+<li><p><strong>%MEM</strong>：内存占用率。</p></li>
+<li><p><strong>%TIME+</strong>：进程使用的CPU总计时，单位10毫秒</p></li>
+</ul>
+</div>
+</div>
+<div id="磁盘网卡" class="section level1">
+<h1>磁盘、网卡</h1>
+<p>查看磁盘使用情况<code>df -h</code></p>
+<p><code>iostat</code>：硬盘的读取、写入速度等信息</p>
+<p><code>sar -n DEV 3 2</code>：3秒刷新一次，一共刷新两次。</p>
 </div>
 </div>
 
