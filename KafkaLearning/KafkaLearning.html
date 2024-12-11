@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-05" />
+        <meta name="date" content="2024-12-11" />
     
     <title>Kafka Learning</title>
 
@@ -1645,7 +1645,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-05</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-11</p>
           </div>
    </div>
      
@@ -1701,18 +1701,19 @@ Replicas）。综上，有<span class="math display">\[\text{AR}=\text{ISR}+\tex
 <pre class="cfg"><code>tickTime=2000
 initLimit=10
 syncLimit=5
-dataDir=/tmp/zookeeper/data
-dataLogDir=/tmp/zookeeper/log
+dataDir=/usr/zookeeper/data
+dataLogDir=/usr/zookeeper/log
 clientPort=2181
 
-server.102=192.168.10.102:2888:3888
-server.103=192.168.10.102:2888:3888</code></pre>
+server.102=192.168.0.45:2888:3888
+server.103=192.168.11.210:2888:3888
+server.104=192.168.0.5:2888:3888</code></pre>
 <p><code>102</code>，<code>103</code>等代表服务器编号。<code>2888</code>表示服务器与集群中得leader服务器交换信息的端口。<code>3888</code>表示选举时服务器相互通信的端口。</p>
-<p>创建系统目录。接着在<code>/tmp/zookeeper/data</code>下输入<code>echo &quot;102&quot; myid</code>，创建一个myid文件并写入102，102代表服务器编号。对于第二台服务器编号要设置得不同，比如可以设置103为编号。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /tmp/zookeeper/data</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /tmp/zookeeper/log</span>
+<p>创建系统目录。接着在<code>/usr/zookeeper/data</code>下输入<code>echo &quot;102&quot; myid</code>，创建一个myid文件并写入102，102代表服务器编号。对于第二台服务器编号要设置得不同，比如可以设置103为编号。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /usr/zookeeper/data</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /usr/zookeeper/log</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="bu">cd</span> /tmp/zookeeper/data </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="bu">cd</span> /usr/zookeeper/data </span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;102&quot;</span> <span class="op">&gt;</span> myid</span></code></pre></div>
 </div>
 </div>
@@ -1781,7 +1782,7 @@ esac</code></pre>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">broker.id=102</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="va">listeners</span><span class="op">=</span>PLAINTEXT://192.168.0.45:9092</span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="ex">advertised.listeners=PLAINTEXT://113.45.129.200:9092</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="ex">log.dirs=/tmp/kafaka-logs</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="ex">log.dirs=/usr/kafaka-logs</span></span>
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="ex">zookeeper.connect=192.168.0.45:2181,192.168.11.210:2181,192.168.0.5:2181/kafka</span></span></code></pre></div>
 <p><code>listeners</code>设置为当前节点的私网IP；<code>advertised.listeners</code>设置为当前节点的公网IP。<code>PLAINTEXT</code>是一种protocol协议类型。</p>
 </div>
@@ -1828,10 +1829,10 @@ esac</code></pre>
 <div id="创建kafka主题" class="section level2">
 <h2>创建Kafka主题</h2>
 <p>使用下述命令设置Kafka主题、分区、副本因子。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="ex">bin/kafka-topics.sh</span> <span class="at">--create</span> <span class="at">--bootstrap-server</span> zookeeper_node1:9092,zookeeper_node2:9092,zookeeper_node3:9092 <span class="at">--replication-factor</span> 3 <span class="at">--partitions</span> 4 <span class="at">--topic</span> mytopic</span></code></pre></div>
-<p>其中<code>zookeeper_node1</code>是指zookeeper节点的ip地址，mytopic为主题名称。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="ex">bin/kafka-topics.sh</span> <span class="at">--create</span> <span class="at">--bootstrap-server</span> hadoop102:9092,hadoop103:9092,hadoop104:9092 <span class="at">--replication-factor</span> 3 <span class="at">--partitions</span> 4 <span class="at">--topic</span> mytopic</span></code></pre></div>
+<p>其中mytopic为主题名称。</p>
 <p>使用下述命令查看Kafka主题、分区、副本因子。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="ex">bin/kafka-topics.sh</span> <span class="at">--describe</span> <span class="at">--topic</span> mytopic <span class="at">--bootstrap-server</span> zookeeper_node1:9092,zookeeper_node2:9092,zookeeper_node3:9092</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="ex">bin/kafka-topics.sh</span> <span class="at">--describe</span> <span class="at">--topic</span> mytopic <span class="at">--bootstrap-server</span> hadoop102:9092,hadoop103:9092,hadoop104:9092</span></code></pre></div>
 </div>
 <div id="测试kafka消息的生产和消费" class="section level2">
 <h2>测试Kafka消息的生产和消费</h2>
