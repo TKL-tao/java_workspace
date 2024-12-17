@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-11" />
+        <meta name="date" content="2024-12-17" />
     
     <title>Flume Learning</title>
 
@@ -1835,7 +1835,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-11</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-17</p>
            
 
    
@@ -2015,6 +2015,13 @@ Sink 参数参考网址</a></p>
 <li><p><code>a1.sinks.k1.hdfs.rollInterval</code>：10秒从缓存区上传HDFS一次。</p></li>
 <li><p><code>a1.sinks.k1.hdfs.rollSize</code>：缓存区积累到<span class="math inline">\(128\text{MB}\)</span>上传到HDFS一次。</p></li>
 <li><p><code>a1.sinks.k1.hdfs.rollCount</code>：缓存区接收到一定的传入次数后向HDFS上传一次。为<span class="math inline">\(0\)</span>表示禁用此项，用于解决小文件问题。</p></li>
+</ul>
+<p>Channel：</p>
+<ul>
+<li><p><code>a1.channels.c1.type</code>
+：值为<strong>memory</strong>意为Channel中的数据保存在内存中。</p></li>
+<li><p><code>a1.channels.c1.capacity</code>：</p></li>
+<li><p><code>a1.channels.c1.transactionCapacity</code>：</p></li>
 </ul>
 <ol start="2" style="list-style-type: decimal">
 <li>在<code>/root/Flume111/myjobs/job1</code>路径下新建任意log文件，运行Flume，然后向log文件中追加内容，Flume会获取到新增的内容。</li>
