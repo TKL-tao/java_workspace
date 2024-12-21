@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-11" />
+        <meta name="date" content="2024-12-21" />
     
     <title>Linux Learning</title>
 
@@ -1859,7 +1859,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-11</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-21</p>
            
 
    
@@ -2069,7 +2069,7 @@ pool：<code>userdel -r zt</code></p></li>
 其中的<strong>x</strong>表示密码占位符，<strong>1000</strong>是用户ID，<strong>1001</strong>是用户组ID，<strong>/home/zt</strong>是用户主目录，<strong>/bin/sh</strong>是用户的默认shell。</p>
 <p>文件<code>/etc/group</code>的尾部会展示新建的用户组、例如当我用<code>groupadd myGroup</code>后，<code>/etc/group</code>的尾部会出现<strong>myGroup:x:1000:</strong>。
 其中<strong>x</strong>表示密码占位符，<strong>1000</strong>是用户组ID。</p>
-<p>使用下述命令切换到用户zt，并加载用户的</p>
+<p>使用下述命令切换到用户zt，并加载目标用户的环境变量，并切换到目标用户的主目录。</p>
 <pre><code>su - zt</code></pre>
 </div>
 </div>
