@@ -1818,9 +1818,17 @@ margin-left: 0 !important;
             <li><a href="#kibana安装和配置" id="toc-kibana安装和配置">Kibana安装和配置</a></li>
             <li><a href="#kibana用法" id="toc-kibana用法">Kibana用法</a></li>
             </ul></li>
-            <li><a href="#es常用命令" id="toc-es常用命令">ES常用命令</a></li>
+            <li><a href="#es常用命令" id="toc-es常用命令">ES常用命令</a>
+            <ul>
+            <li><a href="#查询命令" id="toc-查询命令">查询命令</a></li>
+            </ul></li>
             <li><a href="#索引别名" id="toc-索引别名">索引别名</a></li>
             <li><a href="#elasticsearch文档操作" id="toc-elasticsearch文档操作">Elasticsearch文档操作</a></li>
+            <li><a href="#python操作es" id="toc-python操作es">Python操作ES</a>
+            <ul>
+            <li><a href="#环境准备" id="toc-环境准备">环境准备</a></li>
+            <li><a href="#python-es-查询语句" id="toc-python-es-查询语句">Python ES 查询语句</a></li>
+            </ul></li>
             <li><a href="#elasticsearch原理" id="toc-elasticsearch原理">Elasticsearch原理</a></li>
             </ul>
           </div>
@@ -2065,6 +2073,23 @@ PUT /myindex/_mapping
 <pre class="json"><code>{
     &quot;query&quot;: {&quot;match&quot;: {&quot;content&quot;: &quot;西伯利亚&quot;}}
 }</code></pre>
+<div id="查询命令" class="section level2">
+<h2>查询命令</h2>
+<pre class="bash"><code># 查询所有
+GET poc_data_import/_search
+{
+  &quot;query&quot;: {
+    &quot;match_all&quot;: {}
+  }
+}
+# 在索引employee中查询id为1的文档
+GET /employee/_doc/1
+# 在索引employee中查询id为1, 2, 4的文档
+GET /employee/_mget
+{
+    &quot;ids&quot;: [1, 2, 4]
+}</code></pre>
+</div>
 </div>
 <div id="索引别名" class="section level1">
 <h1>索引别名</h1>
@@ -2142,6 +2167,35 @@ POST _bulk
 { &quot;id&quot;: 3, &quot;title&quot;: &quot;Tom&quot;, &quot;content&quot;: &quot;Tom is a teacher&quot;, &quot;tags&quot;: [&quot;Java&quot;, &quot;Python&quot;, &quot;C++&quot;], &quot;create_time&quot;: 2024 }
 { &quot;index&quot;: { &quot;_index&quot;: &quot;myindex&quot;, &quot;_id&quot;: 3 } }
 { &quot;id&quot;: 4, &quot;title&quot;: &quot;Malina&quot;, &quot;content&quot;: &quot;Malina is a student&quot;, &quot;tags&quot;: [&quot;Java&quot;, &quot;Python&quot;], &quot;create_time&quot;: 2024 }</code></pre>
+</div>
+<div id="python操作es" class="section level1">
+<h1>Python操作ES</h1>
+<div id="环境准备" class="section level2">
+<h2>环境准备</h2>
+<p>在Kibana中运行<code>GET /</code>来查看ES版本号（位于”version”-&gt;“number”）中。例如我的当前ES版本为<strong>7.10.2</strong>。</p>
+<pre class="bash"><code>pip install elasticsearch==7.10.1 </code></pre>
+<pre class="python"><code>from elasticsearch import Elasticsearch
+es = Elasticsearch(&quot;http://公网IP:9200&quot;)
+print(es.info())  # 能够打印出信息说明本地连接Elasticsearch成功</code></pre>
+</div>
+<div id="python-es-查询语句" class="section level2">
+<h2>Python ES 查询语句</h2>
+<pre class="python"><code>query = {
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        {&quot;match&quot;: {&quot;mapping1&quot;: &quot;value0&quot;}},
+        {&quot;match&quot;: {&quot;mapping2&quot;: &quot;value1&quot;}},
+        {&quot;match&quot;: {&quot;mapping3&quot;: &quot;value2&quot;}}
+        ]
+    }
+  }
+}
+query_result = es.count(index=&quot;my_index_name&quot;, body=search_query)
+print(query_result)  # 打印出信息{&#39;count&#39;: 261285, &#39;_shards&#39;: {&#39;total&#39;: 3, &#39;successful&#39;: 3, &#39;skipped&#39;: 0, &#39;failed&#39;: 0}}
+query_result = es.search(index=&quot;my_index_name&quot;, body=search_query)
+print(query_result)  # 打印出查询到的所有信息</code></pre>
+</div>
 </div>
 <div id="elasticsearch原理" class="section level1">
 <h1>Elasticsearch原理</h1>
