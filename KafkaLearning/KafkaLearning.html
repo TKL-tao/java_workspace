@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-27" />
+        <meta name="date" content="2024-12-29" />
     
     <title>Kafka Learning</title>
 
@@ -1640,12 +1640,17 @@ margin-left: 0 !important;
       <li><a href="#生产者调优" id="toc-生产者调优">生产者调优</a></li>
       </ul></li>
       <li><a href="#压力测试" id="toc-压力测试">压力测试</a></li>
+      <li><a href="#kerberos安全模式" id="toc-kerberos安全模式">Kerberos安全模式</a>
+      <ul>
+      <li><a href="#创建kerberos的kafka服务主体和用户主体" id="toc-创建kerberos的kafka服务主体和用户主体">创建Kerberos的Kafka服务主体和用户主体</a></li>
+      <li><a href="#修改kafka配置" id="toc-修改kafka配置">修改Kafka配置</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-27</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-29</p>
           </div>
    </div>
      
@@ -2436,6 +2441,44 @@ apt install</code></pre>
 </div>
 <div id="压力测试" class="section level1">
 <h1>压力测试</h1>
+</div>
+<div id="kerberos安全模式" class="section level1">
+<h1>Kerberos安全模式</h1>
+<div id="创建kerberos的kafka服务主体和用户主体" class="section level2">
+<h2>创建Kerberos的Kafka服务主体和用户主体</h2>
+<p>创建Kafka服务主体：</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="ex">kadmin.local</span> <span class="at">-q</span> <span class="st">&quot;add_principal -randkey kafka/hadoop102@EXAMPLE.COM&quot;</span></span>
+<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a><span class="ex">kadmin.local</span> <span class="at">-q</span> <span class="st">&quot;add_principal -randkey kafka/hadoop103@EXAMPLE.COM&quot;</span></span>
+<span id="cb57-3"><a href="#cb57-3" tabindex="-1"></a><span class="ex">kadmin.local</span> <span class="at">-q</span> <span class="st">&quot;add_principal -randkey kafka/hadoop104@EXAMPLE.COM&quot;</span></span>
+<span id="cb57-4"><a href="#cb57-4" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" tabindex="-1"></a><span class="fu">ssh</span> hadoop102</span>
+<span id="cb57-6"><a href="#cb57-6" tabindex="-1"></a><span class="ex">kadmin</span> <span class="at">-p</span> zt/admin@EXAMPLE.COM <span class="at">-w123456</span> <span class="at">-q</span> <span class="st">&quot;ktadd -kt /etc/security/keytabs/kafkaService.keytab kafka/hadoop102@EXAMPLE.COM&quot;</span></span>
+<span id="cb57-7"><a href="#cb57-7" tabindex="-1"></a><span class="fu">ssh</span> hadoop103</span>
+<span id="cb57-8"><a href="#cb57-8" tabindex="-1"></a><span class="ex">kadmin</span> <span class="at">-p</span> zt/admin@EXAMPLE.COM <span class="at">-w123456</span> <span class="at">-q</span> <span class="st">&quot;ktadd -kt /etc/security/keytabs/kafkaService.keytab kafka/hadoop103@EXAMPLE.COM&quot;</span></span>
+<span id="cb57-9"><a href="#cb57-9" tabindex="-1"></a><span class="fu">ssh</span> hadoop104</span>
+<span id="cb57-10"><a href="#cb57-10" tabindex="-1"></a><span class="ex">kadmin</span> <span class="at">-p</span> zt/admin@EXAMPLE.COM <span class="at">-w123456</span> <span class="at">-q</span> <span class="st">&quot;ktadd -kt /etc/security/keytabs/kafkaService.keytab kafka/hadoop104@EXAMPLE.COM&quot;</span></span></code></pre></div>
+<p>创建Kafka用户主体：</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a><span class="co"># 在每个节点上执行下面一行命令</span></span>
+<span id="cb58-2"><a href="#cb58-2" tabindex="-1"></a><span class="ex">useradd</span> <span class="at">-g</span> hadoop <span class="at">-m</span> kafka_user</span>
+<span id="cb58-3"><a href="#cb58-3" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" tabindex="-1"></a><span class="co"># 在Kerberos服务端执行下面这一行命令创建Kafka用户主体并设置好密码</span></span>
+<span id="cb58-5"><a href="#cb58-5" tabindex="-1"></a><span class="ex">kadmin.local</span> <span class="at">-q</span> <span class="st">&quot;add_principal kafka_user&quot;</span></span></code></pre></div>
+</div>
+<div id="修改kafka配置" class="section level2">
+<h2>修改Kafka配置</h2>
+<ol style="list-style-type: decimal">
+<li>相关配置文件准备</li>
+</ol>
+<div class="sourceCode" id="cb59"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="fu">mkdir</span> <span class="va">$KAFKA_HOME</span>/config/kerberos</span>
+<span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a><span class="fu">cp</span> /etc/security/keytabs/kafkaService.keytab <span class="va">$KAFKA_HOME</span>/config/kerberos</span>
+<span id="cb59-3"><a href="#cb59-3" tabindex="-1"></a><span class="fu">cp</span> /etc/krb5.conf <span class="va">$KAFKA_HOME</span>/config/kerberos</span>
+<span id="cb59-4"><a href="#cb59-4" tabindex="-1"></a><span class="fu">cp</span> <span class="va">$KAFKA_HOME</span>/config/server.properties <span class="va">$KAFKA_HOME</span>/config/server-sasl.properties</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>修改<code>server-sasl.properties</code></li>
+</ol>
+<div class="sourceCode" id="cb60"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a><span class="ex">vim</span> <span class="va">$KAFKA_HOME</span>/config/server-sasl.properties</span></code></pre></div>
+<p><a href="https://blog.csdn.net/m0_46168848/article/details/126194114">下次继续</a></p>
+</div>
 </div>
 </div>
 
