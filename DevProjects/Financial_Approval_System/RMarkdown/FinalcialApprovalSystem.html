@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-27" />
+        <meta name="date" content="2025-01-02" />
     
     <title>Financial Approval System</title>
 
@@ -1835,6 +1835,7 @@ margin-left: 0 !important;
             <ul>
             <li><a href="#hive安装" id="toc-hive安装">Hive安装</a></li>
             <li><a href="#启动hive" id="toc-启动hive">启动Hive</a></li>
+            <li><a href="#hive计算引擎" id="toc-hive计算引擎">Hive计算引擎</a></li>
             </ul></li>
             <li><a href="#数据仓库" id="toc-数据仓库">数据仓库</a></li>
             </ul>
@@ -1851,7 +1852,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-27</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-02</p>
            
 
    
@@ -2018,7 +2019,7 @@ vim /opt/Maxwell129/maxwell-1.29.2/config.properties</code></pre>
 <p>修改下述内容：配置数据发送到Kafka的地址、分区方式；配置数据库位置等。</p>
 <pre><code>producer=kafka
 kafka.bootstrap.servers=hadoop102:9092,hadoop103:9092,hadoop104:9092
-kafka_topic=topic_db
+kafka_topic=topicDB
 producer_partition_by=primary_key
 
 host=hadoop102
@@ -2102,6 +2103,10 @@ a1.sinks.k1.channel = c1</code></pre>
 <h1>Hive</h1>
 <div id="hive安装" class="section level2">
 <h2>Hive安装</h2>
+<p>环境变量：</p>
+<pre class="sh"><code>#HIVE_HOME
+export HIVE_HOME=/opt/Hive313/apache-hive-3.1.3-bin
+export PATH=$PATH:$HIVE_HOME/bin</code></pre>
 <ol style="list-style-type: decimal">
 <li>下述命令的作用是解决jar包日志冲突。</li>
 </ol>
@@ -2179,7 +2184,7 @@ mv log4j-slf4j-impl-2.17.1.jar log4j-slf4j-impl-2.17.1.jar.bak</code></pre>
 </ol>
 <p>使用<strong>root</strong>用户创建数据库<strong>metastore</strong>，然后将该数据库的权限给用户<strong>zt@%</strong></p>
 <p>初始化Hive元数据库：</p>
-<pre class="bash"><code>cd /root/Hive313/apache-hive-3.1.3-bin
+<pre class="bash"><code>cd $HIVE_HOME
 schematool -initSchema -dbType mysql -verbose</code></pre>
 <ol start="5" style="list-style-type: decimal">
 <li>修改原数据库metastore字符集。</li>
@@ -2200,6 +2205,71 @@ OFF</strong>。然后再次运行<code>hive</code>时，居然能够重新启动
 <p>测试Hive（Hive默认采用MapReduce引擎做计算，故插入一条数据时会启动MapReduce）</p>
 <pre class="hive"><code>CREATE TABLE student (id INT, name STRING);
 INSERT INTO student VALUES (1, &#39;zt&#39;);</code></pre>
+</div>
+<div id="hive计算引擎" class="section level2">
+<h2>Hive计算引擎</h2>
+<p>Hive默认使用的计算引擎是MapReduce。现在将其替换为Spark（Hive on
+Spark）。</p>
+<p>Hive-3.1.3与Spark-3.3.0是默认不兼容的，为了使两者兼容，下面开始重新编译Hive-3.1.3。</p>
+<p><font color="cornflowerblue">（具体编译方法以后再尝试）</font></p>
+<div id="安装和配置spark-3.3.2" class="section level3">
+<h3>安装和配置Spark-3.3.2</h3>
+<ol style="list-style-type: decimal">
+<li>安装：</li>
+</ol>
+<pre class="bash"><code>wget https://archive.apache.org/dist/spark/spark-3.3.2/spark-3.3.2-bin-without-hadoop.tgz
+# 华为云镜像
+wget https://mirrors.huaweicloud.com/apache/spark/spark-3.3.2/spark-3.3.2-bin-without-hadoop.tgz</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>配置：</li>
+</ol>
+<pre class="bash"><code>mv /opt/Spark332/spark-3.3.2-bin-without-hadoop/conf/spark-env.sh.template /opt/Spark332/spark-3.3.2-bin-without-hadoop/conf/spark-env.sh
+vim /opt/Spark332/spark-3.3.2-bin-without-hadoop/conf/spark-env.sh</code></pre>
+<p>追加下述内容：</p>
+<pre class="sh"><code>export SPARK_DIST_CLASSPATH=$(hadoop classpath)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>添加SPARK_HOME环境变量</li>
+</ol>
+<pre class="sh"><code>#SPARK_HOME
+export SPARK_HOME=/opt/Spark332/spark-3.3.2-bin-without-hadoop
+export PATH=$PATH:$SPARK_HOME/bin</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>在Hive中配置Spark</li>
+</ol>
+<pre class="bash"><code>vim /opt/Hive313/apache-hive-3.1.3-bin/conf/spark-defaults.conf</code></pre>
+<pre class="conf"><code>spark.master                    yarn
+spark.eventLog.enabled          true
+spark.eventLog.dir              hdfs://hadoop102:8020/spark-history
+spark.executor.memory           1g
+spark.driver.memory             1g</code></pre>
+<p>然后在HDFS上创建文件夹：<code>hadoop fs -mkdir /spark-history</code></p>
+<ol start="5" style="list-style-type: decimal">
+<li>Hive配置Spark依赖和Spark引擎</li>
+</ol>
+<p>先向HDFS上环Spark的所有依赖：</p>
+<pre class="bash"><code>hadoop fs -mkdir /spark-jars
+hadoop fs -put $SPARK_HOME/jars/* /spark-jars</code></pre>
+<p>为Hive配置这些依赖：</p>
+<pre class="bash"><code>vim /opt/Hive313/apache-hive-3.1.3-bin/conf/hive-site.xml</code></pre>
+<pre class="xml"><code>    &lt;!-- Spark依赖的位置 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;spark.yarn.jars&lt;/name&gt;
+        &lt;value&gt;hdfs://hadoop102:8020/spark-jars/*&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 指定引擎为Spark --&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.execution.engine&lt;/name&gt;
+        &lt;value&gt;spark&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 设置默认任务超时的时间，单位毫秒--&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.spark.client.connect.timeout&lt;/name&gt;
+        &lt;value&gt;5000&lt;/value&gt;
+    &lt;/property&gt;</code></pre>
+</div>
+<div id="测试hive的spark引擎" class="section level3">
+<h3>测试Hive的Spark引擎</h3>
+</div>
 </div>
 </div>
 <div id="数据仓库" class="section level1">

@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-17" />
+        <meta name="date" content="2025-01-02" />
     
     <title>Flume Learning</title>
 
@@ -1835,7 +1835,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-17</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-02</p>
            
 
    
@@ -1962,7 +1962,7 @@ a1.sinks.k1.channel = c1</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>启动命令</li>
 </ol>
-<pre class="bash"><code>bin/flume-ng agent --conf conf --conf-file /root/Flume111/myjobs/nc-flume-console.conf  --name a1</code></pre>
+<pre class="bash"><code>bin/flume-ng agent --conf conf --conf-file /opt/Flume111/myjobs/nc-flume-console.conf  --name a1</code></pre>
 <p>上述命令相当于启动了Flume监听器，然后在另一个端口里面运行<code>nc localhost 44444</code>后即可向Flume里面发送信息。</p>
 </div>
 <div id="实时读取文件并上传hdfs" class="section level1">
@@ -1980,8 +1980,8 @@ a1.channels = c1
 # Describe/configure the source
 a1.sources.r1.type = TAILDIR
 a1.sources.r1.filegroups = f1
-a1.sources.r1.filegroups.f1 = /root/Flume111/myjobs/job1/.*log
-a1.sources.r1.positionFile = /root/Flume111/taildir_position.json
+a1.sources.r1.filegroups.f1 = /opt/Flume111/myjobs/job1/.*log
+a1.sources.r1.positionFile = /opt/Flume111/taildir_position.json
 
 # Describe the sink
 a1.sinks.k1.type = hdfs
@@ -2024,9 +2024,11 @@ Sink 参数参考网址</a></p>
 <li><p><code>a1.channels.c1.transactionCapacity</code>：</p></li>
 </ul>
 <ol start="2" style="list-style-type: decimal">
-<li>在<code>/root/Flume111/myjobs/job1</code>路径下新建任意log文件，运行Flume，然后向log文件中追加内容，Flume会获取到新增的内容。</li>
+<li>在<code>/opt/Flume111/myjobs/job1</code>路径下新建任意log文件，运行Flume，然后向log文件中追加内容，Flume会获取到新增的内容。</li>
 </ol>
-<pre class="bash"><code>bin/flume-ng agent --conf conf --conf-file /root/Flume111/myjobs/job1/file-flume-hdfs.conf  --name a1</code></pre>
+<pre class="bash"><code>bin/flume-ng agent --conf conf --conf-file /opt/Flume111/myjobs/job1/file-flume-hdfs.conf  --name a1</code></pre>
+<p>对于有Kerberos认证的的HDFS，需要先确保当前Linux用户拿到了操作HDFS的Kerberos
+Ticket，然后才能启动Flume来操作HDFS。（好像可以对Flume本身设置Kerberos安全模式）</p>
 </div>
 <div id="flume事务" class="section level1">
 <h1>Flume事务</h1>
