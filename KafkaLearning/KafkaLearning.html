@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-01-04" />
+        <meta name="date" content="2025-01-05" />
     
     <title>Kafka Learning</title>
 
@@ -1653,7 +1653,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-04</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-05</p>
           </div>
    </div>
      
@@ -1752,20 +1752,22 @@ case $1 in
 &quot;start&quot;)
         echo &quot;====== 启动zookeeper集群 ======&quot;
         echo &quot;------ zookeeper on  hadoop102&quot;
-        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh start&quot;
+        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh start&quot; &amp;
         echo &quot;------ zookeeper on  hadoop103&quot;
-        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh start&quot;
+        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh start&quot; &amp;
         echo &quot;------ zookeeper on  hadoop104&quot;
-        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh start&quot;
+        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh start&quot; &amp;
+        wait # wait for all processes to complete
 ;;
 &quot;stop&quot;)
         echo &quot;====== 关闭zookeeper集群 ======&quot;
         echo &quot;------ zookeeper on  hadoop102&quot;
-        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh stop&quot;
+        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh stop&quot; &amp;
         echo &quot;------ zookeeper on  hadoop103&quot;
-        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh stop&quot;
+        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh stop&quot; &amp;
         echo &quot;------ zookeeper on  hadoop104&quot;
-        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh stop&quot;
+        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $ZOOKEEPER_HOME/bin/zkServer.sh stop&quot; &amp;
+        wait # wait for all processes to complete
 ;;
 *)
     echo &quot;Input Args Error...&quot;
@@ -1825,20 +1827,22 @@ case $1 in
 &quot;start&quot;)
         echo &quot;====== 启动kafka集群 ======&quot;
         echo &quot;------ kafka on  hadoop102&quot;
-        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties&quot;
+        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties&quot; &amp;
         echo &quot;------ kafka on  hadoop103&quot;
-        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties&quot;
+        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties&quot; &amp;
         echo &quot;------ kafka on  hadoop104&quot;
-        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties&quot;
+        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties&quot; &amp;
+        wait # wait for all processes to complete
 ;;
 &quot;stop&quot;)
         echo &quot;====== 关闭kafka集群 ======&quot;
         echo &quot;------ kafka on  hadoop102&quot;
-        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot;
+        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot; &amp;
         echo &quot;------ kafka on  hadoop103&quot;
-        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot;
+        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot; &amp;
         echo &quot;------ kafka on  hadoop104&quot;
-        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot;
+        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot; &amp;
+        wait # wait for all processes to complete
 ;;
 *)
     echo &quot;Input Args Error...&quot;
@@ -1848,7 +1852,7 @@ esac</code></pre>
 <div id="安全模式kafka集群启动脚本" class="section level3">
 <h3>安全模式Kafka集群启动脚本</h3>
 <p>Kerberos安全模式参见：<a href="#kerberos安全模式">Kerberos安全模式</a></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="ex">vim</span> /root/bin/kafkastartstop.sh</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="ex">vim</span> /root/bin/kafkastartstop-sasl.sh</span></code></pre></div>
 <pre><code>#!/bin/bash
 
 if [ $# -lt 1 ]
@@ -1861,20 +1865,22 @@ case $1 in
 &quot;start&quot;)
         echo &quot;====== 启动kafka集群 ======&quot;
         echo &quot;------ kafka on  hadoop102&quot;
-        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start-sasl.sh -daemon $KAFKA_HOME/config/server-sasl.properties&quot;
+        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start-sasl.sh -daemon $KAFKA_HOME/config/server-sasl.properties&quot; &amp;
         echo &quot;------ kafka on  hadoop103&quot;
-        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start-sasl.sh -daemon $KAFKA_HOME/config/server-sasl.properties&quot;
+        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start-sasl.sh -daemon $KAFKA_HOME/config/server-sasl.properties&quot; &amp;
         echo &quot;------ kafka on  hadoop104&quot;
-        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start-sasl.sh -daemon $KAFKA_HOME/config/server-sasl.properties&quot;
+        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-start-sasl.sh -daemon $KAFKA_HOME/config/server-sasl.properties&quot; &amp;
+        wait # wait for all processes to complete
 ;;
 &quot;stop&quot;)
         echo &quot;====== 关闭kafka集群 ======&quot;
         echo &quot;------ kafka on  hadoop102&quot;
-        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot;
+        ssh hadoop102 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot; &amp;
         echo &quot;------ kafka on  hadoop103&quot;
-        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot;
+        ssh hadoop103 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot; &amp;
         echo &quot;------ kafka on  hadoop104&quot;
-        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot;
+        ssh hadoop104 &quot;source /etc/profile.d/my_env.sh; $KAFKA_HOME/bin/kafka-server-stop.sh&quot; &amp;
+        wait # wait for all processes to complete
 ;;
 *)
     echo &quot;Input Args Error...&quot;
@@ -2486,7 +2492,9 @@ efak.password=123456</code></pre>
 <div class="sourceCode" id="cb62"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 8048:192.168.0.45:8048 root@113.45.129.200</span></code></pre></div>
 <p>或，直接在电脑浏览器上访问<code>http://公网IP:8048</code>console提供的用户名和密码登录也可以直接访问Kafka-Eagle。</p>
 <p><font color="red">目前在Kerberos安全模式的Kafak使用Kafka-Eagle来监测会出现以下小问题。例如：无法显示zookeeper的数目、无法在web
-UI上直接创建主题和查看主题。但是在非Kerberos安全模式下Kafka-Eagle是能完全正常运行的。</font></p>
+UI上直接创建主题和查看主题。但是在非Kerberos安全模式下Kafka-Eagle是能完全正常运行的。我感觉这里的主要问题和无法通过在本地电脑的HDFS
+Web
+UI操作都属于一个问题，应该是本地电脑无法完成Kerberos认证的原因。</font></p>
 </div>
 </div>
 <div id="调优" class="section level1">
