@@ -1,10 +1,10 @@
 from elasticsearch import Elasticsearch
 from openai import OpenAI
 
-es = Elasticsearch("http://113.45.129.200:9200", request_timeout=30)
+es = Elasticsearch("http://公网IP:9200", request_timeout=30)
 print(es.info())
 
-llm_client = OpenAI(api_key='sk-ad43441046cb4343a80972b9dd0668cd', base_url='https://dashscope.aliyuncs.com/compatible-mode/v1')
+llm_client = OpenAI(api_key='sk-ad43441046cb4343a80972b9d', base_url='https://dashscope.aliyuncs.com/compatible-mode/v1')
 
 text = "Hello, ElasticSearch"
 tmp = llm_client.embeddings.create(input=text,  model='text-embedding-v3')
