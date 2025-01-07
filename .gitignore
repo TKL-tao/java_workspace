@@ -12,3 +12,5 @@
 imgs
 target
 Resources
+
+!ElasticsearchLearning/projects/RAG-demo/*.py
