@@ -1985,6 +1985,8 @@ elasticsearch.hosts: [&quot;http://192.168.0.45:9200&quot;]</code></pre>
 <pre class="bash"><code>nohup /home/zt/Kibana814/kibana-8.14.3/bin/kibana &amp;</code></pre>
 <p>启动过程比较慢</p>
 <p>之后直接在浏览器访问<code>http://公网IP:5601</code>，不必访问<code>http://公网IP:9200</code>了。</p>
+<p>关闭kibana：</p>
+<pre class="bash"><code>ps -ef | grep kibana | grep -v grep | awk &#39;{print $2}&#39; | xargs kill</code></pre>
 </div>
 </div>
 <div id="kibana用法" class="section level2">
@@ -2241,6 +2243,10 @@ print(tmp.data[0].embedding, len(tmp.data[0].embedding))</code></pre>
 </div>
 <div id="文本向量入库" class="section level2">
 <h2>文本向量入库</h2>
+<pre class="python"><code>from elasticsearch import Elasticsearch
+
+es = Elasticsearch(&quot;http://公网IP:9200&quot;, request_timeout=30)
+print(es.info())  # 能打印出结果则连接成功</code></pre>
 <ol style="list-style-type: decimal">
 <li>创建索引用于存储文本向量。</li>
 </ol>
