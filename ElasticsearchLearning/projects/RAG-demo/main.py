@@ -1,5 +1,10 @@
 from elasticsearch import Elasticsearch
 from openai import OpenAI
+import elasticsearch
+import openai
+
+print(elasticsearch.__version__)
+print(openai.__version__)
 
 es = Elasticsearch("http://公网IP:9200", request_timeout=30)
 print(es.info())
