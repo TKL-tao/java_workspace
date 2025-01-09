@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-01-05" />
+        <meta name="date" content="2025-01-09" />
     
     <title>Kafka Learning</title>
 
@@ -1653,7 +1653,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-05</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-09</p>
           </div>
    </div>
      
@@ -2661,13 +2661,15 @@ sasl.kerberos.service.name=kafka</code></pre>
 <span id="cb78-3"><a href="#cb78-3" tabindex="-1"></a><span class="ex">bin/kafka-server-start-sasl.sh</span> <span class="at">-daemon</span> config/server-sasl.properties</span></code></pre></div>
 <p><a href="#启动kafka">安全模式Kafka集群启动脚本</a></p>
 <div class="sourceCode" id="cb79"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="co"># 创建topic</span></span>
-<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a><span class="ex">bin/kafka-topics-sasl.sh</span> <span class="at">--create</span> <span class="at">--topic</span> topicDB2 <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092  <span class="at">--partitions</span> 4 <span class="at">--replication-factor</span> 3 <span class="at">--config</span> retention.ms=259200000 <span class="at">--command-config</span> config/kerberos/client.properties</span></code></pre></div>
+<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a><span class="ex">bin/kafka-topics-sasl.sh</span> <span class="at">--create</span> <span class="at">--topic</span> topicDB <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092  <span class="at">--partitions</span> 4 <span class="at">--replication-factor</span> 3 <span class="at">--config</span> retention.ms=259200000 <span class="at">--command-config</span> config/kerberos/client.properties</span></code></pre></div>
 <div class="sourceCode" id="cb80"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a><span class="co"># 查看topic</span></span>
-<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a><span class="ex">bin/kafka-topics-sasl.sh</span> <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--describe</span> <span class="at">--topic</span> topicDB2 <span class="at">--command-config</span> config/kerberos/client.properties</span></code></pre></div>
-<div class="sourceCode" id="cb81"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="co"># 启动消费者</span></span>
-<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a><span class="ex">bin/kafka-console-consumer-sasl.sh</span> <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--topic</span> topicDB2 <span class="at">--from-beginning</span> <span class="at">--consumer.config</span> config/kerberos/client.properties</span></code></pre></div>
-<div class="sourceCode" id="cb82"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a><span class="co"># 启动生产者</span></span>
-<span id="cb82-2"><a href="#cb82-2" tabindex="-1"></a><span class="ex">bin/kafka-console-producer-sasl.sh</span> <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--topic</span> topicDB2 <span class="at">--producer.config</span> config/kerberos/client.properties</span></code></pre></div>
+<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a><span class="ex">bin/kafka-topics-sasl.sh</span> <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--describe</span> <span class="at">--topic</span> topicDB <span class="at">--command-config</span> config/kerberos/client.properties</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="co"># 删除topic</span></span>
+<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a><span class="ex">bin/kafka-topics-sasl.sh</span> <span class="at">--delete</span> <span class="at">--topic</span> topicDB <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--command-config</span> config/kerberos/client.properties</span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a><span class="co"># 启动消费者</span></span>
+<span id="cb82-2"><a href="#cb82-2" tabindex="-1"></a><span class="ex">bin/kafka-console-consumer-sasl.sh</span> <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--topic</span> topicDB <span class="at">--from-beginning</span> <span class="at">--consumer.config</span> config/kerberos/client.properties</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb83-1"><a href="#cb83-1" tabindex="-1"></a><span class="co"># 启动生产者</span></span>
+<span id="cb83-2"><a href="#cb83-2" tabindex="-1"></a><span class="ex">bin/kafka-console-producer-sasl.sh</span> <span class="at">--bootstrap-server</span> hadoop102:19092,hadoop103:19092,hadoop104:19092 <span class="at">--topic</span> topicDB <span class="at">--producer.config</span> config/kerberos/client.properties</span></code></pre></div>
 <p><a href="https://blog.csdn.net/m0_46168848/article/details/126194114">更多详情参观这条CSDN博客</a></p>
 </div>
 </div>

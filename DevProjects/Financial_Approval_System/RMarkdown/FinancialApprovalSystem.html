@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-01-03" />
+        <meta name="date" content="2025-01-09" />
     
     <title>Financial Approval System</title>
 
@@ -1816,10 +1816,13 @@ margin-left: 0 !important;
             <li><a href="#dataflow" id="toc-dataflow">Dataflow</a></li>
             <li><a href="#业务场景分析" id="toc-业务场景分析">业务场景分析</a></li>
             </ul></li>
-            <li><a href="#环境准备" id="toc-环境准备">环境准备</a>
+            <li><a href="#mysql配置" id="toc-mysql配置">MySQL配置</a></li>
+            <li><a href="#maxwell配置监控mysql" id="toc-maxwell配置监控mysql">Maxwell配置（监控MySQL）</a>
             <ul>
-            <li><a href="#mysql数据集准备" id="toc-mysql数据集准备">MySQL数据集准备</a></li>
-            <li><a href="#maxwell环境准备" id="toc-maxwell环境准备">Maxwell环境准备</a></li>
+            <li><a href="#在mysql中创建maxwell用户和数据库" id="toc-在mysql中创建maxwell用户和数据库">在MySQL中创建Maxwell用户和数据库</a></li>
+            <li><a href="#配置maxwell" id="toc-配置maxwell">配置Maxwell</a></li>
+            <li><a href="#maxwell启动" id="toc-maxwell启动">Maxwell启动</a></li>
+            <li><a href="#历史数据全量同步" id="toc-历史数据全量同步">历史数据全量同步</a></li>
             </ul></li>
             <li><a href="#同步策略" id="toc-同步策略">同步策略</a>
             <ul>
@@ -1853,7 +1856,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-03</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-09</p>
            
 
    
@@ -1951,10 +1954,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 <h2>业务场景分析</h2>
 </div>
 </div>
-<div id="环境准备" class="section level1">
-<h1>环境准备</h1>
-<div id="mysql数据集准备" class="section level2">
-<h2>MySQL数据集准备</h2>
+<div id="mysql配置" class="section level1">
+<h1>MySQL配置</h1>
 <p>设置好用户zt，创建两个数据库<strong>finance_result</strong>，<strong>financial_lease</strong>把数据库权限放给用户zt，在<code>application/application.yaml</code>中配置登录信息，之后运行下述命令生成数据（可以重复运行多次）。</p>
 <pre class="yaml"><code># 注意修改数据地址、用户名、密码
 spring:
@@ -1982,8 +1983,8 @@ mock:
 <pre class="bash"><code>java -jar mock-finance-1.3.0.jar</code></pre>
 <p><a href="http://ezdml.com/download_cn.html">EZDML数据表逻辑梳理工具</a></p>
 </div>
-<div id="maxwell环境准备" class="section level2">
-<h2>Maxwell环境准备</h2>
+<div id="maxwell配置监控mysql" class="section level1">
+<h1>Maxwell配置（监控MySQL）</h1>
 <p>Maxwell监控、采集MySQL中数据变化（实际上是监控的数据库的binlog），转化成json格式，发送到Kafka上。</p>
 <ol style="list-style-type: decimal">
 <li>在<a href="https://github.com/zendesk/maxwell/releases/download/v1.29.2/maxwell-1.29.2.tar.gz">https://github.com/zendesk/maxwell/releases/download/v1.29.2/maxwell-1.29.2.tar.gz</a>下载Maxwell。（Maxwell1.30及以上版本不支持JDK8）</li>
@@ -2003,16 +2004,16 @@ binlog_format=row
 # 指定监控的数据库
 binlog-do-db=finance_result</code></pre>
 <p>之后执行<code>systemctl restart mysql</code>。</p>
-<div id="在mysql中创建maxwell用户和数据库" class="section level3">
-<h3>在MySQL中创建Maxwell用户和数据库</h3>
+<div id="在mysql中创建maxwell用户和数据库" class="section level2">
+<h2>在MySQL中创建Maxwell用户和数据库</h2>
 <p>用户名为<strong>maxwell</strong>用于管理Maxwell应用的元数据。所管理的数据库亦名为<code>maxwell</code>。</p>
 <pre class="sql"><code>CREATE DATABASE maxwell;
 CREATE USER &#39;maxwell&#39;@&#39;%&#39; IDENTIFIED BY &#39;123456&#39;;
 GRANT ALL ON maxwell.* TO &#39;maxwell&#39;@&#39;%&#39;;
 GRANT SELECT, REPLICATION CLIENT, REPLICATION SLAVE ON *.* TO &#39;maxwell&#39;@&#39;%&#39;;</code></pre>
 </div>
-<div id="配置maxwell" class="section level3">
-<h3>配置Maxwell</h3>
+<div id="配置maxwell" class="section level2">
+<h2>配置Maxwell</h2>
 <p>该配置项中默认<strong>maxwell</strong>用户所管理的数据库也名为<code>maxwell</code>（schema_database=maxwell），所以不必再显示地指定数据库。</p>
 <pre class="bash"><code>cd /opt/Maxwell129/maxwell-1.29.2
 mv config.properties.example config.properties
@@ -2028,19 +2029,18 @@ user=maxwell
 password=123456
 jdbc_options=useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true</code></pre>
 </div>
-<div id="maxwell启动" class="section level3">
-<h3>Maxwell启动</h3>
+<div id="maxwell启动" class="section level2">
+<h2>Maxwell启动</h2>
 <p>先启动Kafka。</p>
 <p>启动Maxwell：</p>
 <pre class="bash"><code>/root/Maxwell112/maxwell-1.29.2/bin/maxwell --config /root/Maxwell112/maxwell-1.29.2/config.properties --daemon</code></pre>
 <p>停止Maxwell：</p>
 <pre class="bash"><code>ps -ef | grep com.zendesk.maxwell.Maxwell | grep -v grep | awk &#39;{print $2}&#39; | xargs kill -9</code></pre>
 </div>
-<div id="历史数据全量同步" class="section level3">
-<h3>历史数据全量同步</h3>
+<div id="历史数据全量同步" class="section level2">
+<h2>历史数据全量同步</h2>
 <p>使用下述命令启动Maxwell后除了传递修改的数据还会先向Kafka传递一次数据表的历史数据，实现历史数据的全量同步。</p>
 <pre class="bash"><code>/root/Maxwell112/maxwell-1.29.2/bin/maxwell-bootstrap --database finance_result --table credit --config /root/Maxwell112/maxwell-1.29.2/config.properties</code></pre>
-</div>
 </div>
 </div>
 <div id="同步策略" class="section level1">
@@ -2056,9 +2056,11 @@ jdbc_options=useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRet
 </div>
 <div id="flume从kafka主题到hdfs" class="section level1">
 <h1>Flume从Kafka主题到HDFS</h1>
-<div id="配置flume" class="section level2">
-<h2>配置Flume</h2>
-<p>编写配置文件<strong>/root/Flume111/myjobs/financialApproval/flume-hdfs.conf</strong>：</p>
+<div id="配置flume" class="section level2 tabset">
+<h2 class="tabset">配置Flume</h2>
+<div id="连接kafka时的配置" class="section level3">
+<h3>连接kafka时的配置</h3>
+<p>编写配置文件<strong>/opt/Flume111/flumeJobs/financialApproval/flume-hdfs.conf</strong>：</p>
 <pre class="conf"><code># Name the components on this agent
 a1.sources = r1
 a1.sinks = k1
@@ -2094,6 +2096,57 @@ a1.sinks.k1.channel = c1</code></pre>
 <ul>
 <li><code>a1.sinks.k1.hdfs.fileType</code>和<code>a1.sinks.k1.hdfs.codeC</code>是在设置以压缩文件上传到HDFS中。</li>
 </ul>
+<p>另外还需要在<code>/opt/Flume111/apache-flume-1.11.0-bin/conf/flume-env.sh</code>中配置。因为我的服务器的内存太小了。</p>
+<pre><code>export JAVA_OPTS=&quot;-Xms256m -Xmx512m -Dcom.sun.management.jmxremote&quot;</code></pre>
+</div>
+<div id="连接kafka-kerberos模式时的配置" class="section level3">
+<h3>连接kafka kerberos模式时的配置</h3>
+<p>编写配置文件<strong>/opt/Flume111/flumeJobs/financialApproval/flume-hdfs.conf</strong>：</p>
+<pre class="conf"><code># Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = org.apache.flume.source.kafka.KafkaSource
+a1.sources.r1.kafka.bootstrap.servers=hadoop102:19092,hadoop103:19092,hadoop104:19092
+a1.sources.r1.kafka.topics=topicDB
+a1.sources.r1.kafka.consumer.group.id=flumeConsumerGroup1
+
+a1.sources.r1.kafka.consumer.security.protocol=SASL_PLAINTEXT
+a1.sources.r1.kafka.consumer.sasl.mechanism=GSSAPI
+a1.sources.r1.kafka.consumer.sasl.kerberos.service.name=kafka
+
+
+# Describe the sink
+a1.sinks.k1.type = hdfs
+a1.sinks.k1.hdfs.path = hdfs://hadoop102:8020/financeApproval/%{tableName}/%Y-%m-%d
+a1.sinks.k1.hdfs.filePrefix = finaAppro-
+a1.sinks.k1.hdfs.rollInterval = 10
+a1.sinks.k1.hdfs.rollSize = 134217728
+a1.sinks.k1.hdfs.rollCount = 0
+a1.sinks.k1.hdfs.useLocalTimeStamp = true
+a1.sinks.k1.hdfs.fileType=CompressedStream
+a1.sinks.k1.hdfs.codeC=gzip
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = file
+a1.channels.c1.dataDirs=/opt/Flume111/channelData/financeApproval1
+a1.channels.c1.checkpointDir=/opt/Flume111/channelCheckPoint/financeApproval1
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 1000
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1</code></pre>
+<ul>
+<li><code>a1.sinks.k1.hdfs.fileType</code>和<code>a1.sinks.k1.hdfs.codeC</code>是在设置以压缩文件上传到HDFS中。</li>
+</ul>
+<p>另外还需要在<code>/opt/Flume111/apache-flume-1.11.0-bin/conf/flume-env.sh</code>中配置。因为我的服务器的内存太小了。</p>
+<pre><code>export JAVA_OPTS=&quot;-Xms256m -Xmx512m -Dcom.sun.management.jmxremote&quot;
+JAVA_OPTS=&quot;$JAVA_OPTS -Djava.security.krb5.conf=/etc/krb5.conf&quot;
+JAVA_OPTS=&quot;$JAVA_OPTS -Djava.security.auth.login.config=/opt/Kafka380/kafka_2.12-3.8.0/config/kerberos/kafka-client-jaas.conf&quot;</code></pre>
+</div>
 </div>
 <div id="flume拦截器" class="section level2">
 <h2>Flume拦截器</h2>
