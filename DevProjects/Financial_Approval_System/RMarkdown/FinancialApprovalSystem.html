@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-01-10" />
+        <meta name="date" content="2025-01-14" />
     
     <title>Financial Approval System</title>
 
@@ -1833,6 +1833,7 @@ margin-left: 0 !important;
             <ul>
             <li><a href="#配置flume" id="toc-配置flume">配置Flume</a></li>
             <li><a href="#flume拦截器" id="toc-flume拦截器">Flume拦截器</a></li>
+            <li><a href="#启动flume" id="toc-启动flume">启动Flume</a></li>
             </ul></li>
             <li><a href="#hive" id="toc-hive">Hive</a>
             <ul>
@@ -1856,7 +1857,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-10</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-14</p>
            
 
    
@@ -2178,6 +2179,13 @@ JAVA_OPTS=&quot;$JAVA_OPTS -Djava.security.auth.login.config=/opt/Kafka380/kafka
 <div id="flume拦截器" class="section level2">
 <h2>Flume拦截器</h2>
 <p>为上述Flume配置中配置<strong>tableName</strong>以及将<strong>%Y-%m-%d</strong>设置为</p>
+</div>
+<div id="启动flume" class="section level2">
+<h2>启动Flume</h2>
+<p>后台启动：</p>
+<pre class="bash"><code>nohup /opt/Flume111/apache-flume-1.11.0-bin/bin/flume-ng agent --conf /opt/Flume111/apache-flume-1.11.0-bin/conf --conf-file /opt/Flume111/flumeJobs/financialApproval/flume-hdfs.conf --name a1 &amp;</code></pre>
+<p>命令窗启动：</p>
+<pre class="bash"><code>/opt/Flume111/apache-flume-1.11.0-bin/bin/flume-ng agent --conf /opt/Flume111/apache-flume-1.11.0-bin/conf --conf-file /opt/Flume111/flumeJobs/financialApproval/flume-hdfs.conf --name a1</code></pre>
 </div>
 </div>
 <div id="hive" class="section level1">
