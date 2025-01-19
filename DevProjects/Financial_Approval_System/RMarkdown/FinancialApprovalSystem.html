@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-01-14" />
+        <meta name="date" content="2025-01-15" />
     
     <title>Financial Approval System</title>
 
@@ -1841,6 +1841,7 @@ margin-left: 0 !important;
             <li><a href="#启动hive" id="toc-启动hive">启动Hive</a></li>
             <li><a href="#hive-on-spark" id="toc-hive-on-spark">Hive on
             Spark</a></li>
+            <li><a href="#hive处理json" id="toc-hive处理json">Hive处理Json</a></li>
             </ul></li>
             <li><a href="#数据仓库" id="toc-数据仓库">数据仓库</a></li>
             </ul>
@@ -1857,7 +1858,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-14</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-15</p>
            
 
    
@@ -2309,6 +2310,26 @@ INSERT INTO student VALUES (1, &#39;zt&#39;);</code></pre>
 Spark）。</p>
 <p>Hive-3.1.3与Spark-3.3.0是默认不兼容的，为了使两者兼容，下面开始重新编译Hive-3.1.3。</p>
 <p><font color="cornflowerblue">（具体编译方法以后再尝试）</font></p>
+</div>
+<div id="hive处理json" class="section level2">
+<h2>Hive处理Json</h2>
+<ol style="list-style-type: decimal">
+<li>将HDFS上的Json读取到Hive中的自建表myjson_table。</li>
+</ol>
+<pre class="sql"><code>CREATE EXTERNAL TABLE myjson_table (
+json_txt STRING
+) LOCATION &quot;/financeApproval/tmp&quot;;</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>在Hive中解析myjson_table</li>
+</ol>
+<pre class="sql"><code>SELECT 
+get_json_object(json_txt, &#39;$.database&#39;) `database_col`,
+get_json_object(json_txt, &#39;$.table&#39;) `table_col`,
+get_json_object(json_txt, &#39;$.type&#39;) `type_col`,
+get_json_object(json_txt, &#39;$.ts&#39;) `ts_col`,
+get_json_object(json_txt, &#39;$.data.id&#39;) `id_col`,
+get_json_object(json_txt, &#39;$.data.name&#39;) `name_col`
+FROM myjson_table;</code></pre>
 <div id="安装和配置spark-3.3.2" class="section level3">
 <h3>安装和配置Spark-3.3.2</h3>
 <ol style="list-style-type: decimal">
