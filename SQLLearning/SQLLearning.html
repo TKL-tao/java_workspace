@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tom Zou" />
     
-        <meta name="date" content="2025-01-20" />
+        <meta name="date" content="2025-01-21" />
     
     <title>MySQL Learning</title>
 
@@ -1901,12 +1901,14 @@ margin-left: 0 !important;
       <li><a href="#group-by-优化" id="toc-group-by-优化">GROUP BY
       优化</a></li>
       </ul></li>
+      <li><a href="#个别问题说明" id="toc-个别问题说明">个别问题说明</a></li>
+      <li><a href="#窗口函数" id="toc-窗口函数">窗口函数</a></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tom
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-20</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-21</p>
           </div>
    </div>
      
@@ -2012,7 +2014,8 @@ different.</p></li>
 ‘UNIQUE’</p></li>
 <li><p><code>CHECK</code>: ensure values in a column satisfies a
 specific condition</p></li>
-<li><p><code>DEFAULT</code>:</p></li>
+<li><p><code>DEFAULT</code>: （It won’t change the already existed
+“NULL” into a default value.）</p></li>
 <li><p><code>CREATE INDEX</code>: use to create and retrieve data from
 database very quickly.</p></li>
 </ul>
@@ -2483,7 +2486,10 @@ specified criterion.</p>
 <span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="kw">FROM</span> table1 <span class="kw">AS</span> t1 <span class="kw">RIGHT</span> <span class="kw">JOIN</span> table2 <span class="kw">AS</span> t2 <span class="kw">ON</span> t1.column1<span class="op">=</span>t2.column1;</span>
 <span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a></span>
 <span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> </span>
-<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a><span class="kw">FROM</span> table1 <span class="kw">AS</span> t1 <span class="kw">CROSS</span> <span class="kw">JOIN</span> table2 <span class="kw">AS</span> t2 <span class="kw">ON</span> t1.column1<span class="op">=</span>t2.column1;</span></code></pre></div>
+<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a><span class="kw">FROM</span> table1 <span class="kw">CROSS</span> <span class="kw">JOIN</span> table2;</span></code></pre></div>
+<p><code>CROSS JOIN</code> is different from the other three
+<code>JOIN</code>. It means Cartesian product and it should not be used
+with <code>on</code>.</p>
 </div>
 <div id="union" class="section level2">
 <h2>UNION</h2>
@@ -2830,6 +2836,36 @@ SIMPLE(最普通的查询)、PRIMARY（主查询）、UNION、SUBQUERY。</p></l
 <div id="group-by-优化" class="section level2">
 <h2>GROUP BY 优化</h2>
 </div>
+</div>
+<div id="个别问题说明" class="section level1">
+<h1>个别问题说明</h1>
+<ol style="list-style-type: decimal">
+<li>在MySQL中，除了<code>TRUE</code>和<code>FALSE</code>外还有一个<code>UNKNOWN</code>。<code>TRUE</code>
+and <code>UNKNOWN</code> = <code>UNKNOWN</code>；<code>FALSE</code> and
+<code>UNKNOWN</code> =
+<code>FALSE</code>。与<code>NULL</code>的比较、判断会得到<code>UNKNOWN</code>。</li>
+</ol>
+</div>
+<div id="窗口函数" class="section level1">
+<h1>窗口函数</h1>
+<p><a href="https://leetcode.cn/problems/consecutive-numbers/description/">Leetcode
+SQL 180题</a></p>
+<p>求连续出现至少三次的数字。</p>
+<pre class="text"><code>+-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| num         | varchar |
++-------------+---------+
+在 SQL 中，id 是该表的主键。
+id 是一个自增列。</code></pre>
+<p>解答：</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a><span class="kw">WITH</span> myWindowFunc <span class="kw">AS</span> (</span>
+<span id="cb71-2"><a href="#cb71-2" tabindex="-1"></a>    <span class="kw">SELECT</span> <span class="kw">id</span>, num, <span class="fu">LAG</span>(num, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span>) <span class="kw">as</span> prev_num1, <span class="fu">LAG</span>(num, <span class="dv">2</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span>) <span class="kw">as</span> prev_num2 <span class="kw">FROM</span> Logs</span>
+<span id="cb71-3"><a href="#cb71-3" tabindex="-1"></a>)</span>
+<span id="cb71-4"><a href="#cb71-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> num <span class="kw">as</span> ConsecutiveNums</span>
+<span id="cb71-5"><a href="#cb71-5" tabindex="-1"></a><span class="kw">FROM</span> myWindowFunc</span>
+<span id="cb71-6"><a href="#cb71-6" tabindex="-1"></a><span class="kw">WHERE</span> num<span class="op">=</span>prev_num1 <span class="kw">AND</span> num<span class="op">=</span>prev_num2;</span></code></pre></div>
 </div>
 </div>
 
