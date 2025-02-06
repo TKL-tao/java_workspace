@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-01" />
+        <meta name="date" content="2025-02-04" />
     
     <title>Kafka Learning</title>
 
@@ -1655,7 +1655,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-01</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-04</p>
           </div>
    </div>
      
@@ -2177,9 +2177,9 @@ esac</code></pre>
 <div id="应答可靠性acks" class="section level3">
 <h3>应答可靠性<em>acks</em></h3>
 <ul>
-<li><p>应答<em>acks</em>为0，消息生产效率最高，但可靠性最低，一般很少用。</p></li>
-<li><p>应答<em>acks</em>为1，一般用于传输日志数据，允许个别数据的丢失。</p></li>
-<li><p>应答<em>acks</em>为-1，可靠性最高，一般用于传输跟钱相关的数据。</p></li>
+<li><p>应答<em>acks</em>为0，生产者发送消息后，不需要等待服务端响应。消息生产效率最高，但可靠性最低，一般很少用。</p></li>
+<li><p>应答<em>acks</em>为1（默认值），生产者发送消息后，leader副本成功写入消息后返回成功响应。缺点1：若发送消息时，leader副本崩溃且新的leader副本未被选举出来，则消息发送失败。缺点2：若发送消息时，leader副本正常，此时返回消息发送成功的响应，但leader副本随即崩溃且消息还未被其他副本同步，则此时实际上是消息发送失败的。因此一般用于传输日志数据，允许个别数据的丢失。</p></li>
+<li><p>应答<em>acks</em>为-1或all，生产者发送消息后，等待ISR中所有副本都成功写入消息后，返回消息发送成功的响应，但是要注意ISR中不能只有leader副本。该方法可靠性最高，一般用于传输跟钱相关的数据。</p></li>
 </ul>
 <p>之后在<code>KafkaProducerAnalysis</code>类中的<code>Properties initConfig()</code>中新增</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>props<span class="op">.</span><span class="fu">put</span><span class="op">(</span>ProducerConfig<span class="op">.</span><span class="fu">ACKS_CONFIG</span><span class="op">,</span> <span class="st">&quot;1&quot;</span><span class="op">);</span></span></code></pre></div>
