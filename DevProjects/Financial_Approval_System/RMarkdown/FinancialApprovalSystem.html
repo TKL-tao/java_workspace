@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-14" />
+        <meta name="date" content="2025-02-15" />
     
     <title>Financial Approval System</title>
 
@@ -1848,6 +1848,7 @@ margin-left: 0 !important;
             <ul>
             <li><a href="#miniconda环境搭建" id="toc-miniconda环境搭建">miniconda环境搭建</a></li>
             <li><a href="#安装部署" id="toc-安装部署">安装部署</a></li>
+            <li><a href="#superset使用" id="toc-superset使用">Superset使用</a></li>
             </ul></li>
             </ul>
           </div>
@@ -1863,7 +1864,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-14</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-15</p>
            
 
    
@@ -2427,12 +2428,12 @@ Store，应用数据存储层)：为特定用户定制数据视图和数据集�
 <h2>miniconda环境搭建</h2>
 <p>这里尝试在我的Linux上安装miniconda。<a href="https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/">清华安装miniconda镜像</a></p>
 <pre class="bash"><code>bash Miniconda3-py39_25.1.1-1-Linux-x86_64.sh</code></pre>
-<p>之后按照提示安装miniconda到我指定的位置<code>/opt/miniconda</code>。</p>
+<p>之后按照提示安装miniconda到我指定的位置<code>/opt/miniconda3</code>。</p>
 <p>之后执行<code>source ~/.bashrc</code>就可以启动miniconda环境了。应该能够看到命令行最左边的<strong>(bash)</strong>标识。</p>
 <ul>
-<li><p>默认不自动加载miniconda的<strong>(bash)</strong>环境：<code>conda config --set auto_activate_bash false</code></p></li>
+<li><p>默认不自动加载miniconda的<strong>(bash)</strong>环境：<code>conda config --set auto_activate_base false</code></p></li>
 <li><p>退出当前python环境：<code>conda deactivate</code></p></li>
-<li><p>创建新python环境：<code>conda create --name superset python==3.8.16</code></p></li>
+<li><p>创建新python环境：<code>conda create --name superset python==3.8.16 -y</code></p></li>
 <li><p>删除一个python环境：<code>conda remove -n env_name --all</code></p></li>
 <li><p>激活一个python环境：<code>conda activate env_name</code></p></li>
 <li><p>查询现有的所有conda环境：<code>coda info --envs</code></p></li>
@@ -2440,10 +2441,87 @@ Store，应用数据存储层)：为特定用户定制数据视图和数据集�
 </div>
 <div id="安装部署" class="section level2">
 <h2>安装部署</h2>
+<div id="安装系统级依赖" class="section level3">
+<h3>安装系统级依赖</h3>
+<pre class="bash"><code>conda activate superset_env
+apt-get update
+apt-get install -y gcc g++ libffi-dev python3-dev python3-pip python3-venv python3-wheel libssl-dev libsasl2-dev libldap2-dev libpq-dev</code></pre>
+</div>
+<div id="安装" class="section level3">
+<h3>安装</h3>
 <p><a href="https://raw.githubusercontent.com/apache/superset/2.0.0/requirements/base.txt">https://raw.githubusercontent.com/apache/superset/2.0.0/requirements/base.txt</a>下载依赖配置，可以重命名为<code>/opt/Superset200/requirements.txt</code>。注意需要把里面的<code>-e file:.</code>去掉。</p>
 <p>然后在该路径<code>opt/Superset200</code>下执行命令：</p>
 <pre class="bash"><code>pip install apache-superset==2.0.0 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt</code></pre>
-<p>安装地址：<a href></a></p>
+</div>
+<div id="配置元数据库" class="section level3">
+<h3>配置元数据库</h3>
+<ol style="list-style-type: decimal">
+<li>创建MySQL用户和数据库</li>
+</ol>
+<pre class="sql"><code>CREATE USER &#39;superset&#39;@&#39;%&#39; IDENTIFIED WITH mysql_native_password BY &#39;superset&#39;;
+CREATE DATABASE supersetDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+GRANT ALL ON supersetDB.* TO &#39;superset&#39;@&#39;%&#39; WITH GRANT OPTION;
+FLUSH PRIVILEGES;</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>配置superset到数据库的连接</li>
+</ol>
+<pre class="bash"><code>vim /opt/miniconda3/envs/superset_env/lib/python3.8/site-packages/superset/config.py</code></pre>
+<p>修改下述内容</p>
+<pre class="python"><code>SQLALCHEMY_DATABASE_URI = &#39;mysql://superset:superset@hadoop102:3306/supersetDB?charset=utf8&#39;
+# 格式为：mysql://username:password@host:port/database?参数</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>安装python mysql驱动</li>
+</ol>
+<pre class="bash"><code>conda activate superset_env
+conda install mysqlclient</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>初始化superset元数据</li>
+</ol>
+<pre class="bash"><code>conda activate superset
+export FLASK_APP=superset
+superset db upgrade</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>初始化superset用户</li>
+</ol>
+<pre class="bash"><code>superset fab create-admin</code></pre>
+<p>根据提示设置用户名和密码。</p>
+<ol start="6" style="list-style-type: decimal">
+<li>初始化superset</li>
+</ol>
+<pre class="bash"><code>superset init</code></pre>
+</div>
+<div id="启停superset" class="section level3">
+<h3>启停superset</h3>
+<ol style="list-style-type: decimal">
+<li>安装python的webserver：gunicorn</li>
+</ol>
+<pre class="bash"><code>conda activate superset
+pip install gunicorn -i https://pypi.douban.com/simple/</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>启动superset</li>
+</ol>
+<pre class="bash"><code>conda activate superset
+gunicorn --workers 5 --timeout 120 --bind 0.0.0.0:8787 &quot;superset.app:create_app()&quot; --daemon</code></pre>
+<p>之后在我的本地电脑输入<code>&lt;公网IP&gt;:8787</code>即可访问成功。（由于我本地电脑设置了DNS，因此访问<code>hadoop102:8787</code>亦可访问成功）</p>
+<ol start="3" style="list-style-type: decimal">
+<li>停止superset</li>
+</ol>
+<pre class="bash"><code>ps -ef | awk &#39;/gunicorn/ &amp;&amp; !/awk/{print $2}&#39; | xargs kill -9</code></pre>
+</div>
+</div>
+<div id="superset使用" class="section level2">
+<h2>Superset使用</h2>
+<div id="连接mysql数据库" class="section level3">
+<h3>连接MySQL数据库。</h3>
+<p>我需要连接的数据库为<code>AutoVisalDB</code>，用户为<code>&#39;zt&#39;@&#39;%&#39;</code>。但是由于MySQL
+8.0+ 默认使用<code>caching_sha2_password</code>，旧版 mysqlclient
+可能不支持。修改用户认证方式为<code>mysql_native_password</code>：</p>
+<pre class="sql"><code>ALTER USER &#39;zt&#39;@&#39;%&#39; IDENTIFIED WITH mysql_native_password BY &#39;password&#39;;
+FLUSH PRIVILEGES;</code></pre>
+<p>连接数据库的URI为：</p>
+<pre><code>mysql+mysqldb://&lt;用户名&gt;:&lt;密码&gt;@&lt;公网IP&gt;:3306/AutoVisualDB</code></pre>
+<p>(或mysql+mysqldb://<用户名>:<密码>@<公网IP>:3306/AutoVisualDB?charset=utf8mb4)</p>
+</div>
 </div>
 </div>
 </div>
