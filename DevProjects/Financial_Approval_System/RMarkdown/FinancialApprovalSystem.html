@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-15" />
+        <meta name="date" content="2025-02-20" />
     
     <title>Financial Approval System</title>
 
@@ -1864,7 +1864,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-15</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-20</p>
            
 
    
@@ -2477,7 +2477,7 @@ conda install mysqlclient</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>初始化superset元数据</li>
 </ol>
-<pre class="bash"><code>conda activate superset
+<pre class="bash"><code>conda activate superset_env
 export FLASK_APP=superset
 superset db upgrade</code></pre>
 <ol start="5" style="list-style-type: decimal">
@@ -2495,18 +2495,20 @@ superset db upgrade</code></pre>
 <ol style="list-style-type: decimal">
 <li>安装python的webserver：gunicorn</li>
 </ol>
-<pre class="bash"><code>conda activate superset
+<pre class="bash"><code>conda activate superset_env
 pip install gunicorn -i https://pypi.douban.com/simple/</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>启动superset</li>
 </ol>
-<pre class="bash"><code>conda activate superset
+<pre class="bash"><code>conda activate superset_env
 gunicorn --workers 5 --timeout 120 --bind 0.0.0.0:8787 &quot;superset.app:create_app()&quot; --daemon</code></pre>
 <p>之后在我的本地电脑输入<code>&lt;公网IP&gt;:8787</code>即可访问成功。（由于我本地电脑设置了DNS，因此访问<code>hadoop102:8787</code>亦可访问成功）</p>
 <ol start="3" style="list-style-type: decimal">
 <li>停止superset</li>
 </ol>
 <pre class="bash"><code>ps -ef | awk &#39;/gunicorn/ &amp;&amp; !/awk/{print $2}&#39; | xargs kill -9</code></pre>
+<p>或使用命令</p>
+<pre class="bash"><code>ps -ef | grep &#39;gunicorn&#39; | grep -v &#39;grep&#39; | awk &#39;{print $2}&#39; | xargs kill -9</code></pre>
 </div>
 </div>
 <div id="superset使用" class="section level2">
