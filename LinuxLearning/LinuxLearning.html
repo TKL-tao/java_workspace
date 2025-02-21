@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2024-12-25" />
+        <meta name="date" content="2025-02-21" />
     
     <title>Linux Learning</title>
 
@@ -1859,7 +1859,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-12-25</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-21</p>
            
 
    
@@ -2012,9 +2012,11 @@ sudo vim /etc/netplan/01-netcfg.yaml</code></pre>
 <h3>which, find</h3>
 <p><code>which ls</code>查看ls命令存放在哪里。</p>
 <p><code>find 起始路径 -mindepth 2 -name 被查找的文件名</code>根据名称规则查找文件</p>
-<p>下述命令可以查找到正则形如”<em>-</em>-<em>-</em>-*“的文件（-type
-f）并删除。</p>
+<p>下述命令可以查找到正则形如”*-*-*-*-*“的文件（-type
+f）并删除（-delete）。</p>
 <pre class="bash"><code>find -type f -name &quot;*-*-*-*-*&quot; -delete</code></pre>
+<p>下述命令可以查找到文件夹名称中包含<code>zookeeper</code>的文件夹（如果不区分大小写，则使用参数-iname替换-name）：</p>
+<pre class="bash"><code>find /opt -type d -name &quot;*zookeeper*&quot;</code></pre>
 <p><code>find 起始路径 -size +|-n[kMG]</code>根据文件大小查找文件。例如<code>find /root -size +100M</code>在<code>/root</code>路径下查找文件大小大于<span class="math inline">\(100\text{MB}\)</span>的文件</p>
 </div>
 <div id="grep-wc" class="section level3">
