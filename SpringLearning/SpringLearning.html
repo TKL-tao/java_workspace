@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-13" />
+        <meta name="date" content="2025-02-23" />
     
     <title>Spring Learning</title>
 
@@ -1833,6 +1833,7 @@ margin-left: 0 !important;
       <li><a href="#添加依赖并配置数据库连接" id="toc-添加依赖并配置数据库连接">添加依赖并配置数据库连接</a></li>
       <li><a href="#securityconfig" id="toc-securityconfig">SecurityConfig</a></li>
       <li><a href="#registration" id="toc-registration">Registration</a></li>
+      <li><a href="#常用身份校验方案" id="toc-常用身份校验方案">常用身份校验方案</a></li>
       </ul></li>
       <li><a href="#spring-restful" id="toc-spring-restful">Spring
       RESTful</a>
@@ -1840,6 +1841,7 @@ margin-left: 0 !important;
       <li><a href="#rest-controller" id="toc-rest-controller">Rest
       Controller</a></li>
       <li><a href="#rest-data" id="toc-rest-data">Rest Data</a></li>
+      <li><a href="#保护restful-api" id="toc-保护restful-api">保护Restful API</a></li>
       </ul></li>
       <li><a href="#jms异步消息" id="toc-jms异步消息">JMS异步消息</a>
       <ul>
@@ -1860,12 +1862,19 @@ margin-left: 0 !important;
       <ul>
       <li><a href="#bean的生命周期" id="toc-bean的生命周期">Bean的生命周期</a></li>
       </ul></li>
+      <li><a href="#spring注解" id="toc-spring注解">Spring注解</a>
+      <ul>
+      <li><a href="#slf4j" id="toc-slf4j"><code>@Slf4j</code></a></li>
+      <li><a href="#data" id="toc-data"><code>@Data</code></a></li>
+      <li><a href="#configurationbean" id="toc-configurationbean"><code>@Configuration</code>、<code>@Bean</code></a></li>
+      <li><a href="#autowired" id="toc-autowired"><code>@Autowired</code></a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-13</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-23</p>
           </div>
    </div>
      
@@ -2173,9 +2182,14 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver</code></pre>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>    &lt;<span class="kw">artifactId</span>&gt;spring-boot-starter-security&lt;/<span class="kw">artifactId</span>&gt;</span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>&lt;/<span class="kw">dependency</span>&gt; </span></code></pre></div>
 <p>上述依赖一旦添加，基本的安全配置会被自动初始化，所有的HTTP请求路径都需要认证。</p>
+<p>Spring Security默认开启<strong>CSRF保护</strong>（Cross-Site Request
+Forgery），它要求所有状态变更的HTTP方法（如POST、PUT、DELETE等）都必须验证CSRF令牌。所以想直接通过curl发送资源更改的请求是会被Forbidden的。CSRF令牌在httpSession会话创立后、在GET请求时服务器下发，存储在Cookie中。所以我认为只要启用了Spring
+Security以及不禁用CSRF的前提下，不执行登录则没有会话，继而也不会有服务器下发的CSRF令牌，故而不可能通过curl直接对服务器资源进行修改。</p>
 </div>
 <div id="securityconfig" class="section level2 tabset">
 <h2 class="tabset">SecurityConfig</h2>
+<p>下述代码的身份验证方案是基于会话的（<strong>Session-based</strong>）：在登录成功后，服务器会创建一个<strong>Session</strong>，然后将<strong>JSESSIONID</strong>通<strong>Cookie</strong>返回给客户端，在后续的请求过程中客户端会携带此<strong>Cookie</strong>让服务端验证。</p>
+<p>下述代码的<code>.formLogin()</code>表单登录是<strong>Session-based</strong>方案的典型特征。</p>
 <div id="框架代码" class="section level3">
 <h3>框架代码</h3>
 <div class="sourceCode" id="cb13"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">security</span><span class="op">.</span><span class="im">crypto</span><span class="op">.</span><span class="im">bcrypt</span><span class="op">.</span><span class="im">BCryptPasswordEncoder</span><span class="op">;</span></span>
@@ -2364,6 +2378,13 @@ Security框架中自动注入的。</p>
 <p>这是用于接收表单数据的类，<em>form</em>的类型。</p>
 </div>
 </div>
+<div id="常用身份校验方案" class="section level2">
+<h2>常用身份校验方案</h2>
+<ul>
+<li><p>Session-based：上述代码正是基于Session-based进行身份校验的。</p></li>
+<li><p>Token-based：客户端在登录服务端之后会获得一个<strong>Token</strong>令牌，在之后的请求中携带这个<strong>Token</strong>令牌。三方登录的身份验证也是使用的这种方式，由三方授权服务器向客户端返回<strong>Token</strong>令牌。</p></li>
+</ul>
+</div>
 </div>
 <div id="spring-restful" class="section level1">
 <h1>Spring RESTful</h1>
@@ -2519,6 +2540,9 @@ Security默认启用了CSRF保护）</p>
 <p>然后使用下述命令行POST数据：</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="at">-d</span> @mydata.json <span class="st">&quot;http://localhost:8080/repo-api/myqueries&quot;</span></span></code></pre></div>
 </div>
+</div>
+<div id="保护restful-api" class="section level2">
+<h2>保护Restful API</h2>
 </div>
 </div>
 <div id="jms异步消息" class="section level1">
@@ -2873,6 +2897,129 @@ Tutorials</a></p>
 <div id="bean的生命周期" class="section level2">
 <h2>Bean的生命周期</h2>
 <p>扫描找到Bean -&gt; 注入对象和值，然后实例化 -&gt; Bean的销毁。</p>
+</div>
+</div>
+<div id="spring注解" class="section level1">
+<h1>Spring注解</h1>
+<div id="slf4j" class="section level2 tabset">
+<h2 class="tabset"><code>@Slf4j</code></h2>
+<p><code>@Slf4j</code>注解用于自动在一个类中生成一个日志处理对象<code>log</code>，以便于在代码中直接使用<code>log.debug()</code>,
+<code>log.info()</code>, <code>log.error()</code>等方法。</p>
+<p>下述两种代码是完全等价的。</p>
+<div id="使用slf4j注解" class="section level3">
+<h3>使用<code>@Slf4j</code>注解</h3>
+<div class="sourceCode" id="cb42"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">extern</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Slf4j</span><span class="op">;</span></span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a><span class="at">@Slf4j</span></span>
+<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyService <span class="op">{</span></span>
+<span id="cb42-5"><a href="#cb42-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">doSomething</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb42-6"><a href="#cb42-6" tabindex="-1"></a>        log<span class="op">.</span><span class="fu">info</span><span class="op">(</span><span class="st">&quot;This is an info message&quot;</span><span class="op">);</span></span>
+<span id="cb42-7"><a href="#cb42-7" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb42-8"><a href="#cb42-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="不使用slf4j注解" class="section level3">
+<h3>不使用<code>@Slf4j</code>注解</h3>
+<div class="sourceCode" id="cb43"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Logger</span><span class="op">;</span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">LoggerFactory</span><span class="op">;</span></span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyService <span class="op">{</span></span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">Logger</span> log <span class="op">=</span> LoggerFactory<span class="op">.</span><span class="fu">getLogger</span><span class="op">(</span>MyService<span class="op">.</span><span class="fu">class</span><span class="op">);</span></span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">doSomething</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a>        log<span class="op">.</span><span class="fu">info</span><span class="op">(</span><span class="st">&quot;This is an info message&quot;</span><span class="op">);</span></span>
+<span id="cb43-9"><a href="#cb43-9" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb43-10"><a href="#cb43-10" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+</div>
+<div id="data" class="section level2 tabset">
+<h2 class="tabset"><code>@Data</code></h2>
+<p><code>@Data</code>=<code>@Getter</code>+<code>@Setter</code>+<code>@ToString</code>+<code>@EqualsAndHashCode</code>+<code>@RequiredArgsConstructor</code></p>
+<ul>
+<li><p><code>@Getter</code>：为所有字段生成<strong>getter</strong>方法。</p></li>
+<li><p><code>@Setter</code>：为所有非<code>final</code>字段生成<strong>setter</strong>方法。</p></li>
+<li><p><code>@ToString</code>：为所有字段生成<strong>toString</strong>方法。</p></li>
+<li><p><code>@EqualsAndHashCode</code>：为获得注解的类生成<code>.equals()</code>和<code>.hashCode()</code>方法。</p></li>
+<li><p><code>@RequiredArgsConstructor</code>：为所有final的字段，以及标记为<code>@NonNull</code>且未初始化的字段生成一个构造函数。</p></li>
+</ul>
+<p>下述两段代码是等价的。</p>
+<div id="使用data注解" class="section level3">
+<h3>使用<code>@Data</code>注解</h3>
+<div class="sourceCode" id="cb44"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">Data</span><span class="op">;</span></span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" tabindex="-1"></a><span class="at">@Data</span></span>
+<span id="cb44-4"><a href="#cb44-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
+<span id="cb44-5"><a href="#cb44-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> id<span class="op">;</span></span>
+<span id="cb44-6"><a href="#cb44-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb44-7"><a href="#cb44-7" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
+<span id="cb44-8"><a href="#cb44-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="不使用data注解" class="section level3">
+<h3>不使用<code>@Data</code>注解</h3>
+<div class="sourceCode" id="cb45"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Objects</span><span class="op">;</span></span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> id<span class="op">;</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">User</span><span class="op">(</span><span class="bu">String</span> id<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span></span>
+<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a></span>
+<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getId</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">id</span><span class="op">;</span></span>
+<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a></span>
+<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getName</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb45-17"><a href="#cb45-17" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">name</span><span class="op">;</span></span>
+<span id="cb45-18"><a href="#cb45-18" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-19"><a href="#cb45-19" tabindex="-1"></a></span>
+<span id="cb45-20"><a href="#cb45-20" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setName</span><span class="op">(</span><span class="bu">String</span> name<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb45-21"><a href="#cb45-21" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">name</span> <span class="op">=</span> name<span class="op">;</span></span>
+<span id="cb45-22"><a href="#cb45-22" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-23"><a href="#cb45-23" tabindex="-1"></a></span>
+<span id="cb45-24"><a href="#cb45-24" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">getAge</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb45-25"><a href="#cb45-25" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">age</span><span class="op">;</span></span>
+<span id="cb45-26"><a href="#cb45-26" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-27"><a href="#cb45-27" tabindex="-1"></a></span>
+<span id="cb45-28"><a href="#cb45-28" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setAge</span><span class="op">(</span><span class="dt">int</span> age<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb45-29"><a href="#cb45-29" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> age<span class="op">;</span></span>
+<span id="cb45-30"><a href="#cb45-30" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-31"><a href="#cb45-31" tabindex="-1"></a></span>
+<span id="cb45-32"><a href="#cb45-32" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb45-33"><a href="#cb45-33" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">equals</span><span class="op">(</span><span class="bu">Object</span> o<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb45-34"><a href="#cb45-34" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="kw">this</span> <span class="op">==</span> o<span class="op">)</span> <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb45-35"><a href="#cb45-35" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>o <span class="op">==</span> <span class="kw">null</span> <span class="op">||</span> <span class="fu">getClass</span><span class="op">()</span> <span class="op">!=</span> o<span class="op">.</span><span class="fu">getClass</span><span class="op">())</span> <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb45-36"><a href="#cb45-36" tabindex="-1"></a>        User user <span class="op">=</span> <span class="op">(</span>User<span class="op">)</span> o<span class="op">;</span></span>
+<span id="cb45-37"><a href="#cb45-37" tabindex="-1"></a>        <span class="cf">return</span> age <span class="op">==</span> user<span class="op">.</span><span class="fu">age</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb45-38"><a href="#cb45-38" tabindex="-1"></a>                Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>id<span class="op">,</span> user<span class="op">.</span><span class="fu">id</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb45-39"><a href="#cb45-39" tabindex="-1"></a>                Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>name<span class="op">,</span> user<span class="op">.</span><span class="fu">name</span><span class="op">);</span></span>
+<span id="cb45-40"><a href="#cb45-40" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-41"><a href="#cb45-41" tabindex="-1"></a></span>
+<span id="cb45-42"><a href="#cb45-42" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb45-43"><a href="#cb45-43" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">hashCode</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb45-44"><a href="#cb45-44" tabindex="-1"></a>        <span class="cf">return</span> Objects<span class="op">.</span><span class="fu">hash</span><span class="op">(</span>id<span class="op">,</span> name<span class="op">,</span> age<span class="op">);</span></span>
+<span id="cb45-45"><a href="#cb45-45" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-46"><a href="#cb45-46" tabindex="-1"></a></span>
+<span id="cb45-47"><a href="#cb45-47" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb45-48"><a href="#cb45-48" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">toString</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb45-49"><a href="#cb45-49" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;User{&quot;</span> <span class="op">+</span></span>
+<span id="cb45-50"><a href="#cb45-50" tabindex="-1"></a>                <span class="st">&quot;id=&#39;&quot;</span> <span class="op">+</span> id <span class="op">+</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="op">+</span></span>
+<span id="cb45-51"><a href="#cb45-51" tabindex="-1"></a>                <span class="st">&quot;, name=&#39;&quot;</span> <span class="op">+</span> name <span class="op">+</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="op">+</span></span>
+<span id="cb45-52"><a href="#cb45-52" tabindex="-1"></a>                <span class="st">&quot;, age=&quot;</span> <span class="op">+</span> age <span class="op">+</span></span>
+<span id="cb45-53"><a href="#cb45-53" tabindex="-1"></a>                <span class="ch">&#39;}&#39;</span><span class="op">;</span></span>
+<span id="cb45-54"><a href="#cb45-54" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-55"><a href="#cb45-55" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+</div>
+<div id="configurationbean" class="section level2">
+<h2><code>@Configuration</code>、<code>@Bean</code></h2>
+<p><code>@Configuration</code>注解的类是配置类，用于定义<strong>Bean</strong>的创建。<code>@Bean</code>注解的方法会被初测到Spring的应用上下文（ApplicationContext）中，可以被<code>@Autowired</code>注入使用。</p>
+<p>带有<code>@Component</code>，<code>@Service</code>，<code>@Repository</code>，<code>@Controller</code>注解的类都会被Spring扫描并注册为<strong>Bean</strong>。</p>
+</div>
+<div id="autowired" class="section level2">
+<h2><code>@Autowired</code></h2>
+<p><code>@Autowired</code>注解的字段会被自动注入Spring容器中已有的<strong>Bean</strong>。</p>
 </div>
 </div>
 </div>
