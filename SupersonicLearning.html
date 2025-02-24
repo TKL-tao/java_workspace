@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-23" />
+        <meta name="date" content="2025-02-24" />
     
     <title>Supersonic BI Note</title>
 
@@ -1820,6 +1820,15 @@ margin-left: 0 !important;
             <li><a href="#windows编译打包" id="toc-windows编译打包">Windows编译打包</a></li>
             <li><a href="#ubuntu系统运行" id="toc-ubuntu系统运行">Ubuntu系统运行</a></li>
             </ul></li>
+            <li><a href="#源代码结构分析" id="toc-源代码结构分析">源代码结构分析</a>
+            <ul>
+            <li><a href="#预加载" id="toc-预加载">预加载</a></li>
+            </ul></li>
+            <li><a href="#data实体" id="toc-data实体">Data实体</a>
+            <ul>
+            <li><a href="#用户表-s2_user" id="toc-用户表-s2_user">用户表
+            s2_user</a></li>
+            </ul></li>
             <li><a href="#使用" id="toc-使用">使用</a>
             <ul>
             <li><a href="#数据库管理" id="toc-数据库管理">数据库管理</a></li>
@@ -1838,7 +1847,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-23</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-24</p>
            
 
    
@@ -1987,7 +1996,22 @@ dos2unix supersonic-env.sh</code></pre>
 <p>运行之前先确认<code>/etc/profile.d/my_env.sh</code>中配置的JAVA_HOME版本和在Windows打包时使用的Java版本一致。（都是JDK17）</p>
 <pre class="bash"><code>supersonic-standalone-0.9.10-SNAPSHOT/bin/supersonic-daemon.sh start</code></pre>
 <p>运行日志保存在<code>supersonic-standalone-0.9.10-SNAPSHOT/logs</code>路径下。</p>
-<p>在Ubuntu系统中启动supersonic程序大概需要消耗运行内容<span class="math inline">\(1.2\text{GB}\)</span>。</p>
+<p>在Ubuntu系统中启动supersonic程序大概需要消耗运行内存<span class="math inline">\(1.2\text{GB}\)</span>。</p>
+</div>
+</div>
+<div id="源代码结构分析" class="section level1">
+<h1>源代码结构分析</h1>
+<div id="预加载" class="section level2">
+<h2>预加载</h2>
+</div>
+</div>
+<div id="data实体" class="section level1">
+<h1>Data实体</h1>
+<div id="用户表-s2_user" class="section level2">
+<h2>用户表 s2_user</h2>
+<p>用户表位于路径<code>auth/authentication/src/main/java/com/tencent/supersonic/auth/authentication/persistence/dataobject/UserDO.java</code>。</p>
+<p><code>UserDO.java</code>的属性变量<strong>salt</strong>的作用是作为加密工具的随机种子。在<code>DefaultUserAdaptor.java</code>(implements
+UserAdaptor)中方法<code>registor(UserReq userReq)</code>和<code>updatePassword(UserDO userDO, String newPassword, UserRepository userRepository)</code>都会调用加密工具<code>AESEncryptionUtil.java</code>。</p>
 </div>
 </div>
 <div id="使用" class="section level1">

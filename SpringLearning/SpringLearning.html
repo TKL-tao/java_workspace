@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-23" />
+        <meta name="date" content="2025-02-24" />
     
     <title>Spring Learning</title>
 
@@ -1861,6 +1861,7 @@ margin-left: 0 !important;
       <li><a href="#spring知识点" id="toc-spring知识点">Spring知识点</a>
       <ul>
       <li><a href="#bean的生命周期" id="toc-bean的生命周期">Bean的生命周期</a></li>
+      <li><a href="#环境变量environment" id="toc-环境变量environment">环境变量Environment</a></li>
       </ul></li>
       <li><a href="#spring注解" id="toc-spring注解">Spring注解</a>
       <ul>
@@ -1874,7 +1875,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-23</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-24</p>
           </div>
    </div>
      
@@ -2898,6 +2899,23 @@ Tutorials</a></p>
 <h2>Bean的生命周期</h2>
 <p>扫描找到Bean -&gt; 注入对象和值，然后实例化 -&gt; Bean的销毁。</p>
 </div>
+<div id="环境变量environment" class="section level2">
+<h2>环境变量Environment</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">core</span><span class="op">.</span><span class="im">env</span><span class="op">.</span><span class="im">Environment</span><span class="op">;</span></span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyClass <span class="op">{</span></span>
+<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a>    <span class="at">@Autowired</span></span>
+<span id="cb42-5"><a href="#cb42-5" tabindex="-1"></a>    <span class="kw">protected</span> <span class="bu">Environment</span> environment<span class="op">;</span></span>
+<span id="cb42-6"><a href="#cb42-6" tabindex="-1"></a>    </span>
+<span id="cb42-7"><a href="#cb42-7" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">myMethod</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb42-8"><a href="#cb42-8" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>environment<span class="op">.</span><span class="fu">getProperty</span><span class="op">(</span><span class="st">&quot;OPENAI_BASE_URL&quot;</span><span class="op">));</span></span>
+<span id="cb42-9"><a href="#cb42-9" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb42-10"><a href="#cb42-10" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>上述代码中的environment变量可以感受到运行命令中的环境变量，例如下面的运行命令中的参数<em>abc</em>就会被上述代码打印出来。</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="ex">java</span> <span class="at">-jar</span> my-app.jar <span class="at">--OPENAI_BASE_URL</span><span class="op">=</span><span class="st">&quot;abc&quot;</span></span></code></pre></div>
+<p><em>environment</em>变量还可以感受到配置文件application.properties中的变量，例如：</p>
+<pre class="properties"><code>OPENAI_BASE_URL=abc</code></pre>
+</div>
 </div>
 <div id="spring注解" class="section level1">
 <h1>Spring注解</h1>
@@ -2908,27 +2926,27 @@ Tutorials</a></p>
 <p>下述两种代码是完全等价的。</p>
 <div id="使用slf4j注解" class="section level3">
 <h3>使用<code>@Slf4j</code>注解</h3>
-<div class="sourceCode" id="cb42"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">extern</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Slf4j</span><span class="op">;</span></span>
-<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a></span>
-<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a><span class="at">@Slf4j</span></span>
-<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyService <span class="op">{</span></span>
-<span id="cb42-5"><a href="#cb42-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">doSomething</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb42-6"><a href="#cb42-6" tabindex="-1"></a>        log<span class="op">.</span><span class="fu">info</span><span class="op">(</span><span class="st">&quot;This is an info message&quot;</span><span class="op">);</span></span>
-<span id="cb42-7"><a href="#cb42-7" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb42-8"><a href="#cb42-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">extern</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Slf4j</span><span class="op">;</span></span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="at">@Slf4j</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyService <span class="op">{</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">doSomething</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>        log<span class="op">.</span><span class="fu">info</span><span class="op">(</span><span class="st">&quot;This is an info message&quot;</span><span class="op">);</span></span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="不使用slf4j注解" class="section level3">
 <h3>不使用<code>@Slf4j</code>注解</h3>
-<div class="sourceCode" id="cb43"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Logger</span><span class="op">;</span></span>
-<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">LoggerFactory</span><span class="op">;</span></span>
-<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a></span>
-<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyService <span class="op">{</span></span>
-<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">Logger</span> log <span class="op">=</span> LoggerFactory<span class="op">.</span><span class="fu">getLogger</span><span class="op">(</span>MyService<span class="op">.</span><span class="fu">class</span><span class="op">);</span></span>
-<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a></span>
-<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">doSomething</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a>        log<span class="op">.</span><span class="fu">info</span><span class="op">(</span><span class="st">&quot;This is an info message&quot;</span><span class="op">);</span></span>
-<span id="cb43-9"><a href="#cb43-9" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb43-10"><a href="#cb43-10" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Logger</span><span class="op">;</span></span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">LoggerFactory</span><span class="op">;</span></span>
+<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyService <span class="op">{</span></span>
+<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">Logger</span> log <span class="op">=</span> LoggerFactory<span class="op">.</span><span class="fu">getLogger</span><span class="op">(</span>MyService<span class="op">.</span><span class="fu">class</span><span class="op">);</span></span>
+<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">doSomething</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a>        log<span class="op">.</span><span class="fu">info</span><span class="op">(</span><span class="st">&quot;This is an info message&quot;</span><span class="op">);</span></span>
+<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
 <div id="data" class="section level2 tabset">
@@ -2944,72 +2962,72 @@ Tutorials</a></p>
 <p>下述两段代码是等价的。</p>
 <div id="使用data注解" class="section level3">
 <h3>使用<code>@Data</code>注解</h3>
-<div class="sourceCode" id="cb44"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">Data</span><span class="op">;</span></span>
-<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a></span>
-<span id="cb44-3"><a href="#cb44-3" tabindex="-1"></a><span class="at">@Data</span></span>
-<span id="cb44-4"><a href="#cb44-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
-<span id="cb44-5"><a href="#cb44-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> id<span class="op">;</span></span>
-<span id="cb44-6"><a href="#cb44-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
-<span id="cb44-7"><a href="#cb44-7" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
-<span id="cb44-8"><a href="#cb44-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">Data</span><span class="op">;</span></span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a><span class="at">@Data</span></span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> id<span class="op">;</span></span>
+<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
+<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="不使用data注解" class="section level3">
 <h3>不使用<code>@Data</code>注解</h3>
-<div class="sourceCode" id="cb45"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Objects</span><span class="op">;</span></span>
-<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a></span>
-<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
-<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> id<span class="op">;</span></span>
-<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
-<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
-<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a></span>
-<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">User</span><span class="op">(</span><span class="bu">String</span> id<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span></span>
-<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a></span>
-<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getId</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">id</span><span class="op">;</span></span>
-<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a></span>
-<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getName</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb45-17"><a href="#cb45-17" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">name</span><span class="op">;</span></span>
-<span id="cb45-18"><a href="#cb45-18" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-19"><a href="#cb45-19" tabindex="-1"></a></span>
-<span id="cb45-20"><a href="#cb45-20" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setName</span><span class="op">(</span><span class="bu">String</span> name<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb45-21"><a href="#cb45-21" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">name</span> <span class="op">=</span> name<span class="op">;</span></span>
-<span id="cb45-22"><a href="#cb45-22" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-23"><a href="#cb45-23" tabindex="-1"></a></span>
-<span id="cb45-24"><a href="#cb45-24" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">getAge</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb45-25"><a href="#cb45-25" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">age</span><span class="op">;</span></span>
-<span id="cb45-26"><a href="#cb45-26" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-27"><a href="#cb45-27" tabindex="-1"></a></span>
-<span id="cb45-28"><a href="#cb45-28" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setAge</span><span class="op">(</span><span class="dt">int</span> age<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb45-29"><a href="#cb45-29" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> age<span class="op">;</span></span>
-<span id="cb45-30"><a href="#cb45-30" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-31"><a href="#cb45-31" tabindex="-1"></a></span>
-<span id="cb45-32"><a href="#cb45-32" tabindex="-1"></a>    <span class="at">@Override</span></span>
-<span id="cb45-33"><a href="#cb45-33" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">equals</span><span class="op">(</span><span class="bu">Object</span> o<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb45-34"><a href="#cb45-34" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="kw">this</span> <span class="op">==</span> o<span class="op">)</span> <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
-<span id="cb45-35"><a href="#cb45-35" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>o <span class="op">==</span> <span class="kw">null</span> <span class="op">||</span> <span class="fu">getClass</span><span class="op">()</span> <span class="op">!=</span> o<span class="op">.</span><span class="fu">getClass</span><span class="op">())</span> <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb45-36"><a href="#cb45-36" tabindex="-1"></a>        User user <span class="op">=</span> <span class="op">(</span>User<span class="op">)</span> o<span class="op">;</span></span>
-<span id="cb45-37"><a href="#cb45-37" tabindex="-1"></a>        <span class="cf">return</span> age <span class="op">==</span> user<span class="op">.</span><span class="fu">age</span> <span class="op">&amp;&amp;</span></span>
-<span id="cb45-38"><a href="#cb45-38" tabindex="-1"></a>                Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>id<span class="op">,</span> user<span class="op">.</span><span class="fu">id</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span id="cb45-39"><a href="#cb45-39" tabindex="-1"></a>                Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>name<span class="op">,</span> user<span class="op">.</span><span class="fu">name</span><span class="op">);</span></span>
-<span id="cb45-40"><a href="#cb45-40" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-41"><a href="#cb45-41" tabindex="-1"></a></span>
-<span id="cb45-42"><a href="#cb45-42" tabindex="-1"></a>    <span class="at">@Override</span></span>
-<span id="cb45-43"><a href="#cb45-43" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">hashCode</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb45-44"><a href="#cb45-44" tabindex="-1"></a>        <span class="cf">return</span> Objects<span class="op">.</span><span class="fu">hash</span><span class="op">(</span>id<span class="op">,</span> name<span class="op">,</span> age<span class="op">);</span></span>
-<span id="cb45-45"><a href="#cb45-45" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-46"><a href="#cb45-46" tabindex="-1"></a></span>
-<span id="cb45-47"><a href="#cb45-47" tabindex="-1"></a>    <span class="at">@Override</span></span>
-<span id="cb45-48"><a href="#cb45-48" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">toString</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb45-49"><a href="#cb45-49" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;User{&quot;</span> <span class="op">+</span></span>
-<span id="cb45-50"><a href="#cb45-50" tabindex="-1"></a>                <span class="st">&quot;id=&#39;&quot;</span> <span class="op">+</span> id <span class="op">+</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="op">+</span></span>
-<span id="cb45-51"><a href="#cb45-51" tabindex="-1"></a>                <span class="st">&quot;, name=&#39;&quot;</span> <span class="op">+</span> name <span class="op">+</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="op">+</span></span>
-<span id="cb45-52"><a href="#cb45-52" tabindex="-1"></a>                <span class="st">&quot;, age=&quot;</span> <span class="op">+</span> age <span class="op">+</span></span>
-<span id="cb45-53"><a href="#cb45-53" tabindex="-1"></a>                <span class="ch">&#39;}&#39;</span><span class="op">;</span></span>
-<span id="cb45-54"><a href="#cb45-54" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb45-55"><a href="#cb45-55" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Objects</span><span class="op">;</span></span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
+<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> id<span class="op">;</span></span>
+<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
+<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a></span>
+<span id="cb48-8"><a href="#cb48-8" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">User</span><span class="op">(</span><span class="bu">String</span> id<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb48-9"><a href="#cb48-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span></span>
+<span id="cb48-10"><a href="#cb48-10" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-11"><a href="#cb48-11" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="#cb48-12" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getId</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb48-13"><a href="#cb48-13" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">id</span><span class="op">;</span></span>
+<span id="cb48-14"><a href="#cb48-14" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-15"><a href="#cb48-15" tabindex="-1"></a></span>
+<span id="cb48-16"><a href="#cb48-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getName</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb48-17"><a href="#cb48-17" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">name</span><span class="op">;</span></span>
+<span id="cb48-18"><a href="#cb48-18" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-19"><a href="#cb48-19" tabindex="-1"></a></span>
+<span id="cb48-20"><a href="#cb48-20" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setName</span><span class="op">(</span><span class="bu">String</span> name<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb48-21"><a href="#cb48-21" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">name</span> <span class="op">=</span> name<span class="op">;</span></span>
+<span id="cb48-22"><a href="#cb48-22" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-23"><a href="#cb48-23" tabindex="-1"></a></span>
+<span id="cb48-24"><a href="#cb48-24" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">getAge</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb48-25"><a href="#cb48-25" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="fu">age</span><span class="op">;</span></span>
+<span id="cb48-26"><a href="#cb48-26" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-27"><a href="#cb48-27" tabindex="-1"></a></span>
+<span id="cb48-28"><a href="#cb48-28" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setAge</span><span class="op">(</span><span class="dt">int</span> age<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb48-29"><a href="#cb48-29" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> age<span class="op">;</span></span>
+<span id="cb48-30"><a href="#cb48-30" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-31"><a href="#cb48-31" tabindex="-1"></a></span>
+<span id="cb48-32"><a href="#cb48-32" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb48-33"><a href="#cb48-33" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">equals</span><span class="op">(</span><span class="bu">Object</span> o<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb48-34"><a href="#cb48-34" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="kw">this</span> <span class="op">==</span> o<span class="op">)</span> <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb48-35"><a href="#cb48-35" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>o <span class="op">==</span> <span class="kw">null</span> <span class="op">||</span> <span class="fu">getClass</span><span class="op">()</span> <span class="op">!=</span> o<span class="op">.</span><span class="fu">getClass</span><span class="op">())</span> <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb48-36"><a href="#cb48-36" tabindex="-1"></a>        User user <span class="op">=</span> <span class="op">(</span>User<span class="op">)</span> o<span class="op">;</span></span>
+<span id="cb48-37"><a href="#cb48-37" tabindex="-1"></a>        <span class="cf">return</span> age <span class="op">==</span> user<span class="op">.</span><span class="fu">age</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb48-38"><a href="#cb48-38" tabindex="-1"></a>                Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>id<span class="op">,</span> user<span class="op">.</span><span class="fu">id</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb48-39"><a href="#cb48-39" tabindex="-1"></a>                Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>name<span class="op">,</span> user<span class="op">.</span><span class="fu">name</span><span class="op">);</span></span>
+<span id="cb48-40"><a href="#cb48-40" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-41"><a href="#cb48-41" tabindex="-1"></a></span>
+<span id="cb48-42"><a href="#cb48-42" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb48-43"><a href="#cb48-43" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">hashCode</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb48-44"><a href="#cb48-44" tabindex="-1"></a>        <span class="cf">return</span> Objects<span class="op">.</span><span class="fu">hash</span><span class="op">(</span>id<span class="op">,</span> name<span class="op">,</span> age<span class="op">);</span></span>
+<span id="cb48-45"><a href="#cb48-45" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-46"><a href="#cb48-46" tabindex="-1"></a></span>
+<span id="cb48-47"><a href="#cb48-47" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb48-48"><a href="#cb48-48" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">toString</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb48-49"><a href="#cb48-49" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;User{&quot;</span> <span class="op">+</span></span>
+<span id="cb48-50"><a href="#cb48-50" tabindex="-1"></a>                <span class="st">&quot;id=&#39;&quot;</span> <span class="op">+</span> id <span class="op">+</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="op">+</span></span>
+<span id="cb48-51"><a href="#cb48-51" tabindex="-1"></a>                <span class="st">&quot;, name=&#39;&quot;</span> <span class="op">+</span> name <span class="op">+</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="op">+</span></span>
+<span id="cb48-52"><a href="#cb48-52" tabindex="-1"></a>                <span class="st">&quot;, age=&quot;</span> <span class="op">+</span> age <span class="op">+</span></span>
+<span id="cb48-53"><a href="#cb48-53" tabindex="-1"></a>                <span class="ch">&#39;}&#39;</span><span class="op">;</span></span>
+<span id="cb48-54"><a href="#cb48-54" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb48-55"><a href="#cb48-55" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
 <div id="configurationbean" class="section level2">
