@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-16" />
+        <meta name="date" content="2025-02-25" />
     
     <title>Java Learning</title>
 
@@ -1816,8 +1816,7 @@ margin-left: 0 !important;
       <ul>
       <li><a href="#primitive-data-type" id="toc-primitive-data-type">Primitive data type</a></li>
       <li><a href="#array" id="toc-array">Array</a></li>
-      <li><a href="#arraylist" id="toc-arraylist">ArrayList</a></li>
-      <li><a href="#linkedlist" id="toc-linkedlist">LinkedList</a></li>
+      <li><a href="#arraylist和linkedlist" id="toc-arraylist和linkedlist"><code>ArrayList</code>和<code>LinkedList</code></a></li>
       <li><a href="#string" id="toc-string">String</a></li>
       <li><a href="#stringbuilder" id="toc-stringbuilder">StringBuilder</a></li>
       <li><a href="#integer" id="toc-integer">Integer</a></li>
@@ -1862,7 +1861,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-16</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-25</p>
           </div>
    </div>
      
@@ -1999,37 +1998,61 @@ char
 </div>
 <div id="array" class="section level2">
 <h2>Array</h2>
-<p><code>int[]</code>, <code>String[]</code></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">// 数组的创建</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> stringArr <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>size<span class="op">];</span>  <span class="co">// 创建一个固定大小的String数组，一旦创建，长度不可变。</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> stringArr <span class="op">=</span> <span class="op">{</span><span class="st">&quot;abc&quot;</span><span class="op">,</span> <span class="st">&quot;ABC&quot;</span><span class="op">};</span>  <span class="co">// 创建数组的同时初始化数组中元素</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="dt">int</span><span class="op">[][]</span> intArr <span class="op">=</span> <span class="op">{{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">},</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">6</span><span class="op">}};</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">// 数组的拷贝</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> newStringArr <span class="op">=</span> stringArr<span class="op">;</span>  <span class="co">// 这是共享地址</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> newStringArr <span class="op">=</span> <span class="bu">Arrays</span><span class="op">.</span><span class="fu">copyOf</span><span class="op">(</span>stringArr<span class="op">,</span> stringArr<span class="op">.</span><span class="fu">length</span><span class="op">);</span>  <span class="co">// 重新创建一个新的数组实例，其中第二个参数为新数组长度。</span></span>
+<ul>
+<li><p>Java语言原生支持。</p></li>
+<li><p>声明时需要指定长度，长度固定，使用连续的内存空间。</p></li>
+<li><p>可以存储基本数据类型（如<code>int</code>，<code>char</code>）以及对象（如<code>Integer</code>、<code>String</code>）</p></li>
+</ul>
+<p>代码样例：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ArrayAnalysis <span class="op">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>        <span class="co">// 声明Array</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>        <span class="dt">int</span><span class="op">[]</span> intArray <span class="op">=</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">9</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">8</span><span class="op">};</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> stringArray <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span><span class="dv">10</span><span class="op">];</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>        <span class="dt">int</span><span class="op">[][]</span> intArray2 <span class="op">=</span> <span class="op">{{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">},</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">6</span><span class="op">},</span> <span class="op">{</span><span class="dv">7</span><span class="op">,</span> <span class="dv">8</span><span class="op">,</span> <span class="dv">9</span><span class="op">}};</span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">// 数组排序</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="dt">int</span><span class="op">[]</span> intArr <span class="op">=</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">6</span><span class="op">};</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="bu">Arrays</span><span class="op">.</span><span class="fu">sort</span><span class="op">(</span>intArr<span class="op">);</span>  <span class="co">// Arrays.sort()方法基于快速排序。</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">// 打印数组</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">deepToString</span><span class="op">(</span>intArr<span class="op">));</span>  <span class="co">// [[1, 2, 3], [4, 5, 6]]</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">toString</span><span class="op">(</span>stringArr<span class="op">));</span>  <span class="co">// [abc, ABC]</span></span></code></pre></div>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>        <span class="co">// 打印Array</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>intArray<span class="op">);</span>  <span class="co">// 打印出intArray的地址</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">toString</span><span class="op">(</span>intArray<span class="op">));</span>  <span class="co">// 打印出inArray的内容</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">deepToString</span><span class="op">(</span>intArray2<span class="op">));</span>  <span class="co">// 打印出intArray2的内容</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>intArray<span class="op">[</span><span class="dv">1</span><span class="op">]);</span>  <span class="co">// 打印出索引为1处的元素</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>        <span class="co">// 排序Array</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>        <span class="bu">Arrays</span><span class="op">.</span><span class="fu">sort</span><span class="op">(</span>intArray<span class="op">);</span>  <span class="co">// 这行代码会直接修改intArray，返回值为void</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>        <span class="co">// 拷贝Array</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>        <span class="dt">int</span><span class="op">[][]</span> newIntArray2 <span class="op">=</span> <span class="bu">Arrays</span><span class="op">.</span><span class="fu">copyOf</span><span class="op">(</span>intArray2<span class="op">,</span> intArray2<span class="op">.</span><span class="fu">length</span><span class="op">);</span>  <span class="co">// 第二个参数的意思是截取Array中前intArray2.length个元素</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">deepToString</span><span class="op">(</span>newIntArray2<span class="op">));</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
-<div id="arraylist" class="section level2">
-<h2>ArrayList</h2>
+<div id="arraylist和linkedlist" class="section level2">
+<h2><code>ArrayList</code>和<code>LinkedList</code></h2>
+<ul>
+<li><p>属于<code>java.util</code>包</p></li>
+<li><p><code>ArrayList</code>具有动态扩容机制，当元素数量超过容量时会自动寻找新的连续内存空间并自动扩容1.5倍。LinkedList采用链表存储，便于元素的平频繁插入，但相比于<code>ArrayList</code>，它的元素查找速度较慢为<span class="math inline">\(O(n)\)</span>。</p></li>
+<li><p>仅能存储对象，不能存储基本数据类型。由于自动装箱机制，表面上看它们似乎也能直接存储基本数据类型。</p></li>
+<li><p>具有丰富的方法可供调用。</p></li>
+</ul>
+<p>另外，<code>ArrayList</code>由于是“整块”，所以GC效率比<code>LinkedList</code>更高。</p>
+<p>代码样例：</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">ArrayList</span><span class="op">;</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">// 创建长度可变数组</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> nameList <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>nameList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;Tom&quot;</span><span class="op">);</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>nameList<span class="op">.</span><span class="fu">get</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>nameList<span class="op">.</span><span class="fu">set</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span> <span class="st">&quot;Alice&quot;</span><span class="op">);</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>nameList<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span></code></pre></div>
-</div>
-<div id="linkedlist" class="section level2">
-<h2>LinkedList</h2>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ArrayListAnalysis <span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">Integer</span><span class="op">&gt;</span> integerList <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">asList</span><span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">6</span><span class="op">));</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">Integer</span><span class="op">&gt;</span> newIntegerList <span class="op">=</span> integerList<span class="op">;</span>  <span class="co">// 这里是直接传递引用</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>integerList<span class="op">);</span>  <span class="co">// 由于ArrayList类重写了Object类中的toString()方法，所以这里直接打印出元素</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>        integerList<span class="op">.</span><span class="fu">set</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span> <span class="dv">100</span><span class="op">);</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>        integerList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="dv">99</span><span class="op">);</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>        integerList<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>integerList<span class="op">.</span><span class="fu">get</span><span class="op">(</span>integerList<span class="op">.</span><span class="fu">size</span><span class="op">()</span> <span class="op">-</span> <span class="dv">1</span><span class="op">));</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>newIntegerList<span class="op">);</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><code>LinkedList</code>和<code>ArrayList</code>都实现了<code>List</code>接口，因此拥有完全相同的方法。</p>
 <p><code>ArrayList</code>占用的是连续空间，如果连续空间不足，则会新找一个足够的连续空间新创建一个<code>ArrayList</code>并删除原有的<code>ArrayList</code>。<code>ArrayList</code>的优势在于获取数据的速度更快。</p>
 <p><code>LinkedList</code>是链表的存储方式。<code>LinkedList</code>的优势在于善于存储频繁被修改的数据。</p>
