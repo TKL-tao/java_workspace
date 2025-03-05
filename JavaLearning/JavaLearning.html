@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-03-03" />
+        <meta name="date" content="2025-03-05" />
     
     <title>Java Learning</title>
 
@@ -1856,7 +1856,7 @@ margin-left: 0 !important;
       <ul>
       <li><a href="#jvm-jdk-jre-字节码" id="toc-jvm-jdk-jre-字节码">JVM,
       JDK, JRE, 字节码</a></li>
-      <li><a href="#移位运算符" id="toc-移位运算符">移位运算符</a></li>
+      <li><a href="#位移运算符" id="toc-位移运算符">位移运算符</a></li>
       <li><a href="#java知识点记录" id="toc-java知识点记录">Java知识点记录</a></li>
       </ul></li>
       </ul>
@@ -1864,7 +1864,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-03</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-05</p>
           </div>
    </div>
      
@@ -2215,7 +2215,9 @@ are replaced by <em>newChar</em>.</p>
 <li><p><code>.toLowerCase()</code></p></li>
 <li><p><code>.toUpperCase()</code></p></li>
 <li><p><code>.toCharArray()</code></p></li>
+<li><p><code>.hashCode()</code></p></li>
 </ul>
+<p>计算一个字符串的Hash值，返回<code>int</code>类型</p>
 </div>
 </div>
 <div id="stringbuilder" class="section level2">
@@ -2866,16 +2868,39 @@ methods unique to the subclass.</p>
 <p>javac编译器负责Java源代码到字节码的转换.java -&gt; .class</p>
 <p>解释器或JIT负责将字节码转换为机器码。</p>
 </div>
-<div id="移位运算符" class="section level2">
-<h2>移位运算符</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 101</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(-</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 11111111111111111111111111111011</span></span></code></pre></div>
-<p><span class="math display">\[5 &lt;&lt; 3 = 5\times2^3 =
-40\]</span></p>
+<div id="位移运算符" class="section level2">
+<h2>位移运算符</h2>
+<div id="二进制转化" class="section level3">
+<h3>二进制转化</h3>
+<p>将<code>int</code>类型转化为二进制。</p>
+<p>先计算原码，再计算反码（正数反码不变，负数除符号位其余位取反），最后计算补码（正数补码+0，负数在反码的基础上+1）</p>
+<div id="样例15的二进制" class="section level4">
+<h4>样例1：5的二进制</h4>
+<div class="sourceCode" id="cb29"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 101</span></span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>原码：00000000,00000000,00000000,00000101</li>
+<li>反码：00000000,00000000,00000000,00000101</li>
+<li>补码：00000000,00000000,00000000,00000101 （二进制转化结果）</li>
+</ol>
+</div>
+<div id="样例2-5的二进制" class="section level4">
+<h4>样例2：-5的二进制</h4>
+<div class="sourceCode" id="cb30"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(-</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 11111111,11111111,11111111,11111011</span></span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>原码：10000000,00000000,00000000,00000101</li>
+<li>反码：11111111,11111111,11111111,11111010</li>
+<li>补码：11111111,11111111,11111111,11111011（二进制转化结果）</li>
+</ol>
+</div>
+</div>
+<div id="位移运算" class="section level3">
+<h3>位移运算</h3>
+<p><span class="math display">\[5&lt;&lt;3=5\times2^3=40\]</span> <span class="math display">\[-5&lt;&lt;3=-5\times2^3=-40\]</span></p>
 <p><span class="math inline">\(&lt;&lt;\)</span>为左移运算符，高位丢弃，低位补零。</p>
 <p><span class="math inline">\(&gt;&gt;\)</span>为右移运算符，高位补符号位，低位丢弃。</p>
 <p><span class="math inline">\(&gt;&gt;&gt;\)</span>无符号右移，忽略符号位，空位以0补齐。</p>
 <p>例：对int类型左移40位的处理过程为：40%32=8，即左移8位。</p>
+</div>
 </div>
 <div id="java知识点记录" class="section level2">
 <h2>Java知识点记录</h2>
