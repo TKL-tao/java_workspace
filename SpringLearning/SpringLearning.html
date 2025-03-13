@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-24" />
+        <meta name="date" content="2025-03-13" />
     
     <title>Spring Learning</title>
 
@@ -1869,13 +1869,16 @@ margin-left: 0 !important;
       <li><a href="#data" id="toc-data"><code>@Data</code></a></li>
       <li><a href="#configurationbean" id="toc-configurationbean"><code>@Configuration</code>、<code>@Bean</code></a></li>
       <li><a href="#autowired" id="toc-autowired"><code>@Autowired</code></a></li>
+      <li><a href="#springbootapplication" id="toc-springbootapplication"><span class="citation">@SpringBootApplication</span></a></li>
+      <li><a href="#enablescheduling" id="toc-enablescheduling"><span class="citation">@EnableScheduling</span></a></li>
+      <li><a href="#enableasync" id="toc-enableasync"><span class="citation">@EnableAsync</span></a></li>
       </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-24</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-13</p>
           </div>
    </div>
      
@@ -3038,6 +3041,44 @@ Tutorials</a></p>
 <div id="autowired" class="section level2">
 <h2><code>@Autowired</code></h2>
 <p><code>@Autowired</code>注解的字段会被自动注入Spring容器中已有的<strong>Bean</strong>。</p>
+</div>
+<div id="springbootapplication" class="section level2">
+<h2><span class="citation">@SpringBootApplication</span></h2>
+<p><code>@SpringBootApplication</code> = <code>@Configuration</code> +
+<code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code></p>
+<ul>
+<li><p><code>@EnableAutoConfiguration</code>：启用Spring-boot的自动配置机制。例如项目中如果引入了spring-boot-starter-data-mongodb，那么Spring
+会自动配置 MongoDB 的连接。</p></li>
+<li><p><code>@ComponentScan</code>：启用组件扫描，自动发现并注册Bean。它会自动扫描被注解类所在包及其子包的组件（<span class="citation">@Component</span>、<span class="citation">@Service</span>、<span class="citation">@Controller等</span>）</p></li>
+</ul>
+<p>案例分析：</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">tencent</span><span class="op">.</span><span class="im">supersonic</span><span class="op">;</span></span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">SpringApplication</span><span class="op">;</span></span>
+<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">SpringBootApplication</span><span class="op">;</span></span>
+<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">data</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoDataAutoConfiguration</span><span class="op">;</span></span>
+<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoAutoConfiguration</span><span class="op">;</span></span>
+<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableAsync</span><span class="op">;</span></span>
+<span id="cb49-8"><a href="#cb49-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableScheduling</span><span class="op">;</span></span>
+<span id="cb49-9"><a href="#cb49-9" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" tabindex="-1"></a><span class="at">@SpringBootApplication</span><span class="op">(</span>scanBasePackages <span class="op">=</span> <span class="op">{</span><span class="st">&quot;com.tencent.supersonic&quot;</span><span class="op">,</span> <span class="st">&quot;dev.langchain4j&quot;</span><span class="op">},</span></span>
+<span id="cb49-11"><a href="#cb49-11" tabindex="-1"></a>        exclude <span class="op">=</span> <span class="op">{</span>MongoAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">,</span> MongoDataAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">})</span></span>
+<span id="cb49-12"><a href="#cb49-12" tabindex="-1"></a><span class="at">@EnableScheduling</span></span>
+<span id="cb49-13"><a href="#cb49-13" tabindex="-1"></a><span class="at">@EnableAsync</span></span>
+<span id="cb49-14"><a href="#cb49-14" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> StandaloneLauncher <span class="op">{</span></span>
+<span id="cb49-15"><a href="#cb49-15" tabindex="-1"></a></span>
+<span id="cb49-16"><a href="#cb49-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb49-17"><a href="#cb49-17" tabindex="-1"></a>        SpringApplication<span class="op">.</span><span class="fu">run</span><span class="op">(</span>StandaloneLauncher<span class="op">.</span><span class="fu">class</span><span class="op">,</span> args<span class="op">);</span></span>
+<span id="cb49-18"><a href="#cb49-18" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb49-19"><a href="#cb49-19" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="enablescheduling" class="section level2">
+<h2><span class="citation">@EnableScheduling</span></h2>
+<p>启用Spring的定时任务，表明该应用需要执行定时任务（如数据同步、缓存刷新等）。</p>
+</div>
+<div id="enableasync" class="section level2">
+<h2><span class="citation">@EnableAsync</span></h2>
+<p>启用Spring的异步方法执行功能，表明该应用需要处理异步任务（如邮件发送、文件处理等），提高系统吞吐量。</p>
 </div>
 </div>
 </div>
