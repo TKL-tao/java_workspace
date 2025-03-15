@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-01-08" />
+        <meta name="date" content="2025-03-15" />
     
     <title>Elasticsearch Learning</title>
 
@@ -1813,6 +1813,7 @@ margin-left: 0 !important;
             <li><a href="#安装配置elasticsearch" id="toc-安装配置elasticsearch">安装配置Elasticsearch</a>
             <ul>
             <li><a href="#elasticsearch安装" id="toc-elasticsearch安装">Elasticsearch安装</a></li>
+            <li><a href="#为elasticsearch配置用户密码" id="toc-为elasticsearch配置用户密码">为Elasticsearch配置用户密码</a></li>
             <li><a href="#elasticsearch启动和停止" id="toc-elasticsearch启动和停止">Elasticsearch启动和停止</a></li>
             <li><a href="#分词器安装" id="toc-分词器安装">分词器安装</a></li>
             <li><a href="#kibana安装和配置" id="toc-kibana安装和配置">Kibana安装和配置</a></li>
@@ -1850,7 +1851,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-01-08</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-15</p>
            
 
    
@@ -1904,7 +1905,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 </script>
 <p>学习参考文档：<a href="https://www.cnblogs.com/buchizicai/p/17093719.html">博客园-不吃紫菜</a></p>
 <p>正向索引、倒排索引</p>
-<p>Elasticsearch与MySQL是同一层次的概念。</p>
 <p>Kibana：数据可视化</p>
 <p>Elasticsearch：存储、计算、搜索数据。</p>
 <div id="elasticsearch介绍" class="section level1">
@@ -1915,6 +1915,7 @@ Stack（ELK）。应用于日志数据分析、实时监控。</p></li>
 <li><p>Elasticsearch基于<a href="https://lucene.apache.org/">Lucene</a>，Lucene是基于Java语言的搜索引擎类库。</p></li>
 <li><p>Elasticsearch是面向文档存储的。</p></li>
 </ul>
+<p>在ES中，索引（index）是基本的数据存储单元。</p>
 </div>
 <div id="安装配置elasticsearch" class="section level1">
 <h1>安装配置Elasticsearch</h1>
@@ -1925,8 +1926,9 @@ Stack（ELK）。应用于日志数据分析、实时监控。</p></li>
 </ol>
 <pre class="bash"><code>wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.3-linux-x86_64.tar.gz</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>在新建用户zt的.profile文件中新增下述内容以配置环境变量。</li>
+<li>在新建用户zt的.profile文件中追加下述内容以配置环境变量。</li>
 </ol>
+<pre class="sh"><code>vim /home/zt/.profile</code></pre>
 <pre class="sh"><code>export ES_JAVA_HOME=/home/zt/Elasticsearch814/elasticsearch-8.14.3/jdk/
 export ES_HOME=/home/zt/Elasticsearch814/elasticsearch-8.14.3</code></pre>
 <p>执行<code>source .profile</code></p>
@@ -1939,12 +1941,23 @@ export ES_HOME=/home/zt/Elasticsearch814/elasticsearch-8.14.3</code></pre>
 network.host: 0.0.0.0
 # 指定为单节点，绕过引导检查，设置为开发者模式
 discovery.type: single-node
-# 关闭security安全认证
-xpack.security.enabled: false</code></pre>
+# 开启security安全认证
+xpack.security.enabled: true</code></pre>
 <pre class="bash"><code>vim $ES_HOME/config/jvm.options</code></pre>
 <p>修改下述内容：我设成了1G</p>
 <pre class="options"><code>-Xms1g
 -Xmx1g</code></pre>
+</div>
+<div id="为elasticsearch配置用户密码" class="section level2">
+<h2>为Elasticsearch配置用户密码</h2>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/8.14/reset-password.html">参考连接</a></p>
+<p>在保持ES启动的情况下使用下述所有命令。</p>
+<pre class="bash"><code># 查询ES中现有的用户
+$ES_HOME/bin/elasticsearch-users list
+# 新建ES用户zt并赋予超级用户权限，然后设置密码
+$ES_HOME/bin/elasticsearch-users useradd zt -r superuser</code></pre>
+<p>但是通过上述命令自建的用户zt会导致连接Kibana失败。所以还是通过下述命令为系统用户<code>apm_system</code>、<code>kibana_system</code>、<code>kibana</code>、<code>logstash_system</code>、<code>beats_system</code>、<code>remote_monitoring_user</code>、<code>elastic</code>生成密码。但是这些密码似乎只会在console中被打印出一次，所以应该妥善保存。</p>
+<pre class="bash"><code>$ES_HOME/bin/elasticsearch-setup-passwords auto</code></pre>
 </div>
 <div id="elasticsearch启动和停止" class="section level2">
 <h2>Elasticsearch启动和停止</h2>
@@ -1978,7 +1991,10 @@ unzip elasticsearch-analysis-ik-8.14.3.zip -d $ES_HOME/plugins/elasticsearch-ana
 <p>修改下述内容：</p>
 <pre class="yml"><code>server.host: &quot;0.0.0.0&quot;
 i18n.locale: &quot;zh-CN&quot;
-elasticsearch.hosts: [&quot;http://192.168.0.45:9200&quot;]</code></pre>
+elasticsearch.hosts: [&quot;http://192.168.0.45:9200&quot;]
+elasticsearch.username: &quot;kibana_system&quot;
+elasticsearch.password: &quot;kibana_system的密码&quot;</code></pre>
+<p>配置后上述并启动kibana后，直接使用自建用户zt及其密码就可以登录Kibana了。</p>
 </div>
 <div id="启动停止" class="section level3">
 <h3>启动停止</h3>
