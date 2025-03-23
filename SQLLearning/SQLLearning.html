@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tom Zou" />
     
-        <meta name="date" content="2025-03-15" />
+        <meta name="date" content="2025-03-23" />
     
     <title>MySQL Learning</title>
 
@@ -1905,7 +1905,12 @@ margin-left: 0 !important;
       <li><a href="#mvcc机制流程" id="toc-mvcc机制流程">MVCC机制流程</a></li>
       </ul></li>
       <li><a href="#个别问题说明" id="toc-个别问题说明">个别问题说明</a></li>
-      <li><a href="#窗口函数" id="toc-窗口函数">窗口函数</a></li>
+      <li><a href="#窗口函数" id="toc-窗口函数">窗口函数</a>
+      <ul>
+      <li><a href="#lag" id="toc-lag">LAG()</a></li>
+      <li><a href="#dense_rank" id="toc-dense_rank">DENSE_RANK()</a></li>
+      <li><a href="#max" id="toc-max">MAX()</a></li>
+      </ul></li>
       <li><a href="#测试表" id="toc-测试表">测试表</a>
       <ul>
       <li><a href="#student表" id="toc-student表"><code>student</code>表</a></li>
@@ -1916,7 +1921,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tom
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-15</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-23</p>
           </div>
    </div>
      
@@ -2989,6 +2994,8 @@ and <code>UNKNOWN</code> = <code>UNKNOWN</code>；<code>FALSE</code> and
 </div>
 <div id="窗口函数" class="section level1">
 <h1>窗口函数</h1>
+<div id="lag" class="section level2">
+<h2>LAG()</h2>
 <p><a href="https://leetcode.cn/problems/consecutive-numbers/description/">Leetcode
 SQL 180题</a></p>
 <p>求连续出现至少三次的数字。</p>
@@ -3008,37 +3015,52 @@ id 是一个自增列。</code></pre>
 <span id="cb72-5"><a href="#cb72-5" tabindex="-1"></a><span class="kw">FROM</span> myWindowFunc</span>
 <span id="cb72-6"><a href="#cb72-6" tabindex="-1"></a><span class="kw">WHERE</span> num<span class="op">=</span>prev_num1 <span class="kw">AND</span> num<span class="op">=</span>prev_num2;</span></code></pre></div>
 </div>
+<div id="dense_rank" class="section level2">
+<h2>DENSE_RANK()</h2>
+<p>生成一个列：表中的<em>score</em>字段的<strong>密度秩</strong>。</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="kw">SELECT</span> score, <span class="fu">DENSE_RANK</span>() <span class="kw">OVER</span>(<span class="kw">ORDER</span> <span class="kw">BY</span> score <span class="kw">DESC</span>) <span class="kw">AS</span> `rank`</span>
+<span id="cb73-2"><a href="#cb73-2" tabindex="-1"></a><span class="kw">FROM</span> Scores</span>
+<span id="cb73-3"><a href="#cb73-3" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> score <span class="kw">DESC</span>;</span></code></pre></div>
+<p>如果<em>score</em>字段中只有一个<code>NULL</code>值，那么<code>DENSE_RANK()</code>会返回一个秩1，而不是返回一个<code>NULL</code>。</p>
+</div>
+<div id="max" class="section level2">
+<h2>MAX()</h2>
+<p>生成一个列：每个部门的所有员工的工资最大值。</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span>, <span class="fu">SUM</span>(salary) <span class="kw">OVER</span>(<span class="kw">PARTITION</span> <span class="kw">BY</span> department) <span class="kw">AS</span> maxSalaryPerDepartment</span>
+<span id="cb74-2"><a href="#cb74-2" tabindex="-1"></a><span class="kw">FROM</span> mytable;</span></code></pre></div>
+</div>
+</div>
 <div id="测试表" class="section level1 tabset">
 <h1 class="tabset">测试表</h1>
 <div id="student表" class="section level2">
 <h2><code>student</code>表</h2>
-<div class="sourceCode" id="cb73"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `student` (<span class="kw">id</span> BIGINT <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTO_INCREMENT, name <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>, sex ENUM(<span class="st">&#39;m&#39;</span>, <span class="st">&#39;f&#39;</span>), phone BIGINT, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), English <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> English<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> English<span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
-<span id="cb73-2"><a href="#cb73-2" tabindex="-1"></a></span>
-<span id="cb73-3"><a href="#cb73-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `student` (name, sex, phone, Chinese, English, Math)</span>
-<span id="cb73-4"><a href="#cb73-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
-<span id="cb73-5"><a href="#cb73-5" tabindex="-1"></a>(<span class="st">&#39;zt&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">15386648422</span>, <span class="fl">90.12</span>, <span class="fl">92.00</span>, <span class="dv">92</span>),</span>
-<span id="cb73-6"><a href="#cb73-6" tabindex="-1"></a>(<span class="st">&#39;Lucas&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">19833718892</span>, <span class="dv">100</span>, <span class="fl">60.0</span>, <span class="fl">00.00</span>),</span>
-<span id="cb73-7"><a href="#cb73-7" tabindex="-1"></a>(<span class="st">&#39;Bella&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">19766539910</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
-<span id="cb73-8"><a href="#cb73-8" tabindex="-1"></a>(<span class="st">&#39;Nancy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">13877461178</span>, <span class="fl">60.00</span>, <span class="dv">96</span>, <span class="dv">46</span>),</span>
-<span id="cb73-9"><a href="#cb73-9" tabindex="-1"></a>(<span class="st">&#39;Tom&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">13877461123</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
-<span id="cb73-10"><a href="#cb73-10" tabindex="-1"></a>(<span class="st">&#39;Jack&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="kw">NULL</span>, <span class="dv">41</span>, <span class="dv">29</span>, <span class="dv">99</span>),</span>
-<span id="cb73-11"><a href="#cb73-11" tabindex="-1"></a>(<span class="st">&#39;Lucy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">18622115566</span>,<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `student` (<span class="kw">id</span> BIGINT <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTO_INCREMENT, name <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>, sex ENUM(<span class="st">&#39;m&#39;</span>, <span class="st">&#39;f&#39;</span>), phone BIGINT, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), English <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> English<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> English<span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
+<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a></span>
+<span id="cb75-3"><a href="#cb75-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `student` (name, sex, phone, Chinese, English, Math)</span>
+<span id="cb75-4"><a href="#cb75-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
+<span id="cb75-5"><a href="#cb75-5" tabindex="-1"></a>(<span class="st">&#39;zt&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">15386648422</span>, <span class="fl">90.12</span>, <span class="fl">92.00</span>, <span class="dv">92</span>),</span>
+<span id="cb75-6"><a href="#cb75-6" tabindex="-1"></a>(<span class="st">&#39;Lucas&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">19833718892</span>, <span class="dv">100</span>, <span class="fl">60.0</span>, <span class="fl">00.00</span>),</span>
+<span id="cb75-7"><a href="#cb75-7" tabindex="-1"></a>(<span class="st">&#39;Bella&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">19766539910</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
+<span id="cb75-8"><a href="#cb75-8" tabindex="-1"></a>(<span class="st">&#39;Nancy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">13877461178</span>, <span class="fl">60.00</span>, <span class="dv">96</span>, <span class="dv">46</span>),</span>
+<span id="cb75-9"><a href="#cb75-9" tabindex="-1"></a>(<span class="st">&#39;Tom&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">13877461123</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
+<span id="cb75-10"><a href="#cb75-10" tabindex="-1"></a>(<span class="st">&#39;Jack&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="kw">NULL</span>, <span class="dv">41</span>, <span class="dv">29</span>, <span class="dv">99</span>),</span>
+<span id="cb75-11"><a href="#cb75-11" tabindex="-1"></a>(<span class="st">&#39;Lucy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">18622115566</span>,<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>);</span></code></pre></div>
 </div>
 <div id="exam表" class="section level2">
 <h2><code>exam</code>表</h2>
-<div class="sourceCode" id="cb74"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `exam` (<span class="kw">id</span> BIGINT <span class="kw">DEFAULT</span> <span class="dv">7</span>, exam_time <span class="dt">DATE</span>, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> exam_score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
-<span id="cb74-2"><a href="#cb74-2" tabindex="-1"></a></span>
-<span id="cb74-3"><a href="#cb74-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `exam` (exam_time, Chinese, Math)</span>
-<span id="cb74-4"><a href="#cb74-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
-<span id="cb74-5"><a href="#cb74-5" tabindex="-1"></a>(<span class="st">&#39;2024-01-01&#39;</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
-<span id="cb74-6"><a href="#cb74-6" tabindex="-1"></a>(<span class="st">&#39;2024-02-01&#39;</span>, <span class="dv">69</span>, <span class="dv">85</span>),</span>
-<span id="cb74-7"><a href="#cb74-7" tabindex="-1"></a>(<span class="st">&#39;2024-03-11&#39;</span>, <span class="dv">12</span>, <span class="dv">91</span>),</span>
-<span id="cb74-8"><a href="#cb74-8" tabindex="-1"></a>(<span class="st">&#39;2024-04-01&#39;</span>, <span class="dv">54</span>, <span class="dv">54</span>),</span>
-<span id="cb74-9"><a href="#cb74-9" tabindex="-1"></a>(<span class="st">&#39;2024-05-01&#39;</span>, <span class="dv">91</span>, <span class="dv">31</span>),</span>
-<span id="cb74-10"><a href="#cb74-10" tabindex="-1"></a>(<span class="st">&#39;2024-06-21&#39;</span>, <span class="dv">92</span>, <span class="dv">21</span>),</span>
-<span id="cb74-11"><a href="#cb74-11" tabindex="-1"></a>(<span class="st">&#39;2024-07-31&#39;</span>, <span class="dv">89</span>, <span class="dv">100</span>),</span>
-<span id="cb74-12"><a href="#cb74-12" tabindex="-1"></a>(<span class="st">&#39;2024-08-17&#39;</span>, <span class="dv">90</span>, <span class="dv">100</span>),</span>
-<span id="cb74-13"><a href="#cb74-13" tabindex="-1"></a>(<span class="st">&#39;2024-09-18&#39;</span>, <span class="dv">95</span>, <span class="dv">80</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb76-1"><a href="#cb76-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `exam` (<span class="kw">id</span> BIGINT <span class="kw">DEFAULT</span> <span class="dv">7</span>, exam_time <span class="dt">DATE</span>, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> exam_score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
+<span id="cb76-2"><a href="#cb76-2" tabindex="-1"></a></span>
+<span id="cb76-3"><a href="#cb76-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `exam` (exam_time, Chinese, Math)</span>
+<span id="cb76-4"><a href="#cb76-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
+<span id="cb76-5"><a href="#cb76-5" tabindex="-1"></a>(<span class="st">&#39;2024-01-01&#39;</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
+<span id="cb76-6"><a href="#cb76-6" tabindex="-1"></a>(<span class="st">&#39;2024-02-01&#39;</span>, <span class="dv">69</span>, <span class="dv">85</span>),</span>
+<span id="cb76-7"><a href="#cb76-7" tabindex="-1"></a>(<span class="st">&#39;2024-03-11&#39;</span>, <span class="dv">12</span>, <span class="dv">91</span>),</span>
+<span id="cb76-8"><a href="#cb76-8" tabindex="-1"></a>(<span class="st">&#39;2024-04-01&#39;</span>, <span class="dv">54</span>, <span class="dv">54</span>),</span>
+<span id="cb76-9"><a href="#cb76-9" tabindex="-1"></a>(<span class="st">&#39;2024-05-01&#39;</span>, <span class="dv">91</span>, <span class="dv">31</span>),</span>
+<span id="cb76-10"><a href="#cb76-10" tabindex="-1"></a>(<span class="st">&#39;2024-06-21&#39;</span>, <span class="dv">92</span>, <span class="dv">21</span>),</span>
+<span id="cb76-11"><a href="#cb76-11" tabindex="-1"></a>(<span class="st">&#39;2024-07-31&#39;</span>, <span class="dv">89</span>, <span class="dv">100</span>),</span>
+<span id="cb76-12"><a href="#cb76-12" tabindex="-1"></a>(<span class="st">&#39;2024-08-17&#39;</span>, <span class="dv">90</span>, <span class="dv">100</span>),</span>
+<span id="cb76-13"><a href="#cb76-13" tabindex="-1"></a>(<span class="st">&#39;2024-09-18&#39;</span>, <span class="dv">95</span>, <span class="dv">80</span>);</span></code></pre></div>
 </div>
 </div>
 </div>
