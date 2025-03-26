@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-03-13" />
+        <meta name="date" content="2025-03-26" />
     
     <title>Spring Learning</title>
 
@@ -1865,10 +1865,11 @@ margin-left: 0 !important;
       </ul></li>
       <li><a href="#spring注解" id="toc-spring注解">Spring注解</a>
       <ul>
-      <li><a href="#slf4j" id="toc-slf4j"><code>@Slf4j</code></a></li>
-      <li><a href="#data" id="toc-data"><code>@Data</code></a></li>
-      <li><a href="#configurationbean" id="toc-configurationbean"><code>@Configuration</code>、<code>@Bean</code></a></li>
-      <li><a href="#autowired" id="toc-autowired"><code>@Autowired</code></a></li>
+      <li><a href="#slf4j" id="toc-slf4j"><span class="citation">@Slf4j</span></a></li>
+      <li><a href="#data" id="toc-data"><span class="citation">@Data</span></a></li>
+      <li><a href="#builder" id="toc-builder"><span class="citation">@Builder</span></a></li>
+      <li><a href="#configurationbean" id="toc-configurationbean"><span class="citation">@Configuration</span>、<span class="citation">@Bean</span></a></li>
+      <li><a href="#autowired" id="toc-autowired"><span class="citation">@Autowired</span></a></li>
       <li><a href="#springbootapplication" id="toc-springbootapplication"><span class="citation">@SpringBootApplication</span></a></li>
       <li><a href="#enablescheduling" id="toc-enablescheduling"><span class="citation">@EnableScheduling</span></a></li>
       <li><a href="#enableasync" id="toc-enableasync"><span class="citation">@EnableAsync</span></a></li>
@@ -1878,7 +1879,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-13</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-26</p>
           </div>
    </div>
      
@@ -2923,12 +2924,12 @@ Tutorials</a></p>
 <div id="spring注解" class="section level1">
 <h1>Spring注解</h1>
 <div id="slf4j" class="section level2 tabset">
-<h2 class="tabset"><code>@Slf4j</code></h2>
+<h2 class="tabset"><span class="citation">@Slf4j</span></h2>
 <p><code>@Slf4j</code>注解用于自动在一个类中生成一个日志处理对象<code>log</code>，以便于在代码中直接使用<code>log.debug()</code>,
 <code>log.info()</code>, <code>log.error()</code>等方法。</p>
 <p>下述两种代码是完全等价的。</p>
 <div id="使用slf4j注解" class="section level3">
-<h3>使用<code>@Slf4j</code>注解</h3>
+<h3><a href="mailto:使用@Slf4j注解" class="email">使用@Slf4j注解</a></h3>
 <div class="sourceCode" id="cb45"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">extern</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Slf4j</span><span class="op">;</span></span>
 <span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a></span>
 <span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="at">@Slf4j</span></span>
@@ -2939,7 +2940,7 @@ Tutorials</a></p>
 <span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="不使用slf4j注解" class="section level3">
-<h3>不使用<code>@Slf4j</code>注解</h3>
+<h3><a href="mailto:不使用@Slf4j注解" class="email">不使用@Slf4j注解</a></h3>
 <div class="sourceCode" id="cb46"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">Logger</span><span class="op">;</span></span>
 <span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">slf4j</span><span class="op">.</span><span class="im">LoggerFactory</span><span class="op">;</span></span>
 <span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a></span>
@@ -2953,7 +2954,7 @@ Tutorials</a></p>
 </div>
 </div>
 <div id="data" class="section level2 tabset">
-<h2 class="tabset"><code>@Data</code></h2>
+<h2 class="tabset"><span class="citation">@Data</span></h2>
 <p><code>@Data</code>=<code>@Getter</code>+<code>@Setter</code>+<code>@ToString</code>+<code>@EqualsAndHashCode</code>+<code>@RequiredArgsConstructor</code></p>
 <ul>
 <li><p><code>@Getter</code>：为所有字段生成<strong>getter</strong>方法。</p></li>
@@ -2964,7 +2965,7 @@ Tutorials</a></p>
 </ul>
 <p>下述两段代码是等价的。</p>
 <div id="使用data注解" class="section level3">
-<h3>使用<code>@Data</code>注解</h3>
+<h3><a href="mailto:使用@Data注解" class="email">使用@Data注解</a></h3>
 <div class="sourceCode" id="cb47"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">Data</span><span class="op">;</span></span>
 <span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a></span>
 <span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a><span class="at">@Data</span></span>
@@ -2975,7 +2976,7 @@ Tutorials</a></p>
 <span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="不使用data注解" class="section level3">
-<h3>不使用<code>@Data</code>注解</h3>
+<h3><a href="mailto:不使用@Data注解" class="email">不使用@Data注解</a></h3>
 <div class="sourceCode" id="cb48"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Objects</span><span class="op">;</span></span>
 <span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a></span>
 <span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
@@ -3033,13 +3034,53 @@ Tutorials</a></p>
 <span id="cb48-55"><a href="#cb48-55" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
+<div id="builder" class="section level2 tabset">
+<h2 class="tabset"><span class="citation">@Builder</span></h2>
+<p><code>@Builder</code>能快速实现建造者设计模式。</p>
+<div id="类级别builder" class="section level3">
+<h3><a href="mailto:类级别@Builder" class="email">类级别@Builder</a></h3>
+<div class="sourceCode" id="cb49"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">Builder</span><span class="op">;</span></span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a><span class="at">@Builder</span></span>
+<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
+<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> age<span class="op">;</span></span>
+<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> email<span class="op">;</span></span>
+<span id="cb49-8"><a href="#cb49-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a>User user <span class="op">=</span> User<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a>        <span class="op">.</span><span class="fu">name</span><span class="op">(</span><span class="st">&quot;Alice&quot;</span><span class="op">)</span></span>
+<span id="cb50-3"><a href="#cb50-3" tabindex="-1"></a>        <span class="op">.</span><span class="fu">age</span><span class="op">(</span><span class="dv">30</span><span class="op">)</span></span>
+<span id="cb50-4"><a href="#cb50-4" tabindex="-1"></a>        <span class="op">.</span><span class="fu">email</span><span class="op">(</span><span class="st">&quot;alice@example.com&quot;</span><span class="op">)</span></span>
+<span id="cb50-5"><a href="#cb50-5" tabindex="-1"></a>        <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span></code></pre></div>
+</div>
+<div id="方法级别builder" class="section level3">
+<h3><a href="mailto:方法级别@Builder" class="email">方法级别@Builder</a></h3>
+<div class="sourceCode" id="cb51"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">lombok</span><span class="op">.</span><span class="im">Builder</span><span class="op">;</span></span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyClient <span class="op">{</span></span>
+<span id="cb51-4"><a href="#cb51-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb51-5"><a href="#cb51-5" tabindex="-1"></a>    <span class="kw">private</span> OpenAiClient client<span class="op">;</span></span>
+<span id="cb51-6"><a href="#cb51-6" tabindex="-1"></a></span>
+<span id="cb51-7"><a href="#cb51-7" tabindex="-1"></a>    <span class="at">@Builder</span></span>
+<span id="cb51-8"><a href="#cb51-8" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">MyClient</span><span class="op">(</span><span class="bu">String</span> name<span class="op">,</span> <span class="bu">String</span> apiKey<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb51-9"><a href="#cb51-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">name</span> <span class="op">=</span> name<span class="op">;</span></span>
+<span id="cb51-10"><a href="#cb51-10" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">client</span> <span class="op">=</span> OpenAiClient<span class="op">.</span><span class="fu">builder</span><span class="op">().</span><span class="fu">openAiApiKey</span><span class="op">(</span>apiKey<span class="op">).</span><span class="fu">build</span><span class="op">();</span></span>
+<span id="cb51-11"><a href="#cb51-11" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb51-12"><a href="#cb51-12" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a>MyClient myClient <span class="op">=</span> MyClient<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a>        <span class="op">.</span><span class="fu">name</span><span class="op">(</span><span class="st">&quot;Tom&quot;</span><span class="op">)</span></span>
+<span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a>        <span class="op">.</span><span class="fu">apiKey</span><span class="op">(</span><span class="st">&quot;123456&quot;</span><span class="op">)</span></span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a>        <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span></code></pre></div>
+<p><a href="mailto:方法级别的@Builder生成针对所有方法参数的builder" class="email">方法级别的@Builder生成针对所有方法参数的builder</a>。</p>
+</div>
+</div>
 <div id="configurationbean" class="section level2">
-<h2><code>@Configuration</code>、<code>@Bean</code></h2>
+<h2><span class="citation">@Configuration</span>、<span class="citation">@Bean</span></h2>
 <p><code>@Configuration</code>注解的类是配置类，用于定义<strong>Bean</strong>的创建。<code>@Bean</code>注解的方法会被初测到Spring的应用上下文（ApplicationContext）中，可以被<code>@Autowired</code>注入使用。</p>
 <p>带有<code>@Component</code>，<code>@Service</code>，<code>@Repository</code>，<code>@Controller</code>注解的类都会被Spring扫描并注册为<strong>Bean</strong>。</p>
 </div>
 <div id="autowired" class="section level2">
-<h2><code>@Autowired</code></h2>
+<h2><span class="citation">@Autowired</span></h2>
 <p><code>@Autowired</code>注解的字段会被自动注入Spring容器中已有的<strong>Bean</strong>。</p>
 </div>
 <div id="springbootapplication" class="section level2">
@@ -3052,25 +3093,25 @@ Tutorials</a></p>
 <li><p><code>@ComponentScan</code>：启用组件扫描，自动发现并注册Bean。它会自动扫描被注解类所在包及其子包的组件（<span class="citation">@Component</span>、<span class="citation">@Service</span>、<span class="citation">@Controller等</span>）</p></li>
 </ul>
 <p>案例分析：</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">tencent</span><span class="op">.</span><span class="im">supersonic</span><span class="op">;</span></span>
-<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a></span>
-<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">SpringApplication</span><span class="op">;</span></span>
-<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">SpringBootApplication</span><span class="op">;</span></span>
-<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">data</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoDataAutoConfiguration</span><span class="op">;</span></span>
-<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoAutoConfiguration</span><span class="op">;</span></span>
-<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableAsync</span><span class="op">;</span></span>
-<span id="cb49-8"><a href="#cb49-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableScheduling</span><span class="op">;</span></span>
-<span id="cb49-9"><a href="#cb49-9" tabindex="-1"></a></span>
-<span id="cb49-10"><a href="#cb49-10" tabindex="-1"></a><span class="at">@SpringBootApplication</span><span class="op">(</span>scanBasePackages <span class="op">=</span> <span class="op">{</span><span class="st">&quot;com.tencent.supersonic&quot;</span><span class="op">,</span> <span class="st">&quot;dev.langchain4j&quot;</span><span class="op">},</span></span>
-<span id="cb49-11"><a href="#cb49-11" tabindex="-1"></a>        exclude <span class="op">=</span> <span class="op">{</span>MongoAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">,</span> MongoDataAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">})</span></span>
-<span id="cb49-12"><a href="#cb49-12" tabindex="-1"></a><span class="at">@EnableScheduling</span></span>
-<span id="cb49-13"><a href="#cb49-13" tabindex="-1"></a><span class="at">@EnableAsync</span></span>
-<span id="cb49-14"><a href="#cb49-14" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> StandaloneLauncher <span class="op">{</span></span>
-<span id="cb49-15"><a href="#cb49-15" tabindex="-1"></a></span>
-<span id="cb49-16"><a href="#cb49-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb49-17"><a href="#cb49-17" tabindex="-1"></a>        SpringApplication<span class="op">.</span><span class="fu">run</span><span class="op">(</span>StandaloneLauncher<span class="op">.</span><span class="fu">class</span><span class="op">,</span> args<span class="op">);</span></span>
-<span id="cb49-18"><a href="#cb49-18" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb49-19"><a href="#cb49-19" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">tencent</span><span class="op">.</span><span class="im">supersonic</span><span class="op">;</span></span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">SpringApplication</span><span class="op">;</span></span>
+<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">SpringBootApplication</span><span class="op">;</span></span>
+<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">data</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoDataAutoConfiguration</span><span class="op">;</span></span>
+<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoAutoConfiguration</span><span class="op">;</span></span>
+<span id="cb53-7"><a href="#cb53-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableAsync</span><span class="op">;</span></span>
+<span id="cb53-8"><a href="#cb53-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableScheduling</span><span class="op">;</span></span>
+<span id="cb53-9"><a href="#cb53-9" tabindex="-1"></a></span>
+<span id="cb53-10"><a href="#cb53-10" tabindex="-1"></a><span class="at">@SpringBootApplication</span><span class="op">(</span>scanBasePackages <span class="op">=</span> <span class="op">{</span><span class="st">&quot;com.tencent.supersonic&quot;</span><span class="op">,</span> <span class="st">&quot;dev.langchain4j&quot;</span><span class="op">},</span></span>
+<span id="cb53-11"><a href="#cb53-11" tabindex="-1"></a>        exclude <span class="op">=</span> <span class="op">{</span>MongoAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">,</span> MongoDataAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">})</span></span>
+<span id="cb53-12"><a href="#cb53-12" tabindex="-1"></a><span class="at">@EnableScheduling</span></span>
+<span id="cb53-13"><a href="#cb53-13" tabindex="-1"></a><span class="at">@EnableAsync</span></span>
+<span id="cb53-14"><a href="#cb53-14" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> StandaloneLauncher <span class="op">{</span></span>
+<span id="cb53-15"><a href="#cb53-15" tabindex="-1"></a></span>
+<span id="cb53-16"><a href="#cb53-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb53-17"><a href="#cb53-17" tabindex="-1"></a>        SpringApplication<span class="op">.</span><span class="fu">run</span><span class="op">(</span>StandaloneLauncher<span class="op">.</span><span class="fu">class</span><span class="op">,</span> args<span class="op">);</span></span>
+<span id="cb53-18"><a href="#cb53-18" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb53-19"><a href="#cb53-19" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="enablescheduling" class="section level2">
 <h2><span class="citation">@EnableScheduling</span></h2>

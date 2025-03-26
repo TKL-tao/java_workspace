@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-03-13" />
+        <meta name="date" content="2025-03-26" />
     
     <title>Java Learning</title>
 
@@ -1865,7 +1865,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-13</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-26</p>
           </div>
    </div>
      
@@ -2959,9 +2959,27 @@ methods unique to the subclass.</p>
 <li>补码：11111111,11111111,11111111,11111011（二进制转化结果）</li>
 </ol>
 </div>
+<div id="样例3interger.min_value的二进制" class="section level4">
+<h4>样例3：Interger.MIN_VALUE的二进制</h4>
+<p><span class="math display">\[\text{Integer.MIN_VALUE}=-2^{31}\]</span>
+由于除开符号位外的另外31位最大只能表示到<span class="math inline">\(2^{31}-1\)</span>，因此无法用原码表示Integer.MIN_VALUE。</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="bu">Integer</span><span class="op">.</span><span class="fu">MIN_VALUE</span><span class="op">);</span>  <span class="co">// 10000000000000000000000000000000</span></span></code></pre></div>
+<p>Integer.MIN_VALUE是补码系统的特殊值，直接构造它的补码：10000000,00000000,00000000,00000000</p>
+<p>因此在Java中<span class="math inline">\(\text{Integer.MIN_VALUE}\times2=\text{Integer.MIN_VALUE}&lt;&lt;1=0\)</span>！</p>
+</div>
+<div id="样例4interger.min_value1的二进制" class="section level4">
+<h4>样例4：Interger.MIN_VALUE+1的二进制</h4>
+<div class="sourceCode" id="cb36"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="bu">Integer</span><span class="op">.</span><span class="fu">MIN_VALUE</span> <span class="op">+</span> <span class="dv">1</span><span class="op">);</span>  <span class="co">// 10000000000000000000000000000001</span></span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>原码：11111111,11111111,11111111,11111111</li>
+<li>反码：10000000,00000000,00000000,00000000</li>
+<li>补码：10000000,00000000,00000000,00000001</li>
+</ol>
+</div>
 </div>
 <div id="位移运算" class="section level3">
 <h3>位移运算</h3>
+<p>位移运算是基于补码的位移。</p>
 <p><span class="math display">\[5&lt;&lt;3=5\times2^3=40\]</span> <span class="math display">\[-5&lt;&lt;3=-5\times2^3=-40\]</span></p>
 <p><span class="math inline">\(&lt;&lt;\)</span>为左移运算符，高位丢弃，低位补零。</p>
 <p><span class="math inline">\(&gt;&gt;\)</span>为右移运算符，高位补符号位，低位丢弃。</p>
