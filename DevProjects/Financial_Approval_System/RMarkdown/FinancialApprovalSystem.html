@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-02-20" />
+        <meta name="date" content="2025-03-28" />
     
     <title>Financial Approval System</title>
 
@@ -1864,7 +1864,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-02-20</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-28</p>
            
 
    
@@ -2427,7 +2427,8 @@ Store，应用数据存储层)：为特定用户定制数据视图和数据集�
 <div id="miniconda环境搭建" class="section level2">
 <h2>miniconda环境搭建</h2>
 <p>这里尝试在我的Linux上安装miniconda。<a href="https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/">清华安装miniconda镜像</a></p>
-<pre class="bash"><code>bash Miniconda3-py39_25.1.1-1-Linux-x86_64.sh</code></pre>
+<pre class="bash"><code>wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py39_25.1.1-1-Linux-x86_64.sh
+bash Miniconda3-py39_25.1.1-1-Linux-x86_64.sh</code></pre>
 <p>之后按照提示安装miniconda到我指定的位置<code>/opt/miniconda3</code>。</p>
 <p>之后执行<code>source ~/.bashrc</code>就可以启动miniconda环境了。应该能够看到命令行最左边的<strong>(bash)</strong>标识。</p>
 <ul>
@@ -2438,6 +2439,8 @@ Store，应用数据存储层)：为特定用户定制数据视图和数据集�
 <li><p>激活一个python环境：<code>conda activate env_name</code></p></li>
 <li><p>查询现有的所有conda环境：<code>coda info --envs</code></p></li>
 </ul>
+<p>在新建python环境时使用华为云镜像提速：</p>
+<pre class="bash"><code>conda create --name superset python==3.8.16 -y -c https://mirrors.huaweicloud.com/anaconda/pkgs/main/ -c https://mirrors.huaweicloud.com/anaconda/pkgs/r/ -c https://mirrors.huaweicloud.com/anaconda/pkgs/msys2/</code></pre>
 </div>
 <div id="安装部署" class="section level2">
 <h2>安装部署</h2>
