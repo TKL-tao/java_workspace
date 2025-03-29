@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tom Zou" />
     
-        <meta name="date" content="2025-03-23" />
+        <meta name="date" content="2025-03-29" />
     
     <title>MySQL Learning</title>
 
@@ -1921,7 +1921,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tom
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-23</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-29</p>
           </div>
    </div>
      
@@ -2269,8 +2269,18 @@ size\in\{0,\cdots,255(2^8-1)\}\)</span>
 YYYY-mm-dd
 </td>
 </tr>
+<tr>
+<td style="text-align:center;">
+<span class="math inline">\(\text{DECIMAL(M, N)}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(M\in\{1,\cdots,65(2^6+1)\},
+D\in\{1,\cdots,30\}\text{且} D\leq M\)</span>
+</td>
+</tr>
 </tbody>
 </table>
+<p><code>CHAR</code>创建时分配固定长度的空间；<code>VARCHAR</code>创建时根据实际存储值的大小动态分配空间。</p>
 </div>
 <div id="insert" class="section level1">
 <h1>INSERT</h1>
