@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-03-26" />
+        <meta name="date" content="2025-03-31" />
     
     <title>Java Learning</title>
 
@@ -1833,6 +1833,7 @@ margin-left: 0 !important;
       <li><a href="#common-used-class" id="toc-common-used-class">Common
       Used Class</a>
       <ul>
+      <li><a href="#object" id="toc-object">Object</a></li>
       <li><a href="#arrays" id="toc-arrays">Arrays</a></li>
       <li><a href="#arraylist-and-linkedlist" id="toc-arraylist-and-linkedlist">ArrayList and
       LinkedList</a></li>
@@ -1842,9 +1843,10 @@ margin-left: 0 !important;
       </ul></li>
       <li><a href="#java-polymorphism" id="toc-java-polymorphism">Java
       Polymorphism</a></li>
-      <li><a href="#threads" id="toc-threads">Threads</a>
+      <li><a href="#thread" id="toc-thread">Thread</a>
       <ul>
-      <li><a href="#callable" id="toc-callable">Callable</a></li>
+      <li><a href="#创建线程" id="toc-创建线程">创建线程</a></li>
+      <li><a href="#堆和元空间" id="toc-堆和元空间">堆和元空间</a></li>
       </ul></li>
       <li><a href="#设计模式" id="toc-设计模式">设计模式</a>
       <ul>
@@ -1860,12 +1862,16 @@ margin-left: 0 !important;
       <li><a href="#位移运算符" id="toc-位移运算符">位移运算符</a></li>
       <li><a href="#java知识点记录" id="toc-java知识点记录">Java知识点记录</a></li>
       </ul></li>
+      <li><a href="#java常见问题" id="toc-java常见问题">Java常见问题</a>
+      <ul>
+      <li><a href="#内存泄漏" id="toc-内存泄漏">内存泄漏</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-26</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-31</p>
           </div>
    </div>
      
@@ -2538,48 +2544,71 @@ functional interface. For example:</p>
 </div>
 <div id="common-used-class" class="section level1">
 <h1>Common Used Class</h1>
+<div id="object" class="section level2">
+<h2>Object</h2>
+<p>Java中所有类都默认继承自<code>Object</code>类。<code>Object</code>类中有两个重要的方法：<code>public boolean equals()</code>和<code>public int hashCode()</code>。</p>
+<p><strong>按照Java规范，equals()返回为true时，两个比较对象的hashCode()必须相同。</strong>因此在重写上述两个方式要注意这一点。</p>
+<p>重写<code>equals()</code>和<code>hashCode()</code>的模板代码：</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="kw">class</span> Student <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> name<span class="op">;</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> address<span class="op">;</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">equals</span><span class="op">(</span><span class="bu">Object</span> o<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="kw">this</span> <span class="op">==</span> o<span class="op">)</span> <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>o <span class="op">==</span> <span class="kw">null</span> <span class="op">||</span> <span class="fu">getClass</span><span class="op">()</span> <span class="op">!=</span> o<span class="op">.</span><span class="fu">getClass</span><span class="op">())</span> <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>        Student student <span class="op">=</span> <span class="op">(</span>Student<span class="op">)</span> o<span class="op">;</span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>        <span class="cf">return</span> Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>name<span class="op">;,</span> student<span class="op">.</span><span class="fu">name</span><span class="op">;)</span> <span class="op">&amp;&amp;</span> Objects<span class="op">.</span><span class="fu">equals</span><span class="op">(</span>address<span class="op">,</span> student<span class="op">.</span><span class="fu">address</span><span class="op">);</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> <span class="fu">hashCode</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>        <span class="cf">return</span> Objects<span class="op">.</span><span class="fu">hash</span><span class="op">(</span>name<span class="op">,</span> address<span class="op">);</span> <span class="co">// 保证相同name和address的Student对象哈希码一致</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
 <div id="arrays" class="section level2">
 <h2>Arrays</h2>
 <p><strong>Arrays</strong> like <code>String[]</code> or
 <code>int[]</code> is static array, the length of which is fixed.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> myArray <span class="op">=</span> <span class="op">{</span><span class="st">&quot;item1&quot;</span><span class="op">,</span> <span class="st">&quot;item2&quot;</span><span class="op">};</span></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myArray<span class="op">[</span><span class="dv">0</span><span class="op">]);</span>  <span class="co">// Show the first element of myArray.</span></span>
-<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myArray<span class="op">);</span>  <span class="co">// Show the hash code of the memory address of an array object.</span></span>
-<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">toString</span><span class="op">(</span>myArray<span class="op">));</span>  <span class="co">// Show all of the items in String daya type of an Array.</span></span>
-<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myArray<span class="op">.</span><span class="fu">length</span><span class="op">);</span>  <span class="co">// Show the length of a String[]. </span></span>
-<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>        </span>
-<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>        <span class="dt">char</span><span class="op">[]</span> charArray <span class="op">=</span> s<span class="op">.</span><span class="fu">toCharArray</span><span class="op">();</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>        <span class="bu">Arrays</span><span class="op">.</span><span class="fu">sort</span><span class="op">(</span>charArray<span class="op">);</span>  <span class="co">// Sort an Array.</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-</div>
-<div id="arraylist-and-linkedlist" class="section level2">
-<h2>ArrayList and LinkedList</h2>
-<div class="sourceCode" id="cb18"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">ArrayList</span><span class="op">;</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> myArray <span class="op">=</span> <span class="op">{</span><span class="st">&quot;item1&quot;</span><span class="op">,</span> <span class="st">&quot;item2&quot;</span><span class="op">};</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myArray<span class="op">[</span><span class="dv">0</span><span class="op">]);</span>  <span class="co">// Show the first element of myArray.</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myArray<span class="op">);</span>  <span class="co">// Show the hash code of the memory address of an array object.</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">toString</span><span class="op">(</span>myArray<span class="op">));</span>  <span class="co">// Show all of the items in String daya type of an Array.</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myArray<span class="op">.</span><span class="fu">length</span><span class="op">);</span>  <span class="co">// Show the length of a String[]. </span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>        </span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
 <span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
 <span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> myList <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;();</span></span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;A&quot;</span><span class="op">);</span></span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;B&quot;</span><span class="op">);</span></span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;C&quot;</span><span class="op">);</span></span>
-<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myList<span class="op">.</span><span class="fu">get</span><span class="op">(</span><span class="dv">1</span><span class="op">));</span><span class="co">// &quot;B&quot;</span></span>
-<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
-<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>        <span class="dt">char</span><span class="op">[]</span> charArray <span class="op">=</span> s<span class="op">.</span><span class="fu">toCharArray</span><span class="op">();</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>        <span class="bu">Arrays</span><span class="op">.</span><span class="fu">sort</span><span class="op">(</span>charArray<span class="op">);</span>  <span class="co">// Sort an Array.</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="arraylist-and-linkedlist" class="section level2">
+<h2>ArrayList and LinkedList</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">ArrayList</span><span class="op">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> myList <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;();</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;A&quot;</span><span class="op">);</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;B&quot;</span><span class="op">);</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;C&quot;</span><span class="op">);</span></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myList<span class="op">.</span><span class="fu">get</span><span class="op">(</span><span class="dv">1</span><span class="op">));</span><span class="co">// &quot;B&quot;</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>        myList<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><code>.remove()</code> method can remove an ArrayList’s item both by
 index and by value. If the items in an ArrayList are <code>int</code>
 data type, and I want to remove the item (for example <span class="math inline">\(5\)</span>) by its value, then I should use
@@ -2592,81 +2621,81 @@ data type, and I want to remove the item (for example <span class="math inline">
 </div>
 <div id="hashmap" class="section level2">
 <h2>HashMap</h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">HashMap</span><span class="op">;</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>        <span class="bu">HashMap</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> myHashTable <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashMap</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;();</span></span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">put</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span> <span class="st">&quot;item1&quot;</span><span class="op">);</span></span>
-<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myHashTable<span class="op">.</span><span class="fu">get</span><span class="op">(</span><span class="dv">0</span><span class="op">));</span></span>
-<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span>  <span class="co">// remove target item.</span></span>
-<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">clear</span><span class="op">();</span>  <span class="co">// remove all items.</span></span>
-<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">keySet</span><span class="op">();</span>  <span class="co">// java.util.HashMap$KeySet, used for loop through keys in a HashTable.</span></span>
-<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">values</span><span class="op">();</span>  <span class="co">// java.uitl.HashMap$Values, used for loop through values in a HashTable.</span></span>
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">containsKey</span><span class="op">(</span><span class="dv">0</span><span class="op">)</span>  <span class="co">// to check if a key in a HashTable.</span></span>
-<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">HashMap</span><span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>        <span class="bu">HashMap</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;</span> myHashTable <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashMap</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">,</span> <span class="bu">String</span><span class="op">&gt;();</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">put</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span> <span class="st">&quot;item1&quot;</span><span class="op">);</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>myHashTable<span class="op">.</span><span class="fu">get</span><span class="op">(</span><span class="dv">0</span><span class="op">));</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span>  <span class="co">// remove target item.</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">clear</span><span class="op">();</span>  <span class="co">// remove all items.</span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">keySet</span><span class="op">();</span>  <span class="co">// java.util.HashMap$KeySet, used for loop through keys in a HashTable.</span></span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">values</span><span class="op">();</span>  <span class="co">// java.uitl.HashMap$Values, used for loop through values in a HashTable.</span></span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>        myHashTable<span class="op">.</span><span class="fu">containsKey</span><span class="op">(</span><span class="dv">0</span><span class="op">)</span>  <span class="co">// to check if a key in a HashTable.</span></span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><code>HashMap</code>是非线程安全的。<code>ConcurrentHashMap</code>是线程安全的。使用<code>ConcurrentHashMap</code>的.put()方法可以保证线程安全（不过貌似更应该使用.compute()方法？）</p>
 </div>
 <div id="hashset-1" class="section level2">
 <h2>HashSet</h2>
 <p>A HashSet is a collection of items where every item is unique.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">HashSet</span><span class="op">;</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>        <span class="bu">HashSet</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> myHashSet <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;();</span></span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;item1&quot;</span><span class="op">);</span></span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;item2&quot;</span><span class="op">);</span></span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">contains</span><span class="op">(</span><span class="st">&quot;item3&quot;</span><span class="op">);</span>  <span class="co">// check if &quot;item3&quot; in myHashSet.</span></span>
-<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="st">&quot;item2&quot;</span><span class="op">);</span></span>
-<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">clear</span><span class="op">();</span></span>
-<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">size</span><span class="op">();</span></span>
-<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>        <span class="co">// myHashSet1.euqals(myHashSet2)  check if two HashSets have same items.</span></span>
-<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">HashSet</span><span class="op">;</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>        <span class="bu">HashSet</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> myHashSet <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashSet</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;();</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;item1&quot;</span><span class="op">);</span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">add</span><span class="op">(</span><span class="st">&quot;item2&quot;</span><span class="op">);</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">contains</span><span class="op">(</span><span class="st">&quot;item3&quot;</span><span class="op">);</span>  <span class="co">// check if &quot;item3&quot; in myHashSet.</span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">remove</span><span class="op">(</span><span class="st">&quot;item2&quot;</span><span class="op">);</span></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">clear</span><span class="op">();</span></span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>        myHashSet<span class="op">.</span><span class="fu">size</span><span class="op">();</span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>        <span class="co">// myHashSet1.euqals(myHashSet2)  check if two HashSets have same items.</span></span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="enum" class="section level2">
 <h2>enum</h2>
 <p><code>enum</code> is a special <code>class</code>.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="kw">enum</span> myEnumName <span class="op">{</span></span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>    CONSTANT1<span class="op">,</span> CONSTANT2<span class="op">,</span> CONSTANT3<span class="op">;</span></span>
-<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="kw">enum</span> myEnumName <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>    CONSTANT1<span class="op">,</span> CONSTANT2<span class="op">,</span> CONSTANT3<span class="op">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <div id="template" class="section level3 tabset">
 <h3 class="tabset">Template</h3>
 <p>Here is a senior example: add annotations to every <code>enum</code>
 value.</p>
 <div id="aggregateenum.java" class="section level4">
 <h4>AggregateEnum.java</h4>
-<div class="sourceCode" id="cb22"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">enum</span> AggregateEnum <span class="op">{</span></span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>    <span class="fu">MOST</span><span class="op">(</span><span class="st">&quot;最多&quot;</span><span class="op">,</span> <span class="st">&quot;max&quot;</span><span class="op">),</span></span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>    <span class="fu">AVERAGE</span><span class="op">(</span><span class="st">&quot;平均&quot;</span><span class="op">,</span> <span class="st">&quot;avg&quot;</span><span class="op">);</span></span>
-<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>    </span>
-<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> aggregateCH<span class="op">;</span></span>
-<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> aggregateEn<span class="op">;</span></span>
-<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>    </span>
-<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>    <span class="fu">AggregateEnum</span><span class="op">(</span><span class="bu">String</span> aggregateCH<span class="op">,</span> <span class="bu">String</span> aggreagteEN<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">aggregateCH</span> <span class="op">=</span> aggregateCH<span class="op">;</span></span>
-<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">aggreagteEN</span> <span class="op">=</span> aggreagteEN<span class="op">;</span></span>
-<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>    </span>
-<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getAggregateCH</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> aggregateCH<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">enum</span> AggregateEnum <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>    <span class="fu">MOST</span><span class="op">(</span><span class="st">&quot;最多&quot;</span><span class="op">,</span> <span class="st">&quot;max&quot;</span><span class="op">),</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>    <span class="fu">AVERAGE</span><span class="op">(</span><span class="st">&quot;平均&quot;</span><span class="op">,</span> <span class="st">&quot;avg&quot;</span><span class="op">);</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>    </span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> aggregateCH<span class="op">;</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">String</span> aggregateEn<span class="op">;</span></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>    </span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>    <span class="fu">AggregateEnum</span><span class="op">(</span><span class="bu">String</span> aggregateCH<span class="op">,</span> <span class="bu">String</span> aggreagteEN<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">aggregateCH</span> <span class="op">=</span> aggregateCH<span class="op">;</span></span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">aggreagteEN</span> <span class="op">=</span> aggreagteEN<span class="op">;</span></span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a>    </span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">getAggregateCH</span><span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> aggregateCH<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb23-14"><a href="#cb23-14" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="main.java" class="section level4">
 <h4>Main.java</h4>
-<div class="sourceCode" id="cb23"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>        AggregateEnum mymost <span class="op">=</span> AggregateEnum<span class="op">.</span><span class="fu">MOST</span><span class="op">;</span></span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>mymost<span class="op">.</span><span class="fu">getAggregateCH</span><span class="op">());</span></span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>mymost<span class="op">.</span><span class="fu">getAggregateEN</span><span class="op">());</span></span>
-<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>        AggregateEnum mymost <span class="op">=</span> AggregateEnum<span class="op">.</span><span class="fu">MOST</span><span class="op">;</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>mymost<span class="op">.</span><span class="fu">getAggregateCH</span><span class="op">());</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>mymost<span class="op">.</span><span class="fu">getAggregateEN</span><span class="op">());</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Define an <code>enum</code> and print its annotations.</p>
 <p>For example, the parameters of “最多” and “max” in MOST() will be
 passed to constructor directly.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">enum</span> aggregateEnum <span class="op">=</span> AggregateEnum<span class="op">.</span><span class="fu">MOST</span><span class="op">;</span></span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>aggregateEnum<span class="op">.</span><span class="fu">aggregateCH</span><span class="op">);</span>  <span class="co">// 最多</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="kw">enum</span> aggregateEnum <span class="op">=</span> AggregateEnum<span class="op">.</span><span class="fu">MOST</span><span class="op">;</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>aggregateEnum<span class="op">.</span><span class="fu">aggregateCH</span><span class="op">);</span>  <span class="co">// 最多</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -2676,81 +2705,200 @@ passed to constructor directly.</p>
 <p>When instantiating a subclass, I can declare the variable type as its
 parent class’ name. But when doing this, I cannot use attributes and
 methods unique to the subclass.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> PolymorphismExample <span class="op">{</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>        Animal myAnimal <span class="op">=</span> <span class="kw">new</span> <span class="fu">Animal</span><span class="op">();</span></span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>        Animal myDog <span class="op">=</span> <span class="kw">new</span> <span class="fu">Dog</span><span class="op">();</span></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>        Animal myCat <span class="op">=</span> <span class="kw">new</span> <span class="fu">Cat</span><span class="op">();</span></span>
-<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>        myAnimal<span class="op">.</span><span class="fu">speak</span><span class="op">();</span> <span class="co">// Output: This animal speaks in its own way.</span></span>
-<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a>        myDog<span class="op">.</span><span class="fu">speak</span><span class="op">();</span>    <span class="co">// Output: Dog barks.</span></span>
-<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a>        myCat<span class="op">.</span><span class="fu">speak</span><span class="op">();</span>    <span class="co">// Output: Cat meows.</span></span>
-<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a>        </span>
-<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a>        Animal<span class="op">[]</span> animals <span class="op">=</span> <span class="op">{</span>myAnimal<span class="op">,</span> myDog<span class="op">,</span> myCat<span class="op">};</span></span>
-<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>Animal animal <span class="op">:</span> animals<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a>            animal<span class="op">.</span><span class="fu">speak</span><span class="op">();</span> <span class="co">// Call the speak method on each type of animal</span></span>
-<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> PolymorphismExample <span class="op">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>        Animal myAnimal <span class="op">=</span> <span class="kw">new</span> <span class="fu">Animal</span><span class="op">();</span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>        Animal myDog <span class="op">=</span> <span class="kw">new</span> <span class="fu">Dog</span><span class="op">();</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>        Animal myCat <span class="op">=</span> <span class="kw">new</span> <span class="fu">Cat</span><span class="op">();</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>        myAnimal<span class="op">.</span><span class="fu">speak</span><span class="op">();</span> <span class="co">// Output: This animal speaks in its own way.</span></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>        myDog<span class="op">.</span><span class="fu">speak</span><span class="op">();</span>    <span class="co">// Output: Dog barks.</span></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a>        myCat<span class="op">.</span><span class="fu">speak</span><span class="op">();</span>    <span class="co">// Output: Cat meows.</span></span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a>        </span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a>        Animal<span class="op">[]</span> animals <span class="op">=</span> <span class="op">{</span>myAnimal<span class="op">,</span> myDog<span class="op">,</span> myCat<span class="op">};</span></span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>Animal animal <span class="op">:</span> animals<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a>            animal<span class="op">.</span><span class="fu">speak</span><span class="op">();</span> <span class="co">// Call the speak method on each type of animal</span></span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
-<div id="threads" class="section level1">
-<h1>Threads</h1>
+<div id="thread" class="section level1">
+<h1>Thread</h1>
+<div id="创建线程" class="section level2">
+<h2>创建线程</h2>
+<div id="继承thread" class="section level3">
+<h3>继承Thread</h3>
+</div>
+<div id="实现runnable" class="section level3">
+<h3>实现Runnable</h3>
+</div>
+<div id="实现callable" class="section level3">
+<h3>实现Callable</h3>
+</div>
+</div>
+<div id="堆和元空间" class="section level2 tabset">
+<h2 class="tabset">堆和元空间</h2>
+<p>JVM进程由<code>main()</code>函数启动，<code>main()</code>函数作为JVM进程中的主线程，同时还有一些其他的线程（Signal
+Dispatcher等）。<strong>方法区</strong>在JDK 8
+之后叫<strong>元空间（MetaSpace）</strong>。</p>
+<p>多个线程共用进程的<strong>堆</strong>和<strong>方法区</strong>。实例变量存储在<strong>堆</strong>中，静态变量（包括其他类的静态变量）存储在<strong>方法区</strong>中。</p>
+<div id="堆和元空间变量存储实例" class="section level3">
+<h3>堆和元空间变量存储实例</h3>
+<div class="sourceCode" id="cb27"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ThreadAnalysis <span class="op">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>    <span class="co">// 存储在元空间中</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">int</span> staticCounter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>    <span class="co">// 存储在堆中</span></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> heapCounter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="kw">throws</span> <span class="bu">InterruptedException</span> <span class="op">{</span></span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>        ThreadAnalysis threadAnalysis <span class="op">=</span> <span class="kw">new</span> <span class="fu">ThreadAnalysis</span><span class="op">();</span></span>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a>        <span class="bu">Thread</span> t1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(()</span> <span class="op">-&gt;</span> <span class="op">{</span></span>
+<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a>                staticCounter<span class="op">++;</span></span>
+<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a>                threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">++;</span></span>
+<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb27-14"><a href="#cb27-14" tabindex="-1"></a>        <span class="op">});</span></span>
+<span id="cb27-15"><a href="#cb27-15" tabindex="-1"></a>        <span class="bu">Thread</span> t2 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(()</span> <span class="op">-&gt;</span> <span class="op">{</span></span>
+<span id="cb27-16"><a href="#cb27-16" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb27-17"><a href="#cb27-17" tabindex="-1"></a>                staticCounter<span class="op">++;</span></span>
+<span id="cb27-18"><a href="#cb27-18" tabindex="-1"></a>                threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">++;</span></span>
+<span id="cb27-19"><a href="#cb27-19" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb27-20"><a href="#cb27-20" tabindex="-1"></a>        <span class="op">});</span></span>
+<span id="cb27-21"><a href="#cb27-21" tabindex="-1"></a></span>
+<span id="cb27-22"><a href="#cb27-22" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb27-23"><a href="#cb27-23" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb27-24"><a href="#cb27-24" tabindex="-1"></a></span>
+<span id="cb27-25"><a href="#cb27-25" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
+<span id="cb27-26"><a href="#cb27-26" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
+<span id="cb27-27"><a href="#cb27-27" tabindex="-1"></a></span>
+<span id="cb27-28"><a href="#cb27-28" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;staticCounter（方法区）最终值: &quot;</span> <span class="op">+</span> staticCounter<span class="op">);</span> <span class="co">// 可能小于10000</span></span>
+<span id="cb27-29"><a href="#cb27-29" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;heapCounter（堆）最终值: &quot;</span> <span class="op">+</span> threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">);</span> <span class="co">// 可能小于10000</span></span>
+<span id="cb27-30"><a href="#cb27-30" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb27-31"><a href="#cb27-31" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="synchronized锁线程安全" class="section level3">
+<h3><code>synchronized</code>锁线程安全</h3>
+<div class="sourceCode" id="cb28"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ThreadAnalysis <span class="op">{</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>    <span class="co">// 存储在元空间中</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">int</span> staticCounter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>    <span class="co">// 存储在堆中</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">int</span> heapCounter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="kw">throws</span> <span class="bu">InterruptedException</span> <span class="op">{</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>        ThreadAnalysis threadAnalysis <span class="op">=</span> <span class="kw">new</span> <span class="fu">ThreadAnalysis</span><span class="op">();</span></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a>        <span class="bu">Thread</span> t1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(()</span> <span class="op">-&gt;</span> <span class="op">{</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a>                <span class="kw">synchronized</span> <span class="op">(</span>ThreadAnalysis<span class="op">.</span><span class="fu">class</span><span class="op">)</span> <span class="op">{</span> staticCounter<span class="op">++;</span> <span class="op">};</span></span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a>                <span class="kw">synchronized</span> <span class="op">(</span>threadAnalysis<span class="op">)</span> <span class="op">{</span> threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">++;</span> <span class="op">};</span></span>
+<span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb28-14"><a href="#cb28-14" tabindex="-1"></a>        <span class="op">});</span></span>
+<span id="cb28-15"><a href="#cb28-15" tabindex="-1"></a>        <span class="bu">Thread</span> t2 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(()</span> <span class="op">-&gt;</span> <span class="op">{</span></span>
+<span id="cb28-16"><a href="#cb28-16" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb28-17"><a href="#cb28-17" tabindex="-1"></a>                <span class="kw">synchronized</span> <span class="op">(</span>ThreadAnalysis<span class="op">.</span><span class="fu">class</span><span class="op">)</span> <span class="op">{</span> staticCounter<span class="op">++;</span> <span class="op">};</span></span>
+<span id="cb28-18"><a href="#cb28-18" tabindex="-1"></a>                <span class="kw">synchronized</span> <span class="op">(</span>threadAnalysis<span class="op">)</span> <span class="op">{</span> threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">++;</span> <span class="op">};</span></span>
+<span id="cb28-19"><a href="#cb28-19" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb28-20"><a href="#cb28-20" tabindex="-1"></a>        <span class="op">});</span></span>
+<span id="cb28-21"><a href="#cb28-21" tabindex="-1"></a></span>
+<span id="cb28-22"><a href="#cb28-22" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb28-23"><a href="#cb28-23" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb28-24"><a href="#cb28-24" tabindex="-1"></a></span>
+<span id="cb28-25"><a href="#cb28-25" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
+<span id="cb28-26"><a href="#cb28-26" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
+<span id="cb28-27"><a href="#cb28-27" tabindex="-1"></a></span>
+<span id="cb28-28"><a href="#cb28-28" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;staticCounter（方法区）最终值: &quot;</span> <span class="op">+</span> staticCounter<span class="op">);</span>  <span class="co">// 10000</span></span>
+<span id="cb28-29"><a href="#cb28-29" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;heapCounter（堆）最终值: &quot;</span> <span class="op">+</span> threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">);</span>  <span class="co">// 10000</span></span>
+<span id="cb28-30"><a href="#cb28-30" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb28-31"><a href="#cb28-31" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="atomicinteger线程安全" class="section level3">
+<h3><code>AtomicInteger</code>线程安全</h3>
+<div class="sourceCode" id="cb29"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">concurrent</span><span class="op">.</span><span class="im">atomic</span><span class="op">.</span><span class="im">AtomicInteger</span><span class="op">;</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ThreadAnalysis <span class="op">{</span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>    <span class="co">// 使用AtomicInteger保证原子性</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">AtomicInteger</span> staticCounter <span class="op">=</span> <span class="kw">new</span> <span class="bu">AtomicInteger</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">AtomicInteger</span> heapCounter <span class="op">=</span> <span class="kw">new</span> <span class="bu">AtomicInteger</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="kw">throws</span> <span class="bu">InterruptedException</span> <span class="op">{</span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a>        ThreadAnalysis threadAnalysis <span class="op">=</span> <span class="kw">new</span> <span class="fu">ThreadAnalysis</span><span class="op">();</span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a>        <span class="bu">Thread</span> t1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(()</span> <span class="op">-&gt;</span> <span class="op">{</span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>                staticCounter<span class="op">.</span><span class="fu">incrementAndGet</span><span class="op">();</span></span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a>                threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">.</span><span class="fu">incrementAndGet</span><span class="op">();</span></span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a>        <span class="op">});</span></span>
+<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a>        <span class="bu">Thread</span> t2 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(()</span> <span class="op">-&gt;</span> <span class="op">{</span></span>
+<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a>                staticCounter<span class="op">.</span><span class="fu">incrementAndGet</span><span class="op">();</span></span>
+<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a>                threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">.</span><span class="fu">incrementAndGet</span><span class="op">();</span></span>
+<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb29-21"><a href="#cb29-21" tabindex="-1"></a>        <span class="op">});</span></span>
+<span id="cb29-22"><a href="#cb29-22" tabindex="-1"></a></span>
+<span id="cb29-23"><a href="#cb29-23" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb29-24"><a href="#cb29-24" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb29-25"><a href="#cb29-25" tabindex="-1"></a></span>
+<span id="cb29-26"><a href="#cb29-26" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
+<span id="cb29-27"><a href="#cb29-27" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
+<span id="cb29-28"><a href="#cb29-28" tabindex="-1"></a></span>
+<span id="cb29-29"><a href="#cb29-29" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;staticCounter（方法区）最终值: &quot;</span> <span class="op">+</span> staticCounter<span class="op">.</span><span class="fu">get</span><span class="op">());</span> <span class="co">// 10000</span></span>
+<span id="cb29-30"><a href="#cb29-30" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;heapCounter（堆）最终值: &quot;</span> <span class="op">+</span> threadAnalysis<span class="op">.</span><span class="fu">heapCounter</span><span class="op">.</span><span class="fu">get</span><span class="op">());</span> <span class="co">// 10000</span></span>
+<span id="cb29-31"><a href="#cb29-31" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb29-32"><a href="#cb29-32" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>利用<code>Runnable</code>创建子线程。</li>
 </ol>
 <p><code>Runnable</code>的定义如下：</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="at">@FunctionalInterface</span></span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="kw">public</span> <span class="kw">interface</span> <span class="bu">Runnable</span> <span class="op">{</span></span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">run</span><span class="op">();</span> </span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="at">@FunctionalInterface</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="kw">public</span> <span class="kw">interface</span> <span class="bu">Runnable</span> <span class="op">{</span></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">run</span><span class="op">();</span> </span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><code>Runnable</code>创建子线程。</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="bu">Runnable</span> task <span class="op">=</span> <span class="op">()</span> <span class="op">-&gt;</span> <span class="op">{</span><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is thread 1&quot;</span><span class="op">);};</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="bu">Thread</span> thread1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(</span>task<span class="op">,</span> <span class="st">&quot;My thread 1&quot;</span><span class="op">);</span></span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>thread1<span class="op">.</span><span class="fu">start</span><span class="op">();</span>  <span class="co">// start the thread1</span></span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>    thread1<span class="op">.</span><span class="fu">join</span><span class="op">();</span>  <span class="co">// stop the main thread and wait for thread1 to complete </span></span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>    e<span class="op">.</span><span class="fu">printStackTrace</span><span class="op">();</span></span>
-<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a><span class="op">}</span>  <span class="co">// 要使用try-catch结构或在其所在的方法添加throws InterruptedException</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="bu">Runnable</span> task <span class="op">=</span> <span class="op">()</span> <span class="op">-&gt;</span> <span class="op">{</span><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is thread 1&quot;</span><span class="op">);};</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="bu">Thread</span> thread1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(</span>task<span class="op">,</span> <span class="st">&quot;My thread 1&quot;</span><span class="op">);</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>thread1<span class="op">.</span><span class="fu">start</span><span class="op">();</span>  <span class="co">// start the thread1</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>    thread1<span class="op">.</span><span class="fu">join</span><span class="op">();</span>  <span class="co">// stop the main thread and wait for thread1 to complete </span></span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a><span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>    e<span class="op">.</span><span class="fu">printStackTrace</span><span class="op">();</span></span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a><span class="op">}</span>  <span class="co">// 要使用try-catch结构或在其所在的方法添加throws InterruptedException</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>利用<code>Thread</code>创建子线程</li>
 </ol>
-<div class="sourceCode" id="cb28"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is my thread&quot;</span><span class="op">);</span></span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MyThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is my thread&quot;</span><span class="op">);</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
 <div id="两种创建线程的方法的示例" class="section level3">
 <h3>两种创建线程的方法的示例</h3>
-<div class="sourceCode" id="cb29"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="kw">throws</span> <span class="bu">InterruptedException</span> <span class="op">{</span></span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>        <span class="bu">Runnable</span> task <span class="op">=</span> <span class="op">()</span> <span class="op">-&gt;</span> <span class="op">{</span><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is thread 1&quot;</span><span class="op">);};</span>  <span class="co">// 这是thread1的run方法</span></span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>        <span class="bu">Thread</span> thread1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(</span>task<span class="op">,</span> <span class="st">&quot;My thread 1&quot;</span><span class="op">);</span></span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>        Main thread2 <span class="op">=</span> <span class="kw">new</span> <span class="fu">Main</span><span class="op">();</span></span>
-<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>        thread2<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>        thread1<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i<span class="op">=</span><span class="dv">0</span><span class="op">;</span> i<span class="op">&lt;</span><span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;Outside&quot;</span><span class="op">);</span></span>
-<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a>            <span class="bu">Thread</span><span class="op">.</span><span class="fu">sleep</span><span class="op">(</span><span class="dv">10</span><span class="op">);</span></span>
-<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a></span>
-<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>    <span class="co">// 这是thread2的run方法</span></span>
-<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i<span class="op">=</span><span class="dv">0</span><span class="op">;</span> i<span class="op">&lt;</span><span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;Inside&quot;</span><span class="op">);</span></span>
-<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a>                <span class="bu">Thread</span><span class="op">.</span><span class="fu">sleep</span><span class="op">(</span><span class="dv">100</span><span class="op">);</span></span>
-<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb29-21"><a href="#cb29-21" tabindex="-1"></a>                e<span class="op">.</span><span class="fu">printStackTrace</span><span class="op">();</span></span>
-<span id="cb29-22"><a href="#cb29-22" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb29-23"><a href="#cb29-23" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb29-24"><a href="#cb29-24" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb29-25"><a href="#cb29-25" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="kw">throws</span> <span class="bu">InterruptedException</span> <span class="op">{</span></span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>        <span class="bu">Runnable</span> task <span class="op">=</span> <span class="op">()</span> <span class="op">-&gt;</span> <span class="op">{</span><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is thread 1&quot;</span><span class="op">);};</span>  <span class="co">// 这是thread1的run方法</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>        <span class="bu">Thread</span> thread1 <span class="op">=</span> <span class="kw">new</span> <span class="bu">Thread</span><span class="op">(</span>task<span class="op">,</span> <span class="st">&quot;My thread 1&quot;</span><span class="op">);</span></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>        Main thread2 <span class="op">=</span> <span class="kw">new</span> <span class="fu">Main</span><span class="op">();</span></span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>        thread2<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>        thread1<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i<span class="op">=</span><span class="dv">0</span><span class="op">;</span> i<span class="op">&lt;</span><span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;Outside&quot;</span><span class="op">);</span></span>
+<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a>            <span class="bu">Thread</span><span class="op">.</span><span class="fu">sleep</span><span class="op">(</span><span class="dv">10</span><span class="op">);</span></span>
+<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>    <span class="co">// 这是thread2的run方法</span></span>
+<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i<span class="op">=</span><span class="dv">0</span><span class="op">;</span> i<span class="op">&lt;</span><span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;Inside&quot;</span><span class="op">);</span></span>
+<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb33-19"><a href="#cb33-19" tabindex="-1"></a>                <span class="bu">Thread</span><span class="op">.</span><span class="fu">sleep</span><span class="op">(</span><span class="dv">100</span><span class="op">);</span></span>
+<span id="cb33-20"><a href="#cb33-20" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb33-21"><a href="#cb33-21" tabindex="-1"></a>                e<span class="op">.</span><span class="fu">printStackTrace</span><span class="op">();</span></span>
+<span id="cb33-22"><a href="#cb33-22" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb33-23"><a href="#cb33-23" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb33-24"><a href="#cb33-24" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb33-25"><a href="#cb33-25" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
-<div id="callable" class="section level2">
-<h2>Callable</h2>
 </div>
 </div>
 <div id="设计模式" class="section level1">
@@ -2758,63 +2906,63 @@ methods unique to the subclass.</p>
 <div id="工厂方法模式" class="section level2">
 <h2>“工厂方法”模式</h2>
 <p>工厂方法模式让子类决定要实例化的类是哪一个。</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">// FactoryMethodDemo.java</span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">example</span><span class="op">;</span></span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a></span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="co">// Button </span></span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="kw">interface</span> <span class="bu">Button</span> <span class="op">{</span></span>
-<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">paint</span><span class="op">();</span></span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a><span class="co">// Windows Button</span></span>
-<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a><span class="kw">class</span> WindowsButton <span class="kw">implements</span> <span class="bu">Button</span> <span class="op">{</span></span>
-<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">paint</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is Windows button.&quot;</span><span class="op">);</span></span>
-<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a></span>
-<span id="cb30-16"><a href="#cb30-16" tabindex="-1"></a><span class="co">// Mac Button</span></span>
-<span id="cb30-17"><a href="#cb30-17" tabindex="-1"></a><span class="kw">class</span> MacButton <span class="kw">implements</span> <span class="bu">Button</span> <span class="op">{</span></span>
-<span id="cb30-18"><a href="#cb30-18" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">paint</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb30-19"><a href="#cb30-19" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is Mac button.&quot;</span><span class="op">);</span></span>
-<span id="cb30-20"><a href="#cb30-20" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb30-21"><a href="#cb30-21" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb30-22"><a href="#cb30-22" tabindex="-1"></a></span>
-<span id="cb30-23"><a href="#cb30-23" tabindex="-1"></a></span>
-<span id="cb30-24"><a href="#cb30-24" tabindex="-1"></a><span class="co">// GUI Factory Button</span></span>
-<span id="cb30-25"><a href="#cb30-25" tabindex="-1"></a><span class="kw">interface</span> GUIFactory <span class="op">{</span></span>
-<span id="cb30-26"><a href="#cb30-26" tabindex="-1"></a>    <span class="bu">Button</span> <span class="fu">createButton</span><span class="op">();</span></span>
-<span id="cb30-27"><a href="#cb30-27" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb30-28"><a href="#cb30-28" tabindex="-1"></a></span>
-<span id="cb30-29"><a href="#cb30-29" tabindex="-1"></a><span class="co">// Windows Factory</span></span>
-<span id="cb30-30"><a href="#cb30-30" tabindex="-1"></a><span class="kw">class</span> WindowsFactory <span class="kw">implements</span> GUIFactory <span class="op">{</span></span>
-<span id="cb30-31"><a href="#cb30-31" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">Button</span> <span class="fu">createButton</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb30-32"><a href="#cb30-32" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">new</span> <span class="fu">WindowsButton</span><span class="op">();</span></span>
-<span id="cb30-33"><a href="#cb30-33" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb30-34"><a href="#cb30-34" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb30-35"><a href="#cb30-35" tabindex="-1"></a></span>
-<span id="cb30-36"><a href="#cb30-36" tabindex="-1"></a><span class="co">// Mac Factory</span></span>
-<span id="cb30-37"><a href="#cb30-37" tabindex="-1"></a><span class="kw">class</span> MacFactory <span class="kw">implements</span> GUIFactory <span class="op">{</span></span>
-<span id="cb30-38"><a href="#cb30-38" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">Button</span> <span class="fu">createButton</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb30-39"><a href="#cb30-39" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">new</span> <span class="fu">MacButton</span><span class="op">();</span></span>
-<span id="cb30-40"><a href="#cb30-40" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb30-41"><a href="#cb30-41" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb30-42"><a href="#cb30-42" tabindex="-1"></a></span>
-<span id="cb30-43"><a href="#cb30-43" tabindex="-1"></a></span>
-<span id="cb30-44"><a href="#cb30-44" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> FactoryMethodDemo <span class="op">{</span></span>
-<span id="cb30-45"><a href="#cb30-45" tabindex="-1"></a></span>
-<span id="cb30-46"><a href="#cb30-46" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb30-47"><a href="#cb30-47" tabindex="-1"></a></span>
-<span id="cb30-48"><a href="#cb30-48" tabindex="-1"></a>        <span class="co">// I don&#39;t need to specify a button. The factory will decide which button it is.</span></span>
-<span id="cb30-49"><a href="#cb30-49" tabindex="-1"></a>        GUIFactory factory1 <span class="op">=</span> <span class="kw">new</span> <span class="fu">WindowsFactory</span><span class="op">();</span></span>
-<span id="cb30-50"><a href="#cb30-50" tabindex="-1"></a>        <span class="bu">Button</span> newButton1 <span class="op">=</span> factory1<span class="op">.</span><span class="fu">createButton</span><span class="op">();</span></span>
-<span id="cb30-51"><a href="#cb30-51" tabindex="-1"></a>        newButton1<span class="op">.</span><span class="fu">paint</span><span class="op">();</span></span>
-<span id="cb30-52"><a href="#cb30-52" tabindex="-1"></a></span>
-<span id="cb30-53"><a href="#cb30-53" tabindex="-1"></a>        GUIFactory factory2 <span class="op">=</span> <span class="kw">new</span> <span class="fu">MacFactory</span><span class="op">();</span></span>
-<span id="cb30-54"><a href="#cb30-54" tabindex="-1"></a>        <span class="bu">Button</span> newButton2 <span class="op">=</span> factory2<span class="op">.</span><span class="fu">createButton</span><span class="op">();</span></span>
-<span id="cb30-55"><a href="#cb30-55" tabindex="-1"></a>        newButton2<span class="op">.</span><span class="fu">paint</span><span class="op">();</span></span>
-<span id="cb30-56"><a href="#cb30-56" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb30-57"><a href="#cb30-57" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co">// FactoryMethodDemo.java</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">example</span><span class="op">;</span></span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a><span class="co">// Button </span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a><span class="kw">interface</span> <span class="bu">Button</span> <span class="op">{</span></span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">paint</span><span class="op">();</span></span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a></span>
+<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a><span class="co">// Windows Button</span></span>
+<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a><span class="kw">class</span> WindowsButton <span class="kw">implements</span> <span class="bu">Button</span> <span class="op">{</span></span>
+<span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">paint</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is Windows button.&quot;</span><span class="op">);</span></span>
+<span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-14"><a href="#cb34-14" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-15"><a href="#cb34-15" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="#cb34-16" tabindex="-1"></a><span class="co">// Mac Button</span></span>
+<span id="cb34-17"><a href="#cb34-17" tabindex="-1"></a><span class="kw">class</span> MacButton <span class="kw">implements</span> <span class="bu">Button</span> <span class="op">{</span></span>
+<span id="cb34-18"><a href="#cb34-18" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">paint</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb34-19"><a href="#cb34-19" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">&quot;This is Mac button.&quot;</span><span class="op">);</span></span>
+<span id="cb34-20"><a href="#cb34-20" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-21"><a href="#cb34-21" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-22"><a href="#cb34-22" tabindex="-1"></a></span>
+<span id="cb34-23"><a href="#cb34-23" tabindex="-1"></a></span>
+<span id="cb34-24"><a href="#cb34-24" tabindex="-1"></a><span class="co">// GUI Factory Button</span></span>
+<span id="cb34-25"><a href="#cb34-25" tabindex="-1"></a><span class="kw">interface</span> GUIFactory <span class="op">{</span></span>
+<span id="cb34-26"><a href="#cb34-26" tabindex="-1"></a>    <span class="bu">Button</span> <span class="fu">createButton</span><span class="op">();</span></span>
+<span id="cb34-27"><a href="#cb34-27" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-28"><a href="#cb34-28" tabindex="-1"></a></span>
+<span id="cb34-29"><a href="#cb34-29" tabindex="-1"></a><span class="co">// Windows Factory</span></span>
+<span id="cb34-30"><a href="#cb34-30" tabindex="-1"></a><span class="kw">class</span> WindowsFactory <span class="kw">implements</span> GUIFactory <span class="op">{</span></span>
+<span id="cb34-31"><a href="#cb34-31" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">Button</span> <span class="fu">createButton</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb34-32"><a href="#cb34-32" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">new</span> <span class="fu">WindowsButton</span><span class="op">();</span></span>
+<span id="cb34-33"><a href="#cb34-33" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-34"><a href="#cb34-34" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-35"><a href="#cb34-35" tabindex="-1"></a></span>
+<span id="cb34-36"><a href="#cb34-36" tabindex="-1"></a><span class="co">// Mac Factory</span></span>
+<span id="cb34-37"><a href="#cb34-37" tabindex="-1"></a><span class="kw">class</span> MacFactory <span class="kw">implements</span> GUIFactory <span class="op">{</span></span>
+<span id="cb34-38"><a href="#cb34-38" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">Button</span> <span class="fu">createButton</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb34-39"><a href="#cb34-39" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">new</span> <span class="fu">MacButton</span><span class="op">();</span></span>
+<span id="cb34-40"><a href="#cb34-40" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-41"><a href="#cb34-41" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-42"><a href="#cb34-42" tabindex="-1"></a></span>
+<span id="cb34-43"><a href="#cb34-43" tabindex="-1"></a></span>
+<span id="cb34-44"><a href="#cb34-44" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> FactoryMethodDemo <span class="op">{</span></span>
+<span id="cb34-45"><a href="#cb34-45" tabindex="-1"></a></span>
+<span id="cb34-46"><a href="#cb34-46" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb34-47"><a href="#cb34-47" tabindex="-1"></a></span>
+<span id="cb34-48"><a href="#cb34-48" tabindex="-1"></a>        <span class="co">// I don&#39;t need to specify a button. The factory will decide which button it is.</span></span>
+<span id="cb34-49"><a href="#cb34-49" tabindex="-1"></a>        GUIFactory factory1 <span class="op">=</span> <span class="kw">new</span> <span class="fu">WindowsFactory</span><span class="op">();</span></span>
+<span id="cb34-50"><a href="#cb34-50" tabindex="-1"></a>        <span class="bu">Button</span> newButton1 <span class="op">=</span> factory1<span class="op">.</span><span class="fu">createButton</span><span class="op">();</span></span>
+<span id="cb34-51"><a href="#cb34-51" tabindex="-1"></a>        newButton1<span class="op">.</span><span class="fu">paint</span><span class="op">();</span></span>
+<span id="cb34-52"><a href="#cb34-52" tabindex="-1"></a></span>
+<span id="cb34-53"><a href="#cb34-53" tabindex="-1"></a>        GUIFactory factory2 <span class="op">=</span> <span class="kw">new</span> <span class="fu">MacFactory</span><span class="op">();</span></span>
+<span id="cb34-54"><a href="#cb34-54" tabindex="-1"></a>        <span class="bu">Button</span> newButton2 <span class="op">=</span> factory2<span class="op">.</span><span class="fu">createButton</span><span class="op">();</span></span>
+<span id="cb34-55"><a href="#cb34-55" tabindex="-1"></a>        newButton2<span class="op">.</span><span class="fu">paint</span><span class="op">();</span></span>
+<span id="cb34-56"><a href="#cb34-56" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-57"><a href="#cb34-57" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="抽象工厂模式" class="section level2">
 <h2>“抽象工厂”模式</h2>
@@ -2824,61 +2972,61 @@ methods unique to the subclass.</p>
 <div id="建造者模式" class="section level2">
 <h2>“建造者”模式</h2>
 <p>“建造者”设计模式用于创建复杂对象。尤其是当对象的属性很多，一部分属性必选，一部分属性可选。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> firstName<span class="op">;</span> <span class="co">// 必需</span></span>
-<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> lastName<span class="op">;</span>  <span class="co">// 必需</span></span>
-<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> age<span class="op">;</span>          <span class="co">// 可选</span></span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> phone<span class="op">;</span>     <span class="co">// 可选</span></span>
-<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> address<span class="op">;</span>   <span class="co">// 可选</span></span>
-<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a></span>
-<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>    <span class="kw">private</span> <span class="fu">User</span><span class="op">(</span>UserBuilder builder<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">firstName</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">firstName</span><span class="op">;</span></span>
-<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">lastName</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">lastName</span><span class="op">;</span></span>
-<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">age</span><span class="op">;</span></span>
-<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">phone</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">phone</span><span class="op">;</span></span>
-<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">address</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">address</span><span class="op">;</span></span>
-<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a></span>
-<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>    <span class="co">// UserBuilder静态类</span></span>
-<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="kw">class</span> UserBuilder <span class="op">{</span></span>
-<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a>        <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> firstName<span class="op">;</span></span>
-<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>        <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> lastName<span class="op">;</span></span>
-<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a>        <span class="kw">private</span> <span class="dt">int</span> age <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb31-21"><a href="#cb31-21" tabindex="-1"></a>        <span class="kw">private</span> <span class="bu">String</span> phone <span class="op">=</span> <span class="st">&quot;&quot;</span><span class="op">;</span></span>
-<span id="cb31-22"><a href="#cb31-22" tabindex="-1"></a>        <span class="kw">private</span> <span class="bu">String</span> address <span class="op">=</span> <span class="st">&quot;&quot;</span><span class="op">;</span></span>
-<span id="cb31-23"><a href="#cb31-23" tabindex="-1"></a></span>
-<span id="cb31-24"><a href="#cb31-24" tabindex="-1"></a>        <span class="kw">public</span> <span class="fu">UserBuilder</span><span class="op">(</span><span class="bu">String</span> firstName<span class="op">,</span> <span class="bu">String</span> lastName<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-25"><a href="#cb31-25" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">firstName</span> <span class="op">=</span> firstName<span class="op">;</span></span>
-<span id="cb31-26"><a href="#cb31-26" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">lastName</span> <span class="op">=</span> lastName<span class="op">;</span></span>
-<span id="cb31-27"><a href="#cb31-27" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb31-28"><a href="#cb31-28" tabindex="-1"></a></span>
-<span id="cb31-29"><a href="#cb31-29" tabindex="-1"></a>        <span class="kw">public</span> UserBuilder <span class="fu">age</span><span class="op">(</span><span class="dt">int</span> age<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-30"><a href="#cb31-30" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> age<span class="op">;</span></span>
-<span id="cb31-31"><a href="#cb31-31" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span></span>
-<span id="cb31-32"><a href="#cb31-32" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb31-33"><a href="#cb31-33" tabindex="-1"></a></span>
-<span id="cb31-34"><a href="#cb31-34" tabindex="-1"></a>        <span class="kw">public</span> UserBuilder <span class="fu">phone</span><span class="op">(</span><span class="bu">String</span> phone<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-35"><a href="#cb31-35" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">phone</span> <span class="op">=</span> phone<span class="op">;</span></span>
-<span id="cb31-36"><a href="#cb31-36" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span></span>
-<span id="cb31-37"><a href="#cb31-37" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb31-38"><a href="#cb31-38" tabindex="-1"></a></span>
-<span id="cb31-39"><a href="#cb31-39" tabindex="-1"></a>        <span class="kw">public</span> UserBuilder <span class="fu">address</span><span class="op">(</span><span class="bu">String</span> address<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-40"><a href="#cb31-40" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">address</span> <span class="op">=</span> address<span class="op">;</span></span>
-<span id="cb31-41"><a href="#cb31-41" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span></span>
-<span id="cb31-42"><a href="#cb31-42" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb31-43"><a href="#cb31-43" tabindex="-1"></a></span>
-<span id="cb31-44"><a href="#cb31-44" tabindex="-1"></a>        <span class="kw">public</span> User <span class="fu">build</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb31-45"><a href="#cb31-45" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">new</span> <span class="fu">User</span><span class="op">(</span><span class="kw">this</span><span class="op">);</span></span>
-<span id="cb31-46"><a href="#cb31-46" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb31-47"><a href="#cb31-47" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb31-48"><a href="#cb31-48" tabindex="-1"></a></span>
-<span id="cb31-49"><a href="#cb31-49" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb31-50"><a href="#cb31-50" tabindex="-1"></a>        User user <span class="op">=</span> <span class="kw">new</span> User<span class="op">.</span><span class="fu">UserBuilder</span><span class="op">(</span><span class="st">&quot;John&quot;</span><span class="op">,</span> <span class="st">&quot;Doe&quot;</span><span class="op">).</span><span class="fu">age</span><span class="op">(</span><span class="dv">30</span><span class="op">)</span></span>
-<span id="cb31-51"><a href="#cb31-51" tabindex="-1"></a>                            <span class="op">.</span><span class="fu">phone</span><span class="op">(</span><span class="st">&quot;1234567890&quot;</span><span class="op">)</span></span>
-<span id="cb31-52"><a href="#cb31-52" tabindex="-1"></a>                            <span class="op">.</span><span class="fu">address</span><span class="op">(</span><span class="st">&quot;Fake Address 1234&quot;</span><span class="op">)</span></span>
-<span id="cb31-53"><a href="#cb31-53" tabindex="-1"></a>                            <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
-<span id="cb31-54"><a href="#cb31-54" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb31-55"><a href="#cb31-55" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> User <span class="op">{</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> firstName<span class="op">;</span> <span class="co">// 必需</span></span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> lastName<span class="op">;</span>  <span class="co">// 必需</span></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> age<span class="op">;</span>          <span class="co">// 可选</span></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> phone<span class="op">;</span>     <span class="co">// 可选</span></span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> address<span class="op">;</span>   <span class="co">// 可选</span></span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a>    <span class="kw">private</span> <span class="fu">User</span><span class="op">(</span>UserBuilder builder<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">firstName</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">firstName</span><span class="op">;</span></span>
+<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">lastName</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">lastName</span><span class="op">;</span></span>
+<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">age</span><span class="op">;</span></span>
+<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">phone</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">phone</span><span class="op">;</span></span>
+<span id="cb35-13"><a href="#cb35-13" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">address</span> <span class="op">=</span> builder<span class="op">.</span><span class="fu">address</span><span class="op">;</span></span>
+<span id="cb35-14"><a href="#cb35-14" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb35-15"><a href="#cb35-15" tabindex="-1"></a></span>
+<span id="cb35-16"><a href="#cb35-16" tabindex="-1"></a>    <span class="co">// UserBuilder静态类</span></span>
+<span id="cb35-17"><a href="#cb35-17" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="kw">class</span> UserBuilder <span class="op">{</span></span>
+<span id="cb35-18"><a href="#cb35-18" tabindex="-1"></a>        <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> firstName<span class="op">;</span></span>
+<span id="cb35-19"><a href="#cb35-19" tabindex="-1"></a>        <span class="kw">private</span> <span class="dt">final</span> <span class="bu">String</span> lastName<span class="op">;</span></span>
+<span id="cb35-20"><a href="#cb35-20" tabindex="-1"></a>        <span class="kw">private</span> <span class="dt">int</span> age <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb35-21"><a href="#cb35-21" tabindex="-1"></a>        <span class="kw">private</span> <span class="bu">String</span> phone <span class="op">=</span> <span class="st">&quot;&quot;</span><span class="op">;</span></span>
+<span id="cb35-22"><a href="#cb35-22" tabindex="-1"></a>        <span class="kw">private</span> <span class="bu">String</span> address <span class="op">=</span> <span class="st">&quot;&quot;</span><span class="op">;</span></span>
+<span id="cb35-23"><a href="#cb35-23" tabindex="-1"></a></span>
+<span id="cb35-24"><a href="#cb35-24" tabindex="-1"></a>        <span class="kw">public</span> <span class="fu">UserBuilder</span><span class="op">(</span><span class="bu">String</span> firstName<span class="op">,</span> <span class="bu">String</span> lastName<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-25"><a href="#cb35-25" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">firstName</span> <span class="op">=</span> firstName<span class="op">;</span></span>
+<span id="cb35-26"><a href="#cb35-26" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">lastName</span> <span class="op">=</span> lastName<span class="op">;</span></span>
+<span id="cb35-27"><a href="#cb35-27" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb35-28"><a href="#cb35-28" tabindex="-1"></a></span>
+<span id="cb35-29"><a href="#cb35-29" tabindex="-1"></a>        <span class="kw">public</span> UserBuilder <span class="fu">age</span><span class="op">(</span><span class="dt">int</span> age<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-30"><a href="#cb35-30" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">age</span> <span class="op">=</span> age<span class="op">;</span></span>
+<span id="cb35-31"><a href="#cb35-31" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span></span>
+<span id="cb35-32"><a href="#cb35-32" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb35-33"><a href="#cb35-33" tabindex="-1"></a></span>
+<span id="cb35-34"><a href="#cb35-34" tabindex="-1"></a>        <span class="kw">public</span> UserBuilder <span class="fu">phone</span><span class="op">(</span><span class="bu">String</span> phone<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-35"><a href="#cb35-35" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">phone</span> <span class="op">=</span> phone<span class="op">;</span></span>
+<span id="cb35-36"><a href="#cb35-36" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span></span>
+<span id="cb35-37"><a href="#cb35-37" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb35-38"><a href="#cb35-38" tabindex="-1"></a></span>
+<span id="cb35-39"><a href="#cb35-39" tabindex="-1"></a>        <span class="kw">public</span> UserBuilder <span class="fu">address</span><span class="op">(</span><span class="bu">String</span> address<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-40"><a href="#cb35-40" tabindex="-1"></a>            <span class="kw">this</span><span class="op">.</span><span class="fu">address</span> <span class="op">=</span> address<span class="op">;</span></span>
+<span id="cb35-41"><a href="#cb35-41" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span></span>
+<span id="cb35-42"><a href="#cb35-42" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb35-43"><a href="#cb35-43" tabindex="-1"></a></span>
+<span id="cb35-44"><a href="#cb35-44" tabindex="-1"></a>        <span class="kw">public</span> User <span class="fu">build</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb35-45"><a href="#cb35-45" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">new</span> <span class="fu">User</span><span class="op">(</span><span class="kw">this</span><span class="op">);</span></span>
+<span id="cb35-46"><a href="#cb35-46" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb35-47"><a href="#cb35-47" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb35-48"><a href="#cb35-48" tabindex="-1"></a></span>
+<span id="cb35-49"><a href="#cb35-49" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-50"><a href="#cb35-50" tabindex="-1"></a>        User user <span class="op">=</span> <span class="kw">new</span> User<span class="op">.</span><span class="fu">UserBuilder</span><span class="op">(</span><span class="st">&quot;John&quot;</span><span class="op">,</span> <span class="st">&quot;Doe&quot;</span><span class="op">).</span><span class="fu">age</span><span class="op">(</span><span class="dv">30</span><span class="op">)</span></span>
+<span id="cb35-51"><a href="#cb35-51" tabindex="-1"></a>                            <span class="op">.</span><span class="fu">phone</span><span class="op">(</span><span class="st">&quot;1234567890&quot;</span><span class="op">)</span></span>
+<span id="cb35-52"><a href="#cb35-52" tabindex="-1"></a>                            <span class="op">.</span><span class="fu">address</span><span class="op">(</span><span class="st">&quot;Fake Address 1234&quot;</span><span class="op">)</span></span>
+<span id="cb35-53"><a href="#cb35-53" tabindex="-1"></a>                            <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
+<span id="cb35-54"><a href="#cb35-54" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb35-55"><a href="#cb35-55" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>再构造函数中传入一个自定义的Builder静态类。这个Build类中的构造函数可以定义User类的必选属性；而其他方法可用于接收User类的可选属性，并返回Builder类。最终定义一个build方法用于实例化User类。</p>
 </div>
 <div id="适配器模式" class="section level2">
@@ -2887,42 +3035,42 @@ methods unique to the subclass.</p>
 <p>具体来讲，Adapter类要实现目标接口，然后再Adapter类中：1.
 接收第三方类的实例作为属性；2.
 实现接口的一个方法以扩展这个实例方法。</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">example</span><span class="op">;</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="co">// 目标接口</span></span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="kw">interface</span> <span class="bu">Target</span> <span class="op">{</span></span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">request</span><span class="op">();</span></span>
-<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a></span>
-<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="co">// 第三方类（被适配者）</span></span>
-<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="kw">class</span> ThirdPartyClass <span class="op">{</span></span>
-<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">specifiedRequest</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a>        <span class="co">// 第三方类的具体实现</span></span>
-<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a></span>
-<span id="cb32-15"><a href="#cb32-15" tabindex="-1"></a><span class="co">// 适配器类</span></span>
-<span id="cb32-16"><a href="#cb32-16" tabindex="-1"></a><span class="kw">class</span> AdapterClass <span class="kw">implements</span> <span class="bu">Target</span> <span class="op">{</span></span>
-<span id="cb32-17"><a href="#cb32-17" tabindex="-1"></a>    <span class="kw">private</span> ThirdPartyClass thirdPartyClass<span class="op">;</span></span>
-<span id="cb32-18"><a href="#cb32-18" tabindex="-1"></a></span>
-<span id="cb32-19"><a href="#cb32-19" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">AdapterClass</span><span class="op">(</span>ThirdPartyClass thirdPartyClass<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb32-20"><a href="#cb32-20" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">thirdPartyClass</span> <span class="op">=</span> thirdPartyClass<span class="op">;</span></span>
-<span id="cb32-21"><a href="#cb32-21" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb32-22"><a href="#cb32-22" tabindex="-1"></a></span>
-<span id="cb32-23"><a href="#cb32-23" tabindex="-1"></a>    <span class="at">@Override</span></span>
-<span id="cb32-24"><a href="#cb32-24" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">request</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb32-25"><a href="#cb32-25" tabindex="-1"></a>        <span class="co">// 调用被适配者的方法，此处可以添加一些额外的处理</span></span>
-<span id="cb32-26"><a href="#cb32-26" tabindex="-1"></a>        thirdPartyClass<span class="op">.</span><span class="fu">specifiedRequest</span><span class="op">();</span></span>
-<span id="cb32-27"><a href="#cb32-27" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb32-28"><a href="#cb32-28" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb32-29"><a href="#cb32-29" tabindex="-1"></a></span>
-<span id="cb32-30"><a href="#cb32-30" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> AdapterClinet <span class="op">{</span></span>
-<span id="cb32-31"><a href="#cb32-31" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb32-32"><a href="#cb32-32" tabindex="-1"></a>        ThirdPartyClass thirdPartyClass <span class="op">=</span> <span class="kw">new</span> <span class="fu">ThirdPartyClass</span><span class="op">();</span></span>
-<span id="cb32-33"><a href="#cb32-33" tabindex="-1"></a>        <span class="bu">Target</span> target <span class="op">=</span> <span class="kw">new</span> <span class="fu">AdapterClass</span><span class="op">(</span>thirdPartyClass<span class="op">);</span></span>
-<span id="cb32-34"><a href="#cb32-34" tabindex="-1"></a>        target<span class="op">.</span><span class="fu">request</span><span class="op">();</span></span>
-<span id="cb32-35"><a href="#cb32-35" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb32-36"><a href="#cb32-36" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">example</span><span class="op">;</span></span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a><span class="co">// 目标接口</span></span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a><span class="kw">interface</span> <span class="bu">Target</span> <span class="op">{</span></span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">request</span><span class="op">();</span></span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a><span class="co">// 第三方类（被适配者）</span></span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a><span class="kw">class</span> ThirdPartyClass <span class="op">{</span></span>
+<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">specifiedRequest</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a>        <span class="co">// 第三方类的具体实现</span></span>
+<span id="cb36-12"><a href="#cb36-12" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb36-14"><a href="#cb36-14" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" tabindex="-1"></a><span class="co">// 适配器类</span></span>
+<span id="cb36-16"><a href="#cb36-16" tabindex="-1"></a><span class="kw">class</span> AdapterClass <span class="kw">implements</span> <span class="bu">Target</span> <span class="op">{</span></span>
+<span id="cb36-17"><a href="#cb36-17" tabindex="-1"></a>    <span class="kw">private</span> ThirdPartyClass thirdPartyClass<span class="op">;</span></span>
+<span id="cb36-18"><a href="#cb36-18" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="#cb36-19" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">AdapterClass</span><span class="op">(</span>ThirdPartyClass thirdPartyClass<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-20"><a href="#cb36-20" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">thirdPartyClass</span> <span class="op">=</span> thirdPartyClass<span class="op">;</span></span>
+<span id="cb36-21"><a href="#cb36-21" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb36-22"><a href="#cb36-22" tabindex="-1"></a></span>
+<span id="cb36-23"><a href="#cb36-23" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb36-24"><a href="#cb36-24" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">request</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-25"><a href="#cb36-25" tabindex="-1"></a>        <span class="co">// 调用被适配者的方法，此处可以添加一些额外的处理</span></span>
+<span id="cb36-26"><a href="#cb36-26" tabindex="-1"></a>        thirdPartyClass<span class="op">.</span><span class="fu">specifiedRequest</span><span class="op">();</span></span>
+<span id="cb36-27"><a href="#cb36-27" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb36-28"><a href="#cb36-28" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb36-29"><a href="#cb36-29" tabindex="-1"></a></span>
+<span id="cb36-30"><a href="#cb36-30" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> AdapterClinet <span class="op">{</span></span>
+<span id="cb36-31"><a href="#cb36-31" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-32"><a href="#cb36-32" tabindex="-1"></a>        ThirdPartyClass thirdPartyClass <span class="op">=</span> <span class="kw">new</span> <span class="fu">ThirdPartyClass</span><span class="op">();</span></span>
+<span id="cb36-33"><a href="#cb36-33" tabindex="-1"></a>        <span class="bu">Target</span> target <span class="op">=</span> <span class="kw">new</span> <span class="fu">AdapterClass</span><span class="op">(</span>thirdPartyClass<span class="op">);</span></span>
+<span id="cb36-34"><a href="#cb36-34" tabindex="-1"></a>        target<span class="op">.</span><span class="fu">request</span><span class="op">();</span></span>
+<span id="cb36-35"><a href="#cb36-35" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb36-36"><a href="#cb36-36" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
 <div id="java基础知识" class="section level1">
@@ -2943,7 +3091,7 @@ methods unique to the subclass.</p>
 <p>先计算原码，再计算反码（正数反码不变，负数除符号位其余位取反），最后计算补码（正数补码+0，负数在反码的基础上+1）</p>
 <div id="样例15的二进制" class="section level4">
 <h4>样例1：5的二进制</h4>
-<div class="sourceCode" id="cb33"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 101</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 101</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>原码：00000000,00000000,00000000,00000101</li>
 <li>反码：00000000,00000000,00000000,00000101</li>
@@ -2952,7 +3100,7 @@ methods unique to the subclass.</p>
 </div>
 <div id="样例2-5的二进制" class="section level4">
 <h4>样例2：-5的二进制</h4>
-<div class="sourceCode" id="cb34"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(-</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 11111111,11111111,11111111,11111011</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(-</span><span class="dv">5</span><span class="op">)</span>  <span class="co">// 11111111,11111111,11111111,11111011</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>原码：10000000,00000000,00000000,00000101</li>
 <li>反码：11111111,11111111,11111111,11111010</li>
@@ -2963,13 +3111,13 @@ methods unique to the subclass.</p>
 <h4>样例3：Interger.MIN_VALUE的二进制</h4>
 <p><span class="math display">\[\text{Integer.MIN_VALUE}=-2^{31}\]</span>
 由于除开符号位外的另外31位最大只能表示到<span class="math inline">\(2^{31}-1\)</span>，因此无法用原码表示Integer.MIN_VALUE。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="bu">Integer</span><span class="op">.</span><span class="fu">MIN_VALUE</span><span class="op">);</span>  <span class="co">// 10000000000000000000000000000000</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="bu">Integer</span><span class="op">.</span><span class="fu">MIN_VALUE</span><span class="op">);</span>  <span class="co">// 10000000000000000000000000000000</span></span></code></pre></div>
 <p>Integer.MIN_VALUE是补码系统的特殊值，直接构造它的补码：10000000,00000000,00000000,00000000</p>
 <p>因此在Java中<span class="math inline">\(\text{Integer.MIN_VALUE}\times2=\text{Integer.MIN_VALUE}&lt;&lt;1=0\)</span>！</p>
 </div>
 <div id="样例4interger.min_value1的二进制" class="section level4">
 <h4>样例4：Interger.MIN_VALUE+1的二进制</h4>
-<div class="sourceCode" id="cb36"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="bu">Integer</span><span class="op">.</span><span class="fu">MIN_VALUE</span> <span class="op">+</span> <span class="dv">1</span><span class="op">);</span>  <span class="co">// 10000000000000000000000000000001</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="bu">Integer</span><span class="op">.</span><span class="fu">toBinaryString</span><span class="op">(</span><span class="bu">Integer</span><span class="op">.</span><span class="fu">MIN_VALUE</span> <span class="op">+</span> <span class="dv">1</span><span class="op">);</span>  <span class="co">// 10000000000000000000000000000001</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>原码：11111111,11111111,11111111,11111111</li>
 <li>反码：10000000,00000000,00000000,00000000</li>
@@ -2992,6 +3140,47 @@ methods unique to the subclass.</p>
 <ol style="list-style-type: decimal">
 <li>子类不能缩小父类的访问权限，不然有违多态性。例如父类的<code>public</code>方法不能被子类重写为<code>private</code>方法。</li>
 </ol>
+</div>
+</div>
+<div id="java常见问题" class="section level1">
+<h1>Java常见问题</h1>
+<div id="内存泄漏" class="section level2 tabset">
+<h2 class="tabset">内存泄漏</h2>
+<p>内存泄漏是指不再被使用的对象未能被GC机制自动回收。常见的内存泄漏如下。</p>
+<div id="静态集合变量的使用" class="section level3">
+<h3>静态集合变量的使用</h3>
+<div class="sourceCode" id="cb41"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> UserController <span class="op">{</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">static</span> <span class="bu">Map</span><span class="op">&lt;</span><span class="bu">Long</span><span class="op">,</span> User<span class="op">&gt;</span> cache <span class="op">=</span> <span class="kw">new</span> <span class="bu">HashMap</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">addUser</span><span class="op">(</span>User user<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a>            cache<span class="op">.</span><span class="fu">put</span><span class="op">(</span>user<span class="op">.</span><span class="fu">getId</span><span class="op">,</span> user<span class="op">);</span>  <span class="co">// cache变量属于类，它始终被引用，不会被回收。</span></span>
+<span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<div id="未显示关闭连接池" class="section level3">
+<h3>未显示关闭连接池</h3>
+<div class="sourceCode" id="cb42"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> OrderService <span class="op">{</span></span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">DataSource</span> dataSource<span class="op">;</span></span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">processOrder</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb42-5"><a href="#cb42-5" tabindex="-1"></a>            <span class="bu">Connection</span> conn <span class="op">=</span> dataSource<span class="op">.</span><span class="fu">getConnection</span><span class="op">();</span></span>
+<span id="cb42-6"><a href="#cb42-6" tabindex="-1"></a>                <span class="co">// 执行SQL但忘记conn.close()</span></span>
+<span id="cb42-7"><a href="#cb42-7" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb42-8"><a href="#cb42-8" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>dataSource.getConnection()</code>会指定一个连接池，将连接池标记为“使用中”。该连接池会被某种特殊的数据结构所引用，即使<code>processOrder()</code>执行完毕，局部变量<code>conn</code>被释放，连接池的引用也不会被释放。</p>
+<p>改正后：</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> OrderService <span class="op">{</span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">DataSource</span> dataSource<span class="op">;</span></span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">processOrder</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a>        <span class="cf">try</span> <span class="op">(</span><span class="bu">Connection</span> conn <span class="op">=</span> dataSource<span class="op">.</span><span class="fu">getConnection</span><span class="op">())</span> <span class="op">{</span></span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a>        <span class="co">// 执行SQL</span></span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">SQLException</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a>            <span class="co">// 处理异常</span></span>
+<span id="cb43-9"><a href="#cb43-9" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb43-10"><a href="#cb43-10" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb43-11"><a href="#cb43-11" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
 </div>
 </div>
 </div>

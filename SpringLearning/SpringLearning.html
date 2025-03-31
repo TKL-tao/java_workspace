@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-03-26" />
+        <meta name="date" content="2025-03-31" />
     
     <title>Spring Learning</title>
 
@@ -1879,7 +1879,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tao
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-26</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-31</p>
           </div>
    </div>
      
@@ -3076,12 +3076,18 @@ Tutorials</a></p>
 </div>
 <div id="configurationbean" class="section level2">
 <h2><span class="citation">@Configuration</span>、<span class="citation">@Bean</span></h2>
-<p><code>@Configuration</code>注解的类是配置类，用于定义<strong>Bean</strong>的创建。<code>@Bean</code>注解的方法会被初测到Spring的应用上下文（ApplicationContext）中，可以被<code>@Autowired</code>注入使用。</p>
+<p><code>@Configuration</code>注解的类是配置类，用于定义<strong>Bean</strong>的创建。<code>@Bean</code>注解的方法会被注册到Spring的应用上下文（ApplicationContext）中，可以被<code>@Autowired</code>注入使用。<font color="yellow"><code>@Bean()</code>中也可以指定别名，如<code>@Bean(myAIService)</code>。好像别名不是通过这种方式指定</font></p>
 <p>带有<code>@Component</code>，<code>@Service</code>，<code>@Repository</code>，<code>@Controller</code>注解的类都会被Spring扫描并注册为<strong>Bean</strong>。</p>
 </div>
 <div id="autowired" class="section level2">
 <h2><span class="citation">@Autowired</span></h2>
 <p><code>@Autowired</code>注解的字段会被自动注入Spring容器中已有的<strong>Bean</strong>。</p>
+<p>当有多个实现类时，<a href="mailto:需要额外为@Autowired选择实例的注入" class="email">需要额外为@Autowired选择实例的注入</a>。假设<strong>ApiService</strong>有两个实现类<strong>OpenAIService</strong>和<strong>QwenAIService</strong></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="at">@Autowired</span></span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a><span class="kw">private</span> ApiService apiService<span class="op">;</span>  <span class="co">// 这里会报错，抛出NoUniqueBeanDefinitionException异常。</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="at">@Autowired</span></span>
+<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="at">@Qualifier</span><span class="op">(</span><span class="st">&quot;openAIService&quot;</span><span class="op">)</span>  <span class="co">// 或@Qualifier(&quot;qwenAIService&quot;)，默认为类的首字母小写。如果@Bean()注解中额外指定了别名，这里需要使用所指定的别名。</span></span>
+<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a><span class="kw">private</span> ApiService apiService<span class="op">;</span>  <span class="co">// 正确</span></span></code></pre></div>
 </div>
 <div id="springbootapplication" class="section level2">
 <h2><span class="citation">@SpringBootApplication</span></h2>
@@ -3093,25 +3099,25 @@ Tutorials</a></p>
 <li><p><code>@ComponentScan</code>：启用组件扫描，自动发现并注册Bean。它会自动扫描被注解类所在包及其子包的组件（<span class="citation">@Component</span>、<span class="citation">@Service</span>、<span class="citation">@Controller等</span>）</p></li>
 </ul>
 <p>案例分析：</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">tencent</span><span class="op">.</span><span class="im">supersonic</span><span class="op">;</span></span>
-<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a></span>
-<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">SpringApplication</span><span class="op">;</span></span>
-<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">SpringBootApplication</span><span class="op">;</span></span>
-<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">data</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoDataAutoConfiguration</span><span class="op">;</span></span>
-<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoAutoConfiguration</span><span class="op">;</span></span>
-<span id="cb53-7"><a href="#cb53-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableAsync</span><span class="op">;</span></span>
-<span id="cb53-8"><a href="#cb53-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableScheduling</span><span class="op">;</span></span>
-<span id="cb53-9"><a href="#cb53-9" tabindex="-1"></a></span>
-<span id="cb53-10"><a href="#cb53-10" tabindex="-1"></a><span class="at">@SpringBootApplication</span><span class="op">(</span>scanBasePackages <span class="op">=</span> <span class="op">{</span><span class="st">&quot;com.tencent.supersonic&quot;</span><span class="op">,</span> <span class="st">&quot;dev.langchain4j&quot;</span><span class="op">},</span></span>
-<span id="cb53-11"><a href="#cb53-11" tabindex="-1"></a>        exclude <span class="op">=</span> <span class="op">{</span>MongoAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">,</span> MongoDataAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">})</span></span>
-<span id="cb53-12"><a href="#cb53-12" tabindex="-1"></a><span class="at">@EnableScheduling</span></span>
-<span id="cb53-13"><a href="#cb53-13" tabindex="-1"></a><span class="at">@EnableAsync</span></span>
-<span id="cb53-14"><a href="#cb53-14" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> StandaloneLauncher <span class="op">{</span></span>
-<span id="cb53-15"><a href="#cb53-15" tabindex="-1"></a></span>
-<span id="cb53-16"><a href="#cb53-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb53-17"><a href="#cb53-17" tabindex="-1"></a>        SpringApplication<span class="op">.</span><span class="fu">run</span><span class="op">(</span>StandaloneLauncher<span class="op">.</span><span class="fu">class</span><span class="op">,</span> args<span class="op">);</span></span>
-<span id="cb53-18"><a href="#cb53-18" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb53-19"><a href="#cb53-19" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">tencent</span><span class="op">.</span><span class="im">supersonic</span><span class="op">;</span></span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">SpringApplication</span><span class="op">;</span></span>
+<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">SpringBootApplication</span><span class="op">;</span></span>
+<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">data</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoDataAutoConfiguration</span><span class="op">;</span></span>
+<span id="cb55-6"><a href="#cb55-6" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">boot</span><span class="op">.</span><span class="im">autoconfigure</span><span class="op">.</span><span class="im">mongo</span><span class="op">.</span><span class="im">MongoAutoConfiguration</span><span class="op">;</span></span>
+<span id="cb55-7"><a href="#cb55-7" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableAsync</span><span class="op">;</span></span>
+<span id="cb55-8"><a href="#cb55-8" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">springframework</span><span class="op">.</span><span class="im">scheduling</span><span class="op">.</span><span class="im">annotation</span><span class="op">.</span><span class="im">EnableScheduling</span><span class="op">;</span></span>
+<span id="cb55-9"><a href="#cb55-9" tabindex="-1"></a></span>
+<span id="cb55-10"><a href="#cb55-10" tabindex="-1"></a><span class="at">@SpringBootApplication</span><span class="op">(</span>scanBasePackages <span class="op">=</span> <span class="op">{</span><span class="st">&quot;com.tencent.supersonic&quot;</span><span class="op">,</span> <span class="st">&quot;dev.langchain4j&quot;</span><span class="op">},</span></span>
+<span id="cb55-11"><a href="#cb55-11" tabindex="-1"></a>        exclude <span class="op">=</span> <span class="op">{</span>MongoAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">,</span> MongoDataAutoConfiguration<span class="op">.</span><span class="fu">class</span><span class="op">})</span></span>
+<span id="cb55-12"><a href="#cb55-12" tabindex="-1"></a><span class="at">@EnableScheduling</span></span>
+<span id="cb55-13"><a href="#cb55-13" tabindex="-1"></a><span class="at">@EnableAsync</span></span>
+<span id="cb55-14"><a href="#cb55-14" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> StandaloneLauncher <span class="op">{</span></span>
+<span id="cb55-15"><a href="#cb55-15" tabindex="-1"></a></span>
+<span id="cb55-16"><a href="#cb55-16" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb55-17"><a href="#cb55-17" tabindex="-1"></a>        SpringApplication<span class="op">.</span><span class="fu">run</span><span class="op">(</span>StandaloneLauncher<span class="op">.</span><span class="fu">class</span><span class="op">,</span> args<span class="op">);</span></span>
+<span id="cb55-18"><a href="#cb55-18" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb55-19"><a href="#cb55-19" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </div>
 <div id="enablescheduling" class="section level2">
 <h2><span class="citation">@EnableScheduling</span></h2>
