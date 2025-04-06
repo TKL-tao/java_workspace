@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-04-05" />
+        <meta name="date" content="2025-04-06" />
     
     <title>VSCode Learning</title>
 
@@ -1822,6 +1822,8 @@ margin-left: 0 !important;
             </ul></li>
             <li><a href="#intellij" id="toc-intellij">IntelliJ</a>
             <ul>
+            <li><a href="#local-cache" id="toc-local-cache">Local
+            Cache</a></li>
             <li><a href="#gateway" id="toc-gateway">Gateway</a></li>
             </ul></li>
             </ul>
@@ -1838,7 +1840,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-05</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-06</p>
            
 
    
@@ -1932,6 +1934,16 @@ kernel，刷新Jupyter即可看见。</p>
 </div>
 <div id="intellij" class="section level1">
 <h1>IntelliJ</h1>
+<div id="local-cache" class="section level2">
+<h2>Local Cache</h2>
+<p>JetBrain系列编译器好像都会默认把缓存存放在C盘中。</p>
+<p>通过在JetBrain软件，比如IntelliJ的安装目录的bin文件夹下的<code>idea.properties</code>文件新增下述内容可以将缓存目录更改。</p>
+<pre class="properties"><code># 修改缓存目录
+idea.system.path=D:/JetBrains/Cache/system
+idea.config.path=D:/JetBrains/Cache/config
+idea.plugins.path=D:/JetBrains/Cache/plugins
+idea.log.path=D:/JetBrains/Cache/logs</code></pre>
+</div>
 <div id="gateway" class="section level2">
 <h2>Gateway</h2>
 <p>Gateway属于IntelliJ
