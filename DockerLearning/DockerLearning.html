@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-04-13" />
+        <meta name="date" content="2025-04-14" />
     
     <title>Docker Learning</title>
 
@@ -1836,7 +1836,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-13</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-14</p>
            
 
    
@@ -1892,6 +1892,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
 <h1>Software Setup</h1>
 <div id="安装docker" class="section level2">
 <h2>安装Docker</h2>
+<p><a href="https://docs.docker.com/engine/install/ubuntu/">官方安装文档</a></p>
+<p>配置Docker的拉取镜像的网络连接问题我感觉很麻烦很疑惑。我最终通过下述方式成功执行<code>docker pull hello-world</code>，但是不能成功执行<code>docker search hello-world</code></p>
+<pre class="bash"><code>echo -e &quot;nameserver 8.8.8.8\nnameserver 1.1.1.1&quot; &gt; /etc/resolv.conf
+
+tee /etc/docker/daemon.json &lt;&lt;-&#39;EOF&#39;
+{
+&quot;registry-mirrors&quot;: [
+&quot;https://do.nark.eu.org&quot;,
+&quot;https://dc.j8.work&quot;,
+&quot;https://docker.m.daocloud.io&quot;,
+&quot;https://dockerproxy.com&quot;,
+&quot;https://docker.mirrors.ustc.edu.cn&quot;,
+&quot;https://docker.nju.edu.cn&quot;
+]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+systemctl status docker</code></pre>
 </div>
 <div id="docker镜像下载源配置" class="section level2">
 <h2>Docker镜像下载源配置</h2>
@@ -1919,7 +1938,7 @@ Docker使用WSL来存储镜像，镜像存储在WSL的虚拟磁盘中）</p></li
 <h2>运行Docker镜像</h2>
 <ul>
 <li><p><code>docker status</code>：docker状态</p></li>
-<li><p><code>docker run &lt;镜像名&gt;</code>：根据一个镜像名创建一个新容器并运行。<code>-d</code>后台运行。<code>--name</code>为容器命名。<code>-p &lt;Linux服务器端口&gt;:&lt;容器端口&gt;</code>端口映射。<code>-v &lt;Linux挂载目录&gt;:&lt;容器内挂载目录&gt;</code>目录挂载。<code>-v &lt;文件夹名&gt;:&lt;容器内目录&gt;</code>卷映射，将容器内目录中的所有文件copy到Linux的<code>/var/lib/docker/volumes/&lt;文件夹名&gt;</code>中。</p></li>
+<li><p><code>docker run &lt;镜像名&gt;</code>：根据一个镜像名创建一个新容器并运行。<code>-d</code>后台运行。<code>--name</code>为容器命名。<code>-p &lt;Linux服务器端口&gt;:&lt;容器端口&gt;</code>端口映射。<code>-v &lt;Linux挂载目录或文件&gt;:&lt;容器内挂载目录或文件&gt;</code>目录挂载。<code>-v &lt;文件夹名&gt;:&lt;容器内目录&gt;</code>卷映射，将容器内目录中的所有文件挂在到Linux的<code>/var/lib/docker/volumes/&lt;文件夹名&gt;</code>中。</p></li>
 <li><p><code>docker ps</code>：显示正在运行中的容器的状态和信息，<code>-a</code>显示所有包括已经停止的容器的状态和信息。</p></li>
 <li><p><code>docker start &lt;Container ID&gt;</code>：启动容器。<em>Container
 ID</em>可以通过<code>docker ps -a</code>查看。</p></li>
