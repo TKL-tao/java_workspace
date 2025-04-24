@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-03-28" />
+        <meta name="date" content="2025-04-25" />
     
     <title>Financial Approval System</title>
 
@@ -1864,7 +1864,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-28</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-25</p>
            
 
    
@@ -2199,21 +2199,23 @@ JAVA_OPTS=&quot;$JAVA_OPTS -Djava.security.auth.login.config=/opt/Kafka380/kafka
 <h1>Hive</h1>
 <div id="hive安装" class="section level2">
 <h2>Hive安装</h2>
+<p>下载Hive-4.0.1：(下面这个网站国内下载速度非常慢)</p>
+<pre class="sh"><code>wget https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz</code></pre>
 <p>环境变量：</p>
 <pre class="sh"><code>#HIVE_HOME
-export HIVE_HOME=/opt/Hive313/apache-hive-3.1.3-bin
+export HIVE_HOME=/opt/Hive401/apache-hive-4.0.1-bin
 export PATH=$PATH:$HIVE_HOME/bin</code></pre>
 <ol style="list-style-type: decimal">
 <li>下述命令的作用是解决jar包日志冲突。</li>
 </ol>
 <pre class="bash"><code>cd $HIVE_HOME/lib
-mv log4j-slf4j-impl-2.17.1.jar log4j-slf4j-impl-2.17.1.jar.bak</code></pre>
+mv log4j-slf4j-impl-2.18.0.jar log4j-slf4j-impl-2.18.0.jar.bak</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>将MySQL的JDBC驱动拷贝到<code>$HIVE_HOME/lib$</code>下。</li>
 </ol>
 <pre class="bash"><code>wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-8.0.31.tar.gz</code></pre>
 <p>解压后找到文件<strong>mysql-connector-j-8.0.31.jar</strong></p>
-<pre class="bash"><code>cp mysql-connector-j-8.0.31.jar /root/Hive313/apache-hive-3.1.3-bin/lib/</code></pre>
+<pre class="bash"><code>cp mysql-connector-j-8.0.31.jar $HIVE_HOME/lib</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>配置<strong>hive-site.xml</strong></li>
 </ol>
@@ -2232,13 +2234,13 @@ mv log4j-slf4j-impl-2.17.1.jar log4j-slf4j-impl-2.17.1.jar.bak</code></pre>
                 &lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;/name&gt;
                 &lt;value&gt;com.mysql.cj.jdbc.Driver&lt;/value&gt;
         &lt;/property&gt;
-        &lt;!-- 配置HiVe连接MySQL的用户名 --&gt;
+        &lt;!-- 配置Hive连接MySQL的用户名 --&gt;
         &lt;property&gt;
                 &lt;name&gt;javax.jdo.option.ConnectionUserName&lt;/name&gt;
                 &lt;value&gt;zt&lt;/value&gt;
         &lt;/property&gt;
 
-        &lt;!-- 配置HiVe连接MySQL的用户密码 --&gt;
+        &lt;!-- 配置Hive连接MySQL的用户密码 --&gt;
         &lt;property&gt;
                 &lt;name&gt;javax.jdo.option.ConnectionPassword&lt;/name&gt;
                 &lt;value&gt;123456&lt;/value&gt;
@@ -2247,7 +2249,7 @@ mv log4j-slf4j-impl-2.17.1.jar log4j-slf4j-impl-2.17.1.jar.bak</code></pre>
         &lt;!-- HDFS上Hive数据的保存路径 --&gt;
         &lt;property&gt;
                 &lt;name&gt;hive.metastore.warehouse.dir&lt;/name&gt;
-                &lt;value&gt;/usr/hive/warehouse&lt;/value&gt;
+                &lt;value&gt;/user/hive/warehouse&lt;/value&gt;
         &lt;/property&gt;
 
         &lt;property&gt;
@@ -2282,14 +2284,18 @@ mv log4j-slf4j-impl-2.17.1.jar log4j-slf4j-impl-2.17.1.jar.bak</code></pre>
 mv $HIVE_HOME/conf/hive-log4j2.properties.template $HIVE_HOME/conf/hive-log4j2.properties
 vim $HIVE_HOME/conf/hive-log4j2.properties</code></pre>
 <p>修改下述内容：</p>
-<pre class="properties"><code>property.hive.log.dir = /opt/Hive313/apache-hive-3.1.3-bin/logs</code></pre>
+<pre class="properties"><code>property.hive.log.dir = /opt/Hive401/apache-hive-4.0.1-bin/logs</code></pre>
 <ol start="5" style="list-style-type: decimal">
 <li>初始化Hive元数据库</li>
 </ol>
 <p>使用<strong>root</strong>用户创建数据库<strong>metastore</strong>，然后将该数据库的权限给用户<strong>zt@%</strong></p>
-<p>初始化Hive元数据库：</p>
+<p>初始化Hive元数据库（Hive3的做法）：</p>
 <pre class="bash"><code>cd $HIVE_HOME
 schematool -initSchema -dbType mysql -verbose</code></pre>
+<p>初始化Hive元数据库（Hive4的做法）：</p>
+<pre class="bash"><code>cd $HIVE_HOME
+mysql -u zt -p mypassword metastore &lt; $HIVE_HOME/scripts/metastore/upgrade/mysql/hive-schema-4.0.0.mysql.sql
+beeline -u jdbc:mysql://hadoop102:3306/metastore -n zt -p mypassword</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>修改原数据库metastore字符集。</li>
 </ol>
@@ -2300,7 +2306,7 @@ ALTER TABLE TABLE_PARAMS modify column PARAM_VALUE mediumtext character SET utf8
 </div>
 <div id="启动hive" class="section level2">
 <h2>启动Hive</h2>
-<p>先启动Hadoop，然后运行<code>hive</code>命令直接启动Hive。</p>
+<p>先启动Hadoop，然后运行<code>hive</code>命令直接启动Hive。（<a href="mailto:Kerberos安全模式下切换到mapred_user用户然后拿到jhs/hadoop102@EXAMPLE.COM的票据然后再启动hive" class="email">Kerberos安全模式下切换到mapred_user用户然后拿到jhs/hadoop102@EXAMPLE.COM的票据然后再启动hive</a>）</p>
 <p>（我在首次启动Hive时出现了报错：Cannot create directory /tmp/hive.
 Name node is in safe
 mode。当时当我运行<code>hdfs dfsadmin -safemode get</code>时得到的结果是<strong>Safe
