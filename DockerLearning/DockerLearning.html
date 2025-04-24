@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-04-14" />
+        <meta name="date" content="2025-04-24" />
     
     <title>Docker Learning</title>
 
@@ -1836,7 +1836,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-14</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-24</p>
            
 
    
@@ -1981,7 +1981,48 @@ ID</em>可以通过<code>docker ps -a</code>查看。</p></li>
 
 </code></pre>
 <p>下述命令用于构建镜像：</p>
-<pre class="sh"><code>docker build -f Dockerfile -t &lt;镜像名&gt;:&lt;镜像版本号&gt; ./</code></pre>
+<p>Dockerfile</p>
+<pre class="dockerfile"><code># 使用官方Ubuntu 22.04基础镜像
+FROM ubuntu:22.04
+
+# 设置环境变量（避免apt安装时交互提示）
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 更新系统并安装必要工具
+RUN apt-get update &amp;&amp; \
+    apt-get install -y wget &amp;&amp; \
+    apt-get clean &amp;&amp; \
+    rm -rf /var/lib/apt/lists/*
+
+# 安装Miniconda3
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh &amp;&amp; \
+    bash miniconda.sh -b -p /opt/conda &amp;&amp; \
+    rm miniconda.sh
+
+# 将conda加入环境变量
+ENV PATH=&quot;/opt/conda/bin:$PATH&quot;
+
+# 创建并设置工作目录
+WORKDIR /app
+
+# 添加Python脚本（先创建本地文件）
+COPY app.py .
+
+# 设置容器启动命令
+ENTRYPOINT [&quot;python3&quot;, &quot;app.py&quot;]</code></pre>
+<p>app.py:</p>
+<pre class="py"><code>while True:
+    try:
+        user_input = input(&quot;请输入内容（输入exit退出）: &quot;)
+        if user_input.lower() == &#39;exit&#39;:
+            print(&quot;程序退出&quot;)
+            break
+        print(f&quot;你输入的是: {user_input}&quot;)
+    except EOFError:
+        print(&quot;\n检测到输入结束，退出程序&quot;)
+        break</code></pre>
+<p>将上述两个文件存放于同一目录，然后在该目录中执行下述命令用于构建镜像。镜像构建大概耗时3分钟，之后执行命令docker
+run -it mypythonapp:0.0.1启动容器即可。</p>
 </div>
 </div>
 
