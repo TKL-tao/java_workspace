@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-04-24" />
+        <meta name="date" content="2025-05-03" />
     
     <title>Spark Learning</title>
 
@@ -1812,9 +1812,14 @@ margin-left: 0 !important;
             <li><a href="#spark安装" id="toc-spark安装">Spark安装</a></li>
             <li><a href="#spark识别hadoop集群" id="toc-spark识别hadoop集群">Spark识别Hadoop集群</a>
             <ul>
-            <li><a href="#kerberos安全模式" id="toc-kerberos安全模式">Kerberos安全模式</a></li>
+            <li><a href="#spark的kerberos安全模式" id="toc-spark的kerberos安全模式">Spark的Kerberos安全模式</a></li>
             <li><a href="#spark-on-yarn" id="toc-spark-on-yarn">Spark on
             Yarn</a></li>
+            </ul></li>
+            <li><a href="#编译器启动spark" id="toc-编译器启动spark">编译器启动Spark</a>
+            <ul>
+            <li><a href="#spark-java" id="toc-spark-java">Spark-Java</a></li>
+            <li><a href="#spark-python" id="toc-spark-python">Spark-Python</a></li>
             </ul></li>
             </ul>
           </div>
@@ -1830,7 +1835,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-04-24</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-05-03</p>
            
 
    
@@ -1894,8 +1899,8 @@ export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin</code></pre>
 </div>
 <div id="spark识别hadoop集群" class="section level1">
 <h1>Spark识别Hadoop集群</h1>
-<div id="kerberos安全模式" class="section level2">
-<h2>Kerberos安全模式</h2>
+<div id="spark的kerberos安全模式" class="section level2">
+<h2>Spark的Kerberos安全模式</h2>
 <p>我的Hadoop集群采用Kerberos安全模式。</p>
 <p>参照<a href="../KafkaLearning/KafkaLearning.html#kerberos安全模式">创建Kerberos的Kafka服务主体和用户主体</a>创建Kerberos的Spark服务主体和用户主体。</p>
 <pre class="sh"><code>useradd -g hadoop -m spark_user
@@ -1908,7 +1913,7 @@ cp /etc/security/keytabs/sparkuserService.keytab $SPARK_HOME/conf/kerberos
 
 # 在每个节点上执行下面一行命令，并且设置不同节点的kafka_user用户两两之间ssh免密
 useradd -g hadoop -m spark_user</code></pre>
-<p>（后面在研究这里如何使用kerberos安全模式）</p>
+<p>（后面再研究这里如何使用kerberos安全模式）</p>
 </div>
 <div id="spark-on-yarn" class="section level2">
 <h2>Spark on Yarn</h2>
@@ -1917,6 +1922,51 @@ useradd -g hadoop -m spark_user</code></pre>
 <pre class="sh"><code>echo -e &quot;export HADOOP_CONF_DIR=/opt/Hadoop336/hadoop-3.3.6/etc/hadoop\nexport YARN_CONF_DIR=/opt/Hadoop336/hadoop-3.3.6/etc/hadoop&quot; &gt;&gt; $SPARK_HOME/conf/spark-env.sh</code></pre>
 <p>之后在Spark服务端节点的mapred_user用户（拿到了jhs票据）下执行<code>$SPARK_HOME/bin/pyspark --master yarn</code>启动pyspark
 on yarn的客户端。</p>
+</div>
+</div>
+<div id="编译器启动spark" class="section level1">
+<h1>编译器启动Spark</h1>
+<p>使用IntelliJ Ultimate版直连服务器。</p>
+<div id="spark-java" class="section level2">
+<h2>Spark-Java</h2>
+<p>准备工作：</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="mailto:在启动Spark-Java之前一定要提前在命令行手动注册jhs/hadoop102@EXAMPLE.COM的票据" class="email">在启动Spark-Java之前一定要提前在命令行手动注册jhs/hadoop102@EXAMPLE.COM的票据</a>，不然程序会将用户识别为<code>mapred_user@EXAMPLE.COM</code>而不是<code>mapred_user</code>。</p></li>
+<li><p>将<code>core-site.xml</code>，<code>hdfs-site.xml</code>，<code>yarn-site.xml</code>,
+<code>mapred-site.xml</code>全部复制到maven项目的resources目录中。</p></li>
+<li><p>添加运行环境变量：<code>HADOOP_CONF_DIR=/opt/Hadoop336/hadoop-3.3.6/etc/hadoop;YARN_CONF_DIR=/opt/Hadoop336/hadoop-3.3.6/etc/hadoop</code></p></li>
+</ol>
+<div id="pom.xml" class="section level3">
+<h3>pom.xml</h3>
+<p>在pom.xml中加入下述依赖：</p>
+<pre class="xml"><code>    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+            &lt;version&gt;2.0.12&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;
+            &lt;artifactId&gt;spark-core_2.12&lt;/artifactId&gt;
+            &lt;version&gt;3.5.5&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;
+            &lt;artifactId&gt;spark-yarn_2.12&lt;/artifactId&gt;
+            &lt;version&gt;3.5.5&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- 这个依赖的作用是使Spark UI能正常启动，否则会报错找不到类org.apache.hadoop.yarn.server.webproxy.amfilter.AmIpFilter --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;
+            &lt;artifactId&gt;hadoop-yarn-server-web-proxy&lt;/artifactId&gt;
+            &lt;version&gt;3.3.6&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;</code></pre>
+</div>
+</div>
+<div id="spark-python" class="section level2">
+<h2>Spark-Python</h2>
 </div>
 </div>
 </div>
