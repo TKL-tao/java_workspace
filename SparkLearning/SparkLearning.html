@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tao Zou" />
     
-        <meta name="date" content="2025-05-03" />
+        <meta name="date" content="2025-06-10" />
     
     <title>Spark Learning</title>
 
@@ -1821,6 +1821,21 @@ margin-left: 0 !important;
             <li><a href="#spark-java" id="toc-spark-java">Spark-Java</a></li>
             <li><a href="#spark-python" id="toc-spark-python">Spark-Python</a></li>
             </ul></li>
+            <li><a href="#sparksql-spark-on-hive" id="toc-sparksql-spark-on-hive">SparkSQL (Spark on Hive)</a>
+            <ul>
+            <li><a href="#sparksql-connecting-to-hive" id="toc-sparksql-connecting-to-hive">SparkSQL connecting to
+            Hive</a></li>
+            </ul></li>
+            <li><a href="#hive" id="toc-hive">Hive</a>
+            <ul>
+            <li><a href="#hive安装" id="toc-hive安装">Hive安装</a></li>
+            <li><a href="#启动hive4.x" id="toc-启动hive4.x">启动Hive4.x</a></li>
+            <li><a href="#hive-on-spark" id="toc-hive-on-spark">Hive on
+            Spark</a></li>
+            <li><a href="#hive处理json" id="toc-hive处理json">Hive处理Json</a></li>
+            <li><a href="#kerberos安全模式" id="toc-kerberos安全模式">Kerberos安全模式</a></li>
+            <li><a href="#hive-ddl" id="toc-hive-ddl">Hive DDL</a></li>
+            </ul></li>
             </ul>
           </div>
           <div data-position="sidebar:post-end" class="InjectedComponents"><div class="dark-theme-toggler"><div class="toggle "><div class="toggle-track"><div class="toggle-track-check"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAABlJJREFUWAm1V3tsFEUcntnXvXu0tBWo1ZZHihBjCEWqkHiNaMLDRKOtQSKaiCFKQtS/SbxiFCHGCIkmkBSMwZhQNTFoQZD0DFiwtCDFAkdDqBBBKFj63rvdnfH7zfVo5aFBj0l2Z/dm5vd98/0es8dYjlpr62azufnDQNZcU1PciMfjWvb9rvZSMk4Ayfb36pLH13189GC8LAtIRLLPt+pzwrCuLq4ISEv/gHmitrAwfPbEkXc/ad4dL6iujrvyX0jcitgd/yZlZqftP6995Mr5TVLa22Tn8XVX2g/XLSRjUu7Q79jonS7I7hS7/0oOb5VyqF52n98oj7esXX07EjlxwXWisRmSnm3b29TTM8iYrjmFBWExubxwY/uhNas4r/WySl1fc5cetDMd7ydl+lMJJRw5WC8ud62Xx5rfepzwxgZmbhUYNS5Stvsj4yo2GXJEFBVHWDBkfdbR9HpYBaaUajDnBLKKpl1xRKYcgGtMCqEzTaSnThk/SQT0uJqTqFNBmXMCsZE48DzRZRMBRjv1GHNdk3HBImF9ZUvTyxM40pMKVc4JZBXQOLOFoDeKSxdp6HIQcO4rjYT9fn0pjbz9GLt7BAAODmjSVReXUMFzNW5x5vfxp2mIxZjIuQKJxAmFa+is2DQJJQ0JyBVExNOYcJnPxx/6/utnijmP555ALEagKAGGnGn64QORBjARcIA/yJk7JMJBLRrNtybTvH88KGjCf2jK86bhzmMcwDKFZEQvbIhxFYhChoMWMzU2iWznlIBEVJOsP+1bdX/ALx9l7jApADeDAEcMkE90JnUmmGl4USKQ0xhoW3JB5XY0YrxYWhLwMZZypUyjDGH35AbNwgUGiFBPpuGbHCpAOV1ZGXf2f/taftAv31DyeymN2d1IhAFAwTOmnzF/kKcdh3me7CYCOVNgycju84u8DeVlwfFq9/ZlTfldYrMUjOlrkjkD+rU+WzCROkcEchIDHR011syZW9JHD7y07N6JvhWMpz3pugaTkB6lWFVCKkhck0zzeMp2utq+uHrmfxOgoCO/Z8CXPlEQ1bdH8wgvhSIkEG0ICcQeExIFGdimjvKka7btJFZuaXOammIGKUCFQ53j9EN1dYKWqHf0t2w407W2tgs6h89ZnImjB55flh81tt9XirjjDuSl+oIPRQ0iWPgNZ5GqTqbBe3vSzEl5n5PhWKwocyR2HlqYN61qV18WjYjE8JLARZPQsUSim8foIRYTlGr02Ly7piASFRtKJ4VfieYhxdS2JcDVMN6xVOKZyrCGm8b108lrLRVzvptLH7IoEFLFANes6KnDi+uxfmvFnF17oALq5u1agu3/YfHkcSFzeSggV5eXRfIB7CHNcO5SUI+Ih5Ir7f4MAV9IqdFzdZgNpZw1Gcs1mNvgGbTbqQ9/cz7ZuuhgyYRQ49ljTyWHhr2DwpNHHFf+5gnWZ3Bharo+0TD5dNMw5vv9RlVpSRDHK4TlnoukhtYApuOHejSZQuo5g/A9BysdKRCyLl6062fN37OXMDlvUJtUrtmxo0avrW3wTrYs3jJ9RvRVChrmSmanPMpX2OXMsmDGh6AiEIwBAlvkOqIdBy+8JyAz8pz7QxiDth4KDy5uAlwzrWTnwC8Vc4KVAMZ3YUZ+IqoIjP3h5KFFX1ZMy3uW+7RhEDHgTi0zC9rS7uhPCDiNrGFyqBeERtKN/B0YlyFCkw0NJ5C0Ojv7zvT1a1WV1TuvZDdL4NTgB7CASYpsen6gqvG5jmTf5qHedADgkBl3D0nkSgNhZACDyi0FUKZRr3IdRjgN4WPPoFMIIegIK3mqd38fS80mcJKelM4szNyzZtQbkchGePuBRS8Eg9pHU8ojRQpSqs+ajAIwTjjUMQ/nvTNM0kicwYxZIYMh/891DYi+fvedB+c1xsm4lDU6ya+Axtz+RiAzEVYbajQOpq17F0R9QevNcEhfcU+xvyQQUalGJBSesqOkgPQ4YNyUZL9fSvUPDjoNAwN8/dwFjaczNkc3ptaMud1EIDtGcmXTcefO2cGSvKIFfp/2JIJxlq7xEl3nVPM4fDeIbPkD16/ptNc0bDu7qxbsu0R2JGywWMIjF2ft3tjfloAyQAGXiOn8hrqwbVvMXzaO+QeHXP6nF0wvX74Hf4NGG5GPjSlYoyM3P/0FbCT6zvM/yYoAAAAASUVORK5CYII=" role="presentation" style="pointer-events: none;" width="16" height="16"></div> <div class="toggle-track-x"><img src="data:image/png;base64,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" role="presentation" style="pointer-events: none;" width="16" height="16"></div></div> <div class="toggle-thumb"></div></div> <input type="checkbox" aria-label="Switch between Dark and Default theme" class="toggler-screen-reader-only"></div></div>
@@ -1835,7 +1850,7 @@ margin-left: 0 !important;
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Tao Zou
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-05-03</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-06-10</p>
            
 
    
@@ -1931,7 +1946,7 @@ on yarn的客户端。</p>
 <h2>Spark-Java</h2>
 <p>准备工作：</p>
 <ol style="list-style-type: decimal">
-<li><p><a href="mailto:在启动Spark-Java之前一定要提前在命令行手动注册jhs/hadoop102@EXAMPLE.COM的票据" class="email">在启动Spark-Java之前一定要提前在命令行手动注册jhs/hadoop102@EXAMPLE.COM的票据</a>，不然程序会将用户识别为<code>mapred_user@EXAMPLE.COM</code>而不是<code>mapred_user</code>。</p></li>
+<li><p>在启动Spark-Java之前一定要提前在<code>core-site.xml</code>文件中添加Keberos的映射规则：<code>RULE:[1:$1@$0](mapred_user@EXAMPLE\.COM)s/.*/mapred_user/</code>，不然程序会将用户识别为<code>mapred_user@EXAMPLE.COM</code>而不是<code>mapred_user</code>。</p></li>
 <li><p>将<code>core-site.xml</code>，<code>hdfs-site.xml</code>，<code>yarn-site.xml</code>,
 <code>mapred-site.xml</code>全部复制到maven项目的resources目录中。</p></li>
 <li><p>添加运行环境变量：<code>HADOOP_CONF_DIR=/opt/Hadoop336/hadoop-3.3.6/etc/hadoop;YARN_CONF_DIR=/opt/Hadoop336/hadoop-3.3.6/etc/hadoop</code></p></li>
@@ -1967,6 +1982,384 @@ on yarn的客户端。</p>
 </div>
 <div id="spark-python" class="section level2">
 <h2>Spark-Python</h2>
+</div>
+</div>
+<div id="sparksql-spark-on-hive" class="section level1">
+<h1>SparkSQL (Spark on Hive)</h1>
+<p>添加依赖</p>
+<pre class="xml"><code>        &lt;!-- 下面这个依赖用于Spark SQL --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;
+            &lt;artifactId&gt;spark-sql_2.12&lt;/artifactId&gt;
+            &lt;version&gt;3.5.5&lt;/version&gt;
+        &lt;/dependency&gt;</code></pre>
+<div id="sparksql-connecting-to-hive" class="section level2">
+<h2>SparkSQL connecting to Hive</h2>
+<p>使用Spark来解析SQL来操作Hive数据库。</p>
+<div id="环境准备" class="section level3">
+<h3>环境准备</h3>
+<ol style="list-style-type: decimal">
+<li>确保启动Hive的metastore服务：</li>
+</ol>
+<pre class="sh"><code>nohup hive --service metastore &gt; /tmp/metastore.log 2&gt;&amp;1 &amp;</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><p>将<code>$HIVE_HOME/conf/hive-site.xml</code>拷贝到maven项目的resources目录下。</p></li>
+<li><p>添加下述依赖</p></li>
+</ol>
+<pre class="xml"><code>        &lt;!-- 用于Spark SQL连接Hive数据源 --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;
+            &lt;artifactId&gt;spark-hive_2.12&lt;/artifactId&gt;
+            &lt;version&gt;3.5.5&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;mysql&lt;/groupId&gt;
+            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+            &lt;version&gt;8.0.31&lt;/version&gt;
+        &lt;/dependency&gt;</code></pre>
+</div>
+<div id="代码实现" class="section level3">
+<h3>代码实现</h3>
+<pre class="java"><code>final SparkSession sparkSession = SparkSession
+        .builder()
+        .config(conf)
+        .enableHiveSupport()
+        .getOrCreate();
+sparkSession.sql(&quot;SHOW TABLES;&quot;).show();  // 打印出Hive数据库中的数据表</code></pre>
+</div>
+</div>
+</div>
+<div id="hive" class="section level1">
+<h1>Hive</h1>
+<div id="hive安装" class="section level2">
+<h2>Hive安装</h2>
+<p>下载Hive-4.0.1：(下面这个网站国内下载速度非常慢)</p>
+<pre class="sh"><code>wget https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz</code></pre>
+<p>环境变量：</p>
+<pre class="sh"><code>#HIVE_HOME
+export HIVE_HOME=/opt/Hive401/apache-hive-4.0.1-bin
+export PATH=$PATH:$HIVE_HOME/bin</code></pre>
+<ol style="list-style-type: decimal">
+<li>下述命令的作用是解决jar包日志冲突。</li>
+</ol>
+<pre class="bash"><code>cd $HIVE_HOME/lib
+mv log4j-slf4j-impl-2.18.0.jar log4j-slf4j-impl-2.18.0.jar.bak</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>将MySQL的JDBC驱动拷贝到<code>$HIVE_HOME/lib$</code>下。</li>
+</ol>
+<pre class="bash"><code>wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-8.0.31.tar.gz</code></pre>
+<p>解压后找到文件<strong>mysql-connector-j-8.0.31.jar</strong></p>
+<pre class="bash"><code>cp mysql-connector-j-8.0.31.jar $HIVE_HOME/lib</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>配置<strong>hive-site.xml</strong></li>
+</ol>
+<pre class="bash"><code>vim $HIVE_HOME/conf/hive-site.xml</code></pre>
+<p>配置Metastore到HIVE：</p>
+<pre class="xml"><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;
+&lt;configuration&gt;
+        &lt;!-- 配置Hive要连接的数据库地址。这是远程连接，如果远程连接root用户好像会报错，所以我连接的是zt@%用户。 --&gt;
+        &lt;property&gt;
+                &lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;
+                &lt;value&gt;jdbc:mysql://hadoop102:3306/metastore?useSSL=false&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;allowPublicKeyRetrieval=true&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;/name&gt;
+                &lt;value&gt;com.mysql.cj.jdbc.Driver&lt;/value&gt;
+        &lt;/property&gt;
+        &lt;!-- 配置Hive连接MySQL的用户名 --&gt;
+        &lt;property&gt;
+                &lt;name&gt;javax.jdo.option.ConnectionUserName&lt;/name&gt;
+                &lt;value&gt;zt&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;!-- 配置Hive连接MySQL的用户密码 --&gt;
+        &lt;property&gt;
+                &lt;name&gt;javax.jdo.option.ConnectionPassword&lt;/name&gt;
+                &lt;value&gt;123456&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;!-- HDFS上Hive数据的保存路径 --&gt;
+        &lt;property&gt;
+                &lt;name&gt;hive.metastore.warehouse.dir&lt;/name&gt;
+                &lt;value&gt;/user/hive/warehouse&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;
+                &lt;value&gt;false&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;hive.server2.thrift.port&lt;/name&gt;
+                &lt;value&gt;10000&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;hive.server2.thrift.bind.host&lt;/name&gt;
+                &lt;value&gt;hadoop102&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;hive.cli.print.header&lt;/name&gt;
+                &lt;value&gt;true&lt;/value&gt;
+        &lt;/property&gt;
+
+        &lt;property&gt;
+                &lt;name&gt;hive.cli.print.current.db&lt;/name&gt;
+                &lt;value&gt;true&lt;/value&gt;
+        &lt;/property&gt;
+&lt;/configuration&gt;</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>配置Hive日志路径</li>
+</ol>
+<pre class="bash"><code>mkdir $HIVE_HOME/logs
+mv $HIVE_HOME/conf/hive-log4j2.properties.template $HIVE_HOME/conf/hive-log4j2.properties
+vim $HIVE_HOME/conf/hive-log4j2.properties</code></pre>
+<p>修改下述内容：</p>
+<pre class="properties"><code>property.hive.log.dir = /opt/Hive401/apache-hive-4.0.1-bin/logs</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>初始化Hive元数据库</li>
+</ol>
+<p>使用<strong>root</strong>用户创建数据库<strong>metastore</strong>，然后将该数据库的权限给用户<strong>zt@%</strong></p>
+<p>初始化Hive元数据库（Hive3的做法）：</p>
+<pre class="bash"><code>cd $HIVE_HOME
+schematool -initSchema -dbType mysql -verbose</code></pre>
+<p>初始化Hive元数据库（Hive4的做法）：</p>
+<pre class="bash"><code>cd $HIVE_HOME
+mysql -u zt -p mypassword metastore &lt; $HIVE_HOME/scripts/metastore/upgrade/mysql/hive-schema-4.0.0.mysql.sql
+beeline -u jdbc:mysql://hadoop102:3306/metastore -n zt -p mypassword</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>修改原数据库metastore字符集。</li>
+</ol>
+<pre><code>-- 使用zt@%登录MySQL
+USE metastore;
+ALTER TABLE COLUMNS_V2 modify column COMMENT VARCHAR(256) character SET utf8;
+ALTER TABLE TABLE_PARAMS modify column PARAM_VALUE mediumtext character SET utf8;</code></pre>
+</div>
+<div id="启动hive4.x" class="section level2">
+<h2>启动Hive4.x</h2>
+<p>Hive4.x跟以前版本的启动有很大不同。</p>
+<p>由于我对Hive的笔记梳理得很混乱，这里暂时记录目前行之有效的Hive4.x启动方式。</p>
+<ol style="list-style-type: decimal">
+<li><p>启动Kerberos安全模式下的 hadoop集群。</p></li>
+<li><p>在root用户下运行<code>hive --service hiveserver2 &amp;</code>来后台启动hiveserver2服务。</p></li>
+<li><p>在root用户下运行<code>hive</code>直接打开beeline命令行，然后输入命令<code>!connect jdbc:hive2://hadoop102:10000</code>即可直接与hiveserver2建立连接，然后就可以直接编写和运行SQL代码了。</p></li>
+</ol>
+<p>可能由于之前已经配置好了hive的kerberos相关配置，上述过程会自动使用我的<code>hive_user</code>完成kerberos安全认证，并直接调用yarn执行mapreduce任务。</p>
+</div>
+<div id="hive-on-spark" class="section level2">
+<h2>Hive on Spark</h2>
+<p>Hive默认使用的计算引擎是MapReduce。现在将其替换为Spark（Hive on
+Spark）。</p>
+<p>Hive-3.1.3与Spark-3.3.0是默认不兼容的，为了使两者兼容，下面开始重新编译Hive-3.1.3。</p>
+<p><font color="cornflowerblue">（具体编译方法以后再尝试）</font></p>
+</div>
+<div id="hive处理json" class="section level2">
+<h2>Hive处理Json</h2>
+<ol style="list-style-type: decimal">
+<li>将HDFS上的Json读取到Hive中的自建表myjson_table。</li>
+</ol>
+<pre class="sql"><code>CREATE EXTERNAL TABLE myjson_table (
+json_txt STRING
+) LOCATION &quot;/financeApproval/tmp&quot;;</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>在Hive中解析myjson_table</li>
+</ol>
+<pre class="sql"><code>SELECT 
+get_json_object(json_txt, &#39;$.database&#39;) `database_col`,
+get_json_object(json_txt, &#39;$.table&#39;) `table_col`,
+get_json_object(json_txt, &#39;$.type&#39;) `type_col`,
+get_json_object(json_txt, &#39;$.ts&#39;) `ts_col`,
+get_json_object(json_txt, &#39;$.data.id&#39;) `id_col`,
+get_json_object(json_txt, &#39;$.data.name&#39;) `name_col`
+FROM myjson_table;</code></pre>
+<div id="安装和配置spark-3.3.2" class="section level3">
+<h3>安装和配置Spark-3.3.2</h3>
+<ol style="list-style-type: decimal">
+<li>安装：</li>
+</ol>
+<pre class="bash"><code>wget https://archive.apache.org/dist/spark/spark-3.3.2/spark-3.3.2-bin-without-hadoop.tgz
+# 华为云镜像
+wget https://mirrors.huaweicloud.com/apache/spark/spark-3.3.2/spark-3.3.2-bin-without-hadoop.tgz</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>配置：</li>
+</ol>
+<pre class="bash"><code>mv /opt/Spark332/spark-3.3.2-bin-without-hadoop/conf/spark-env.sh.template /opt/Spark332/spark-3.3.2-bin-without-hadoop/conf/spark-env.sh
+vim /opt/Spark332/spark-3.3.2-bin-without-hadoop/conf/spark-env.sh</code></pre>
+<p>追加下述内容：</p>
+<pre class="sh"><code>export SPARK_DIST_CLASSPATH=$(hadoop classpath)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>添加SPARK_HOME环境变量</li>
+</ol>
+<pre class="sh"><code>#SPARK_HOME
+export SPARK_HOME=/opt/Spark332/spark-3.3.2-bin-without-hadoop
+export PATH=$PATH:$SPARK_HOME/bin</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>在Hive中配置Spark</li>
+</ol>
+<pre class="bash"><code>vim /opt/Hive313/apache-hive-3.1.3-bin/conf/spark-defaults.conf</code></pre>
+<pre class="conf"><code>spark.master                    yarn
+spark.eventLog.enabled          true
+spark.eventLog.dir              hdfs://hadoop102:8020/spark-history
+spark.executor.memory           1g
+spark.driver.memory             1g</code></pre>
+<p>然后在HDFS上创建文件夹：<code>hadoop fs -mkdir /spark-history</code></p>
+<ol start="5" style="list-style-type: decimal">
+<li>Hive配置Spark依赖和Spark引擎</li>
+</ol>
+<p>先向HDFS上环Spark的所有依赖：</p>
+<pre class="bash"><code>hadoop fs -mkdir /spark-jars
+hadoop fs -put $SPARK_HOME/jars/* /spark-jars</code></pre>
+<p>为Hive配置这些依赖：</p>
+<pre class="bash"><code>vim /opt/Hive313/apache-hive-3.1.3-bin/conf/hive-site.xml</code></pre>
+<pre class="xml"><code>    &lt;!-- Spark依赖的位置 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;spark.yarn.jars&lt;/name&gt;
+        &lt;value&gt;hdfs://hadoop102:8020/spark-jars/*&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 指定引擎为Spark --&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.execution.engine&lt;/name&gt;
+        &lt;value&gt;spark&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 设置默认任务超时的时间，单位毫秒--&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.spark.client.connect.timeout&lt;/name&gt;
+        &lt;value&gt;5000&lt;/value&gt;
+    &lt;/property&gt;</code></pre>
+</div>
+</div>
+<div id="kerberos安全模式" class="section level2">
+<h2>Kerberos安全模式</h2>
+<ol style="list-style-type: decimal">
+<li>准备Principal和linux用户，并配置权限：</li>
+</ol>
+<pre class="bash"><code># 在每个节点上都要执行下面这一行创建hive_user的代码，并相互设置免密ssh登录
+useradd -g hadoop -m hive_user 
+
+chown -R hive_user:hadoop /opt/Hive313/apache-hive-3.1.3-bin
+kadmin.local -q &quot;add_principal hive_user&quot;
+
+kadmin.local -q &quot;add_principal -randkey hive/hadoop102@EXAMPLE.COM&quot;
+kadmin.local -q &quot;ktadd -kt /etc/security/keytabs/hiveService.keytab hive/hadoop102@EXAMPLE.COM&quot;
+chown hive_user:hadoop /etc/security/keytabs/hiveService.keytab
+chmod 400 /etc/security/keytabs/hiveService.keytab</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>修改<code>hive-env.sh</code>文件</li>
+</ol>
+<pre class="bash"><code>mv /opt/Hive313/apache-hive-3.1.3-bin/conf/hive-env.sh.template /opt/Hive313/apache-hive-3.1.3-bin/conf/hive-env.sh
+vim /opt/Hive313/apache-hive-3.1.3-bin/conf/hive-env.sh</code></pre>
+<p>追加下述内容：</p>
+<pre class="sh"><code>export JAVA_HOME=/opt/JDK8/jdk1.8.0_202
+export HADOOP_HOME=/opt/Hadoop336/hadoop-3.3.6
+export HIVE_HOME=/opt/Hive313/apache-hive-3.1.3-bin
+export HIVE_CONF_DIR=/opt/Hive313/apache-hive-3.1.3-bin/conf</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>修改<code>hive-site.xml</code>文件</li>
+</ol>
+<pre class="bash"><code>vim /opt/Hive313/apache-hive-3.1.3-bin/conf/hive-site.xml</code></pre>
+<p>添加下述Kerberos安全相关配置：</p>
+<pre class="xml"><code>    &lt;property&gt;
+        &lt;name&gt;hive.server2.authentication&lt;/name&gt;
+        &lt;value&gt;KERBEROS&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.server2.authentication.kerberos.principal&lt;/name&gt;
+        &lt;value&gt;hive/_HOST@EXAMPLE.COM&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.server2.authentication.kerberos.keytab&lt;/name&gt;
+        &lt;value&gt;/etc/security/keytabs/hiveService.keytab&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;hive.metastore.sasl.enabled&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.metastore.kerberos.principal&lt;/name&gt;
+        &lt;value&gt;hive/_HOST@EXAMPLE.COM&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hive.metastore.kerberos.keytab.file&lt;/name&gt;
+        &lt;value&gt;/etc/security/keytabs/hiveService.keytab&lt;/value&gt;
+    &lt;/property&gt;</code></pre>
+<p>上述内容配置好后，执行<code>hive</code>后，<a href="mailto:系统当前的票据会自动变成hive/hadoop102@EXAMPLE.COM" class="email">系统当前的票据会自动变成hive/hadoop102@EXAMPLE.COM</a>。</p>
+<ol start="4" style="list-style-type: decimal">
+<li>在<code>$HADOOP_HOME/etc/hadoop/core-site.xml</code>中新增hive_user的映射规则，以及允许hive在任何主机上模拟属于hadoop组的用户：</li>
+</ol>
+<pre class="xml"><code>    &lt;property&gt;
+        &lt;name&gt;hadoop.security.auth_to_local&lt;/name&gt;
+        &lt;value&gt;
+            RULE:[2:$1/$2@$0]([dn]n\/.*@EXAMPLE\.COM)s/.*/hdfs_user/
+            RULE:[2:$1/$2@$0](snn\/.*@EXAMPLE\.COM)s/.*/hdfs_user/
+            RULE:[2:$1/$2@$0]([rn]m\/.*@EXAMPLE\.COM)s/.*/yarn_user/
+            RULE:[2:$1/$2@$0](jhs\/.*@EXAMPLE\.COM)s/.*/mapred_user/
+            RULE:[2:$1/$2@$0](hive\/.*@EXAMPLE\.COM)s/.*/hive_user/
+            RULE:[1:$1@$0](zt@EXAMPLE\.COM)s/.*/zt/
+        &lt;/value&gt;
+    &lt;/property&gt;
+
+&lt;!-- 按照视频里的教程，这里还加了一堆hive, hdfs, HTTP的* --&gt;</code></pre>
+<p>分发到所有节点。</p>
+</div>
+<div id="hive-ddl" class="section level2">
+<h2>Hive DDL</h2>
+<div id="数据库" class="section level3">
+<h3>数据库</h3>
+<ul>
+<li>创建数据库</li>
+</ul>
+<pre class="sql"><code>CREATE DATABASE [IF NOT EXISTS] mydb
+[COMMENT &#39;This is my first DB in Hive&#39;]
+[LOCATION hdfs_path]
+[WITH DBPROPERTIES (property_name=property_value, ...)];</code></pre>
+<ol style="list-style-type: decimal">
+<li><p><code>LOCATION</code>若不指定，则默认路径为：<code>${hive.metastore.warehouse.dir}/database_name.db</code>。</p></li>
+<li><p><code>WITH DBPROPERTIES</code>是给数据库附加属性的，例如追加该数据库的负责人或数据库创建时间，例如：WITH
+DBPROPERTIES(‘create_date’=‘2022-11-18’)。</p></li>
+</ol>
+<ul>
+<li>查询数据库</li>
+</ul>
+<pre class="sql"><code>SHOW DATABASES [LIKE &#39;this is wildcard&#39;];</code></pre>
+<ul>
+<li>描述某个数据库</li>
+</ul>
+<pre class="sql"><code>DESCRIBE DATABASE [EXTENDED] db_name;</code></pre>
+<ol style="list-style-type: decimal">
+<li><code>EXTENDED</code>表示展示更为详细的信息。</li>
+</ol>
+<ul>
+<li>修改数据库</li>
+</ul>
+<pre class="sql"><code>ALTER DATABASE database_name SET DBPROPERTIES (property_name=property_value, ...);
+
+ALTER DATABASE database_name SET LOCATION hdfs_path;
+
+ALTER DATABASE database_name SET OWNER USER user_name;</code></pre>
+<ol style="list-style-type: decimal">
+<li>更改数据库的路径不会影响已存在的数据库中的表的路径，只会影响新表的默认路径。</li>
+</ol>
+<ul>
+<li>删除数据库</li>
+</ul>
+<pre class="sql"><code>DROP DATABASE [IF EXISTS] database_name [RESTRICT|CASCADE];</code></pre>
+<ol style="list-style-type: decimal">
+<li><code>RESTRICT</code>为默认的严格模式，数据库中存在表则数据库删除失败；<code>CASCADE</code>为级联模式，数据库中的表会被一并删除。</li>
+</ol>
+</div>
+<div id="数据表" class="section level3">
+<h3>数据表</h3>
+<ul>
+<li>创建表</li>
+</ul>
+<pre class="sql"><code></code></pre>
+<pre class="sql"><code>CREATE TABLE [IF NOT EXISTS] [db_name.]mytable AS SELECT ...</code></pre>
+<pre class="sql"><code>CREATE TABLE [IF NOT EXISTS] [db_name.]mytable LIKE another_table;</code></pre>
+</div>
 </div>
 </div>
 </div>
