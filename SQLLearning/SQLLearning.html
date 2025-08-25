@@ -7,7 +7,7 @@
 
         <meta name="author" content="Tom Zou" />
     
-        <meta name="date" content="2025-03-29" />
+        <meta name="date" content="2025-08-25" />
     
     <title>MySQL Learning</title>
 
@@ -1874,6 +1874,11 @@ margin-left: 0 !important;
       <li><a href="#case" id="toc-case">CASE</a></li>
       <li><a href="#ifnull" id="toc-ifnull">IFNULL</a></li>
       <li><a href="#view" id="toc-view">VIEW</a></li>
+      <li><a href="#常用函数" id="toc-常用函数">常用函数</a>
+      <ul>
+      <li><a href="#lateral-view" id="toc-lateral-view">LATERAL
+      VIEW</a></li>
+      </ul></li>
       <li><a href="#dbeaver连接mysql" id="toc-dbeaver连接mysql">DBeaver连接MySQL</a></li>
       <li><a href="#mysql体系结构" id="toc-mysql体系结构">MySQL体系结构</a>
       <ul>
@@ -1910,6 +1915,16 @@ margin-left: 0 !important;
       <li><a href="#lag" id="toc-lag">LAG()</a></li>
       <li><a href="#dense_rank" id="toc-dense_rank">DENSE_RANK()</a></li>
       <li><a href="#max" id="toc-max">MAX()</a></li>
+      <li><a href="#row_number" id="toc-row_number">ROW_NUMBER()</a></li>
+      </ul></li>
+      <li><a href="#odps" id="toc-odps">ODPS</a>
+      <ul>
+      <li><a href="#odps特性" id="toc-odps特性">ODPS特性</a></li>
+      <li><a href="#哈希分桶" id="toc-哈希分桶">哈希分桶</a></li>
+      <li><a href="#回收站" id="toc-回收站">回收站</a></li>
+      <li><a href="#udf" id="toc-udf">UDF</a></li>
+      <li><a href="#数据仓库" id="toc-数据仓库">数据仓库</a></li>
+      <li><a href="#odps性能优化" id="toc-odps性能优化">ODPS性能优化</a></li>
       </ul></li>
       <li><a href="#测试表" id="toc-测试表">测试表</a>
       <ul>
@@ -1921,7 +1936,7 @@ margin-left: 0 !important;
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Tom
 Zou</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-03-29</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-08-25</p>
           </div>
    </div>
      
@@ -2639,26 +2654,38 @@ correspondingly.</p>
 <span id="cb49-9"><a href="#cb49-9" tabindex="-1"></a><span class="co">-- Drop a view</span></span>
 <span id="cb49-10"><a href="#cb49-10" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">VIEW</span> my_view</span></code></pre></div>
 </div>
+<div id="常用函数" class="section level1">
+<h1>常用函数</h1>
+<div id="lateral-view" class="section level2">
+<h2>LATERAL VIEW</h2>
+<p><code>LATERAL VIEW</code>用于关联横向展开的数组或Map类型字段，对样本行扩展。</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="kw">SELECT</span>  <span class="op">*</span></span>
+<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a><span class="kw">FROM</span>    mytable</span>
+<span id="cb50-3"><a href="#cb50-3" tabindex="-1"></a>LATERAL <span class="kw">VIEW</span> EXPLODE(<span class="kw">SPLIT</span>(hobbies, <span class="st">&#39;,&#39;</span>));</span></code></pre></div>
+<p><code>EXPLODE()</code>用于将数组进行行展开，<code>LATERAL VIEW</code>再去跟原表的每一行关联。</p>
+<p>注：如果<code>EXPLODE()</code>返回的结果是<code>NULL</code>或空列表，<code>LATERAL VIEW</code>去跟原表关联时会删除原表的对应行，为了避免删除原表行，使用<code>LATERAL VIEW OUTER</code>。</p>
+</div>
+</div>
 <div id="dbeaver连接mysql" class="section level1">
 <h1>DBeaver连接MySQL</h1>
 <p>参照<a href="https://blog.csdn.net/LogosTR_/article/details/125602116">https://blog.csdn.net/LogosTR_/article/details/125602116</a>完成配置。</p>
 <ol style="list-style-type: decimal">
 <li>对于MySQL8.0，先修改配置文件，注释掉地址绑定：<code># bind-address = 127.0.0.1</code></li>
 </ol>
-<div class="sourceCode" id="cb50"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="fu">sudo</span> vim /etc/mysql/mysql.conf.d/mysqld.cnf</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="fu">sudo</span> vim /etc/mysql/mysql.conf.d/mysqld.cnf</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>重启mysql，修改root用户的登录地址，并授权。</li>
 </ol>
-<div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="co"># 重启mysql</span></span>
-<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a><span class="fu">sudo</span> service mysql restart</span></code></pre></div>
-<div class="sourceCode" id="cb52"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a># 修改root用户登录地址、授权、刷新</span>
-<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="kw">USE</span> mysql;</span>
-<span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a><span class="kw">UPDATE</span> <span class="fu">user</span> <span class="kw">SET</span> host<span class="op">=</span><span class="st">&#39;%&#39;</span> <span class="kw">WHERE</span> <span class="fu">user</span><span class="op">=</span><span class="st">&#39;root&#39;</span>;</span>
-<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span>
-<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a></span>
-<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> <span class="op">*</span>.<span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;root&#39;</span>@<span class="st">&#39;%&#39;</span> <span class="kw">WITH</span> <span class="kw">GRANT</span> <span class="kw">OPTION</span>;</span>
-<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a></span>
-<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="co"># 重启mysql</span></span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="fu">sudo</span> service mysql restart</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a># 修改root用户登录地址、授权、刷新</span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a><span class="kw">USE</span> mysql;</span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a><span class="kw">UPDATE</span> <span class="fu">user</span> <span class="kw">SET</span> host<span class="op">=</span><span class="st">&#39;%&#39;</span> <span class="kw">WHERE</span> <span class="fu">user</span><span class="op">=</span><span class="st">&#39;root&#39;</span>;</span>
+<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span>
+<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a></span>
+<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> <span class="op">*</span>.<span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;root&#39;</span>@<span class="st">&#39;%&#39;</span> <span class="kw">WITH</span> <span class="kw">GRANT</span> <span class="kw">OPTION</span>;</span>
+<span id="cb53-7"><a href="#cb53-7" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span></code></pre></div>
 <p>至此，可以通过DBeaver连接虚拟机上的MySQL数据库了。</p>
 </div>
 <div id="mysql体系结构" class="section level1">
@@ -2673,12 +2700,12 @@ correspondingly.</p>
 <div id="存储引擎" class="section level2">
 <h2>存储引擎</h2>
 <p>存储引擎是基于表的，不同表可以有不同的存储引擎（表的类型）。执行<code>SHOW CREATE TABLE students;</code>，展示建表SQL。其中<code>ENGINE</code>指定了默认的存储引擎InnoDB；自增列<code>id</code>的下一条插入数据的值应该为4；<code>DEFAULT CHARSET</code>指定当前表的字符集是<code>utf8mb4</code>。</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> `students` (</span>
-<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a>  `id` <span class="dt">int</span> <span class="kw">NOT</span> <span class="kw">NULL</span> AUTO_INCREMENT,</span>
-<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a>  `name` <span class="dt">varchar</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
-<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a>  `score` <span class="dt">int</span> <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,</span>
-<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a>  <span class="kw">PRIMARY</span> <span class="kw">KEY</span> (`id`)</span>
-<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a>) ENGINE<span class="op">=</span>InnoDB AUTO_INCREMENT<span class="op">=</span><span class="dv">4</span> <span class="kw">DEFAULT</span> CHARSET<span class="op">=</span>utf8mb4 COLLATE<span class="op">=</span>utf8mb4_0900_ai_ci</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> `students` (</span>
+<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a>  `id` <span class="dt">int</span> <span class="kw">NOT</span> <span class="kw">NULL</span> AUTO_INCREMENT,</span>
+<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a>  `name` <span class="dt">varchar</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a>  `score` <span class="dt">int</span> <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,</span>
+<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a>  <span class="kw">PRIMARY</span> <span class="kw">KEY</span> (`id`)</span>
+<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a>) ENGINE<span class="op">=</span>InnoDB AUTO_INCREMENT<span class="op">=</span><span class="dv">4</span> <span class="kw">DEFAULT</span> CHARSET<span class="op">=</span>utf8mb4 COLLATE<span class="op">=</span>utf8mb4_0900_ai_ci</span></code></pre></div>
 <p>执行<code>SHOW ENGINES;</code>展示当前数据库所支持的存储引擎。</p>
 <div id="innodb存储引擎" class="section level3">
 <h3>InnoDB存储引擎</h3>
@@ -2754,15 +2781,15 @@ correspondingly.</p>
 </div>
 <div id="建立索引" class="section level2">
 <h2>建立索引</h2>
-<div class="sourceCode" id="cb54"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co">-- 创建索引</span></span>
-<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="kw">CREATE</span> [<span class="kw">UNIQUE</span>|FULLTEXT] <span class="kw">INDEX</span> index_name <span class="kw">ON</span> table_name (column1, column2, <span class="op">..</span>.);</span>
-<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a><span class="co">-- 查看索引（可在下面的SQL代码后加上&quot;\G&quot;以纵向展示结果）</span></span>
-<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="co">-- 默认使用FULLTEXT为索引。</span></span>
-<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a>SHOW <span class="kw">INDEX</span> <span class="kw">FROM</span> table_name;</span>
-<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="co">-- 删除索引</span></span>
-<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">INDEX</span> index_name <span class="kw">ON</span> table_name;</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="co">-- 创建索引</span></span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a><span class="kw">CREATE</span> [<span class="kw">UNIQUE</span>|FULLTEXT] <span class="kw">INDEX</span> index_name <span class="kw">ON</span> table_name (column1, column2, <span class="op">..</span>.);</span>
+<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a><span class="co">-- 查看索引（可在下面的SQL代码后加上&quot;\G&quot;以纵向展示结果）</span></span>
+<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a><span class="co">-- 默认使用FULLTEXT为索引。</span></span>
+<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a>SHOW <span class="kw">INDEX</span> <span class="kw">FROM</span> table_name;</span>
+<span id="cb55-6"><a href="#cb55-6" tabindex="-1"></a><span class="co">-- 删除索引</span></span>
+<span id="cb55-7"><a href="#cb55-7" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">INDEX</span> index_name <span class="kw">ON</span> table_name;</span></code></pre></div>
 <p>为对查询功能需求不大的表做索引是没有必要的。下述命令可以查看整个MySQL服务的增删查改频次：</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>SHOW <span class="kw">GLOBAL</span> STATUS <span class="kw">LIKE</span> <span class="st">&#39;Com_______&#39;</span>;  <span class="co">-- 七个下划线</span></span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a>SHOW <span class="kw">GLOBAL</span> STATUS <span class="kw">LIKE</span> <span class="st">&#39;Com_______&#39;</span>;  <span class="co">-- 七个下划线</span></span></code></pre></div>
 </div>
 <div id="使用索引" class="section level2">
 <h2>使用索引</h2>
@@ -2770,8 +2797,8 @@ correspondingly.</p>
 <li><p>索引的使用要符合最左前缀法则，否则联合索引会部分失效。</p></li>
 <li><p>联合索引中，范围查询的右边的列的索引会失效。例如：</p></li>
 </ul>
-<div class="sourceCode" id="cb56"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="co">-- 业务场景下更推荐使用&gt;=（我目前还不理解这是为什么）</span></span>
-<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> student <span class="kw">WHERE</span> age<span class="op">&gt;</span><span class="dv">30</span> <span class="kw">AND</span> name<span class="op">=</span><span class="st">&#39;Jack&#39;</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="co">-- 业务场景下更推荐使用&gt;=（我目前还不理解这是为什么）</span></span>
+<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> student <span class="kw">WHERE</span> age<span class="op">&gt;</span><span class="dv">30</span> <span class="kw">AND</span> name<span class="op">=</span><span class="st">&#39;Jack&#39;</span>;</span></code></pre></div>
 <ul>
 <li><p>对索引列使用运算函数会导致索引失效。</p></li>
 <li><p>尾部模糊匹配，索引列不是失效；头部模糊匹配，索引列失效。</p></li>
@@ -2790,15 +2817,15 @@ SELECT * FORM mytable FORCE INDEX(index_name) WHERE ...;</code></pre>
 <div id="使用前缀索引针对长文本" class="section level3">
 <h3>使用前缀索引（针对长文本）</h3>
 <p>抽取长文本的前n个字符来创建索引：</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> index_name <span class="kw">ON</span> table_name(column1(n));</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> index_name <span class="kw">ON</span> table_name(column1(n));</span></code></pre></div>
 <p>前缀索引可能导致同一索引对应多条数据的情况，当<strong>选择性</strong>为1时性能时，每个索引都对应不同的数据。</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> SUBSTRING(column1, <span class="dv">1</span>, <span class="dv">10</span>)) <span class="op">/</span> <span class="fu">COUNT</span> (<span class="op">*</span>) <span class="kw">FROM</span> table_name;</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> SUBSTRING(column1, <span class="dv">1</span>, <span class="dv">10</span>)) <span class="op">/</span> <span class="fu">COUNT</span> (<span class="op">*</span>) <span class="kw">FROM</span> table_name;</span></code></pre></div>
 </div>
 </div>
 <div id="慢查询日志" class="section level2">
 <h2>慢查询日志</h2>
-<div class="sourceCode" id="cb60"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a><span class="co">-- 查看MySQL慢查询日志是否打开</span></span>
-<span id="cb60-2"><a href="#cb60-2" tabindex="-1"></a>SHOW VARIABLES <span class="kw">LIKE</span> <span class="st">&#39;slow_query_log&#39;</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="co">-- 查看MySQL慢查询日志是否打开</span></span>
+<span id="cb61-2"><a href="#cb61-2" tabindex="-1"></a>SHOW VARIABLES <span class="kw">LIKE</span> <span class="st">&#39;slow_query_log&#39;</span>;</span></code></pre></div>
 <p>在<code>/etc/mysql/mysql.conf.d/mysqld.cnf</code>中添加下述信息</p>
 <pre class="text"><code># 开启慢查询日志开关
 slow_query_log=1
@@ -2812,18 +2839,18 @@ slow_query_log_file = /var/log/mysql/mysql-slow.log</code></pre>
 <div id="profiles查询每条sql执行时间" class="section level2">
 <h2>profiles查询每条SQL执行时间</h2>
 <p>profiles用于记录每一条SQL语句的执行时间。</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="co">-- 查看数据库是否支持profiles</span></span>
-<span id="cb62-2"><a href="#cb62-2" tabindex="-1"></a><span class="kw">SELECT</span> @@have_profiling;</span>
-<span id="cb62-3"><a href="#cb62-3" tabindex="-1"></a><span class="co">-- 开启profiles</span></span>
-<span id="cb62-4"><a href="#cb62-4" tabindex="-1"></a><span class="kw">SELECT</span> @@profiling;  <span class="co">-- 为0则表示未开启</span></span>
-<span id="cb62-5"><a href="#cb62-5" tabindex="-1"></a><span class="kw">SET</span> @@profiling<span class="op">=</span><span class="dv">1</span>;</span></code></pre></div>
-<div class="sourceCode" id="cb63"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a>SHOW profiles;  <span class="co">-- 查询当前会话所有SQL语句的执行耗时情况</span></span>
-<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a>SHOW <span class="kw">profile</span> <span class="cf">FOR</span> <span class="kw">QUERY</span> query_id;  <span class="co">-- 单独查看某条SQL语句的具体耗时情况</span></span>
-<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a>SHOW <span class="kw">profile</span> CPU <span class="cf">FOR</span> <span class="kw">QUERY</span> query_id;  <span class="co">-- 单独查看某条SQL语句的具体耗时情况（CPU）</span></span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="co">-- 查看数据库是否支持profiles</span></span>
+<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a><span class="kw">SELECT</span> @@have_profiling;</span>
+<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a><span class="co">-- 开启profiles</span></span>
+<span id="cb63-4"><a href="#cb63-4" tabindex="-1"></a><span class="kw">SELECT</span> @@profiling;  <span class="co">-- 为0则表示未开启</span></span>
+<span id="cb63-5"><a href="#cb63-5" tabindex="-1"></a><span class="kw">SET</span> @@profiling<span class="op">=</span><span class="dv">1</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a>SHOW profiles;  <span class="co">-- 查询当前会话所有SQL语句的执行耗时情况</span></span>
+<span id="cb64-2"><a href="#cb64-2" tabindex="-1"></a>SHOW <span class="kw">profile</span> <span class="cf">FOR</span> <span class="kw">QUERY</span> query_id;  <span class="co">-- 单独查看某条SQL语句的具体耗时情况</span></span>
+<span id="cb64-3"><a href="#cb64-3" tabindex="-1"></a>SHOW <span class="kw">profile</span> CPU <span class="cf">FOR</span> <span class="kw">QUERY</span> query_id;  <span class="co">-- 单独查看某条SQL语句的具体耗时情况（CPU）</span></span></code></pre></div>
 </div>
 <div id="explain解释sql语句执行详情" class="section level2">
 <h2>EXPLAIN解释SQL语句执行详情</h2>
-<div class="sourceCode" id="cb64"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a><span class="kw">EXPLAIN</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> student <span class="kw">WHERE</span> <span class="kw">id</span><span class="op">=</span>(<span class="kw">SELECT</span> <span class="kw">id</span> <span class="kw">FROM</span> course <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span> <span class="kw">LIMIT</span> <span class="dv">1</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a><span class="kw">EXPLAIN</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> student <span class="kw">WHERE</span> <span class="kw">id</span><span class="op">=</span>(<span class="kw">SELECT</span> <span class="kw">id</span> <span class="kw">FROM</span> course <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span> <span class="kw">LIMIT</span> <span class="dv">1</span>);</span></code></pre></div>
 <p>上述语句会展示查询涉及到的每一个表的具体执行情况。 - id:
 id值越大的表越先执行，同id值得所有表按照从上到下得顺序执行。</p>
 <ul>
@@ -2848,17 +2875,17 @@ SIMPLE(最普通的查询)、PRIMARY（主查询）、UNION、SUBQUERY。</p></l
 <h2>插入数据优化</h2>
 <div id="建议使用批量插入而不要使用单条数据插入" class="section level3">
 <h3>建议使用批量插入而不要使用单条数据插入</h3>
-<div class="sourceCode" id="cb65"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a><span class="co">-- 批量插入</span></span>
-<span id="cb65-2"><a href="#cb65-2" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="st">&#39;Tom&#39;</span>), (<span class="dv">2</span>, <span class="st">&#39;Jack&#39;</span>), (<span class="dv">3</span>, <span class="st">&#39;Lucas&#39;</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb66-1"><a href="#cb66-1" tabindex="-1"></a><span class="co">-- 批量插入</span></span>
+<span id="cb66-2"><a href="#cb66-2" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="st">&#39;Tom&#39;</span>), (<span class="dv">2</span>, <span class="st">&#39;Jack&#39;</span>), (<span class="dv">3</span>, <span class="st">&#39;Lucas&#39;</span>);</span></code></pre></div>
 </div>
 <div id="执行一条sql语句该语句会被自动提交事务并执行可采用手动提交事务的方式实现以单条数据插入的方式插入多条数据" class="section level3">
 <h3>执行一条SQL语句，该语句会被自动提交事务并执行。可采用手动提交事务的方式实现以单条数据插入的方式插入多条数据。</h3>
-<div class="sourceCode" id="cb66"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb66-1"><a href="#cb66-1" tabindex="-1"></a><span class="co">-- 手动提交事务</span></span>
-<span id="cb66-2"><a href="#cb66-2" tabindex="-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
-<span id="cb66-3"><a href="#cb66-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="st">&#39;Tom&#39;</span>);</span>
-<span id="cb66-4"><a href="#cb66-4" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">2</span>, <span class="st">&#39;Jack&#39;</span>);</span>
-<span id="cb66-5"><a href="#cb66-5" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">3</span>, <span class="st">&#39;Lucas&#39;</span>);</span>
-<span id="cb66-6"><a href="#cb66-6" tabindex="-1"></a><span class="kw">COMMIT</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a><span class="co">-- 手动提交事务</span></span>
+<span id="cb67-2"><a href="#cb67-2" tabindex="-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb67-3"><a href="#cb67-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="st">&#39;Tom&#39;</span>);</span>
+<span id="cb67-4"><a href="#cb67-4" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">2</span>, <span class="st">&#39;Jack&#39;</span>);</span>
+<span id="cb67-5"><a href="#cb67-5" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> mytable <span class="kw">VALUES</span> (<span class="dv">3</span>, <span class="st">&#39;Lucas&#39;</span>);</span>
+<span id="cb67-6"><a href="#cb67-6" tabindex="-1"></a><span class="kw">COMMIT</span>;</span></code></pre></div>
 </div>
 <div id="按照主键的顺序插入" class="section level3">
 <h3>按照主键的顺序插入</h3>
@@ -2870,12 +2897,12 @@ SIMPLE(最普通的查询)、PRIMARY（主查询）、UNION、SUBQUERY。</p></l
 <pre class="text"><code>1, Tom
 2, Jack
 3, Lucas</code></pre>
-<div class="sourceCode" id="cb68"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a><span class="co">## 在客户端连接MySQL服务器时，加上参数--local-infile</span></span>
-<span id="cb68-2"><a href="#cb68-2" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">--local-infile</span> <span class="at">-u</span> root <span class="at">-p</span></span></code></pre></div>
-<div class="sourceCode" id="cb69"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="co">-- 开启在本从本地加载文件导入数据的开关。通过SELECT @@local_infile可以查看开关状态。</span></span>
-<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a><span class="kw">SET</span> <span class="kw">GLOBAL</span> local_infile<span class="op">=</span><span class="dv">1</span>;</span>
-<span id="cb69-3"><a href="#cb69-3" tabindex="-1"></a><span class="co">-- 将.sql文件加载到目标表中</span></span>
-<span id="cb69-4"><a href="#cb69-4" tabindex="-1"></a>LOAD <span class="kw">DATA</span> <span class="kw">LOCAL</span> INFILE <span class="st">&#39;/root/sql1.sql&#39;</span> <span class="kw">INTO</span> <span class="kw">TABLE</span> `mytable` FIELDS TERMINATED <span class="kw">BY</span> <span class="st">&#39;,&#39;</span> LINES TERMINATED <span class="kw">BY</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="co">## 在客户端连接MySQL服务器时，加上参数--local-infile</span></span>
+<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">--local-infile</span> <span class="at">-u</span> root <span class="at">-p</span></span></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a><span class="co">-- 开启在本从本地加载文件导入数据的开关。通过SELECT @@local_infile可以查看开关状态。</span></span>
+<span id="cb70-2"><a href="#cb70-2" tabindex="-1"></a><span class="kw">SET</span> <span class="kw">GLOBAL</span> local_infile<span class="op">=</span><span class="dv">1</span>;</span>
+<span id="cb70-3"><a href="#cb70-3" tabindex="-1"></a><span class="co">-- 将.sql文件加载到目标表中</span></span>
+<span id="cb70-4"><a href="#cb70-4" tabindex="-1"></a>LOAD <span class="kw">DATA</span> <span class="kw">LOCAL</span> INFILE <span class="st">&#39;/root/sql1.sql&#39;</span> <span class="kw">INTO</span> <span class="kw">TABLE</span> `mytable` FIELDS TERMINATED <span class="kw">BY</span> <span class="st">&#39;,&#39;</span> LINES TERMINATED <span class="kw">BY</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>;</span></code></pre></div>
 </div>
 </div>
 <div id="主键优化" class="section level2">
@@ -2890,12 +2917,12 @@ SIMPLE(最普通的查询)、PRIMARY（主查询）、UNION、SUBQUERY。</p></l
 <h2>ORDER BY 优化</h2>
 <p><strong>filesort</strong>单独设立缓存区对查询的所有数据进行排序，这种排序的效率较低。</p>
 <p><strong>index</strong>直接通过字段索引返回了有序的数据，这种排序的效率较高。</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a><span class="co">-- 假设对age,phone创建了一个联合索引（默认以升序构建索引）</span></span>
-<span id="cb70-2"><a href="#cb70-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age;  <span class="co">-- index</span></span>
-<span id="cb70-3"><a href="#cb70-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age, phone;  <span class="co">-- index</span></span>
-<span id="cb70-4"><a href="#cb70-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">DESC</span>, phone, <span class="kw">DESC</span>;  <span class="co">-- index (backward scan)</span></span>
-<span id="cb70-5"><a href="#cb70-5" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">ASC</span>, phone <span class="kw">DESC</span>; <span class="co">-- index &amp; filesort：对于age使用index，对于phone使用filesort。</span></span>
-<span id="cb70-6"><a href="#cb70-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> phone, age; <span class="co">-- filesort &amp; index：对于phone使用filesort，对于age使用index</span></span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a><span class="co">-- 假设对age,phone创建了一个联合索引（默认以升序构建索引）</span></span>
+<span id="cb71-2"><a href="#cb71-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age;  <span class="co">-- index</span></span>
+<span id="cb71-3"><a href="#cb71-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age, phone;  <span class="co">-- index</span></span>
+<span id="cb71-4"><a href="#cb71-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">DESC</span>, phone, <span class="kw">DESC</span>;  <span class="co">-- index (backward scan)</span></span>
+<span id="cb71-5"><a href="#cb71-5" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">ASC</span>, phone <span class="kw">DESC</span>; <span class="co">-- index &amp; filesort：对于age使用index，对于phone使用filesort。</span></span>
+<span id="cb71-6"><a href="#cb71-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, age, phone <span class="op">..</span>. <span class="kw">ORDER</span> <span class="kw">BY</span> phone, age; <span class="co">-- filesort &amp; index：对于phone使用filesort，对于age使用index</span></span></code></pre></div>
 <p>对于上述第3条和第4条SQL的差异我暂时不理解。不过对两个联合索引使用顺序一致的查询可以避免filesort。
 为了解决第4条SQL的问题，可以创建联合索引并指定构建顺序：<code>CREATE INDEX idx_mytable_age_phone_ad ON mytable(age ASC, phone DESC);</code>。</p>
 <p>当遇到大数据量排序时，且不可避免要使用filesort时，可以手动通过<code>SET sort_buffer_size=1048576  -- 1MB</code>来增加缓冲区大小（默认为256K）。</p>
@@ -3026,59 +3053,232 @@ SQL 180题</a></p>
 在 SQL 中，id 是该表的主键。
 id 是一个自增列。</code></pre>
 <p>解答：</p>
-<div class="sourceCode" id="cb72"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb72-1"><a href="#cb72-1" tabindex="-1"></a><span class="kw">WITH</span> myWindowFunc <span class="kw">AS</span> (</span>
-<span id="cb72-2"><a href="#cb72-2" tabindex="-1"></a>    <span class="kw">SELECT</span> <span class="kw">id</span>, num, <span class="fu">LAG</span>(num, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span>) <span class="kw">as</span> prev_num1, <span class="fu">LAG</span>(num, <span class="dv">2</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span>) <span class="kw">as</span> prev_num2 <span class="kw">FROM</span> Logs</span>
-<span id="cb72-3"><a href="#cb72-3" tabindex="-1"></a>)</span>
-<span id="cb72-4"><a href="#cb72-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> num <span class="kw">as</span> ConsecutiveNums</span>
-<span id="cb72-5"><a href="#cb72-5" tabindex="-1"></a><span class="kw">FROM</span> myWindowFunc</span>
-<span id="cb72-6"><a href="#cb72-6" tabindex="-1"></a><span class="kw">WHERE</span> num<span class="op">=</span>prev_num1 <span class="kw">AND</span> num<span class="op">=</span>prev_num2;</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="kw">WITH</span> myWindowFunc <span class="kw">AS</span> (</span>
+<span id="cb73-2"><a href="#cb73-2" tabindex="-1"></a>    <span class="kw">SELECT</span> <span class="kw">id</span>, num, <span class="fu">LAG</span>(num, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span>) <span class="kw">as</span> prev_num1, <span class="fu">LAG</span>(num, <span class="dv">2</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="kw">id</span>) <span class="kw">as</span> prev_num2 <span class="kw">FROM</span> Logs</span>
+<span id="cb73-3"><a href="#cb73-3" tabindex="-1"></a>)</span>
+<span id="cb73-4"><a href="#cb73-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> num <span class="kw">as</span> ConsecutiveNums</span>
+<span id="cb73-5"><a href="#cb73-5" tabindex="-1"></a><span class="kw">FROM</span> myWindowFunc</span>
+<span id="cb73-6"><a href="#cb73-6" tabindex="-1"></a><span class="kw">WHERE</span> num<span class="op">=</span>prev_num1 <span class="kw">AND</span> num<span class="op">=</span>prev_num2;</span></code></pre></div>
 </div>
 <div id="dense_rank" class="section level2">
 <h2>DENSE_RANK()</h2>
 <p>生成一个列：表中的<em>score</em>字段的<strong>密度秩</strong>。</p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="kw">SELECT</span> score, <span class="fu">DENSE_RANK</span>() <span class="kw">OVER</span>(<span class="kw">ORDER</span> <span class="kw">BY</span> score <span class="kw">DESC</span>) <span class="kw">AS</span> `rank`</span>
-<span id="cb73-2"><a href="#cb73-2" tabindex="-1"></a><span class="kw">FROM</span> Scores</span>
-<span id="cb73-3"><a href="#cb73-3" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> score <span class="kw">DESC</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a><span class="kw">SELECT</span> score, <span class="fu">DENSE_RANK</span>() <span class="kw">OVER</span>(<span class="kw">ORDER</span> <span class="kw">BY</span> score <span class="kw">DESC</span>) <span class="kw">AS</span> `rank`</span>
+<span id="cb74-2"><a href="#cb74-2" tabindex="-1"></a><span class="kw">FROM</span> Scores</span>
+<span id="cb74-3"><a href="#cb74-3" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> score <span class="kw">DESC</span>;</span></code></pre></div>
 <p>如果<em>score</em>字段中只有一个<code>NULL</code>值，那么<code>DENSE_RANK()</code>会返回一个秩1，而不是返回一个<code>NULL</code>。</p>
 </div>
 <div id="max" class="section level2">
 <h2>MAX()</h2>
 <p>生成一个列：每个部门的所有员工的工资最大值。</p>
-<div class="sourceCode" id="cb74"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span>, <span class="fu">SUM</span>(salary) <span class="kw">OVER</span>(<span class="kw">PARTITION</span> <span class="kw">BY</span> department) <span class="kw">AS</span> maxSalaryPerDepartment</span>
-<span id="cb74-2"><a href="#cb74-2" tabindex="-1"></a><span class="kw">FROM</span> mytable;</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span>, <span class="fu">SUM</span>(salary) <span class="kw">OVER</span>(<span class="kw">PARTITION</span> <span class="kw">BY</span> department) <span class="kw">AS</span> maxSalaryPerDepartment</span>
+<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a><span class="kw">FROM</span> mytable;</span></code></pre></div>
+</div>
+<div id="row_number" class="section level2">
+<h2>ROW_NUMBER()</h2>
+<div class="sourceCode" id="cb76"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb76-1"><a href="#cb76-1" tabindex="-1"></a><span class="fu">ROW_NUMBER</span>() <span class="kw">OVER</span>(<span class="kw">PARTITION</span> <span class="kw">BY</span> gender <span class="kw">ORDER</span> <span class="kw">BY</span> grade) <span class="kw">AS</span> rm</span></code></pre></div>
+<p>在男生里根据成绩单独排个序；在女生里根据成绩单独排个序。<strong>序号从1开始，连续不间断、不重复</strong>（即使grade有重复值或是空值，rm也能满足该特点）。</p>
+</div>
+</div>
+<div id="odps" class="section level1">
+<h1>ODPS</h1>
+<div id="odps特性" class="section level2">
+<h2>ODPS特性</h2>
+<ul>
+<li><p>没有事务、没有主键、没有索引、没有游标、没有存储过程。</p></li>
+<li><p>不支持<code>UPDATE</code>和<code>DELETE</code>。</p></li>
+</ul>
+</div>
+<div id="哈希分桶" class="section level2">
+<h2>哈希分桶</h2>
+<div class="sourceCode" id="cb77"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> dwd_trd_alipay_order_dd (</span>
+<span id="cb77-2"><a href="#cb77-2" tabindex="-1"></a>    order_id STRING <span class="kw">COMMENT</span> <span class="st">&#39;订单id&#39;</span>,</span>
+<span id="cb77-3"><a href="#cb77-3" tabindex="-1"></a>    buyer_id STRING <span class="kw">COMMENT</span> <span class="st">&#39;买家id&#39;</span>,</span>
+<span id="cb77-4"><a href="#cb77-4" tabindex="-1"></a>    seller_id STRING <span class="kw">COMMENT</span> <span class="st">&#39;卖家id&#39;</span>,</span>
+<span id="cb77-5"><a href="#cb77-5" tabindex="-1"></a>    gmt_pay STRING <span class="kw">COMMENT</span> <span class="st">&#39;付款时间&#39;</span></span>
+<span id="cb77-6"><a href="#cb77-6" tabindex="-1"></a>) <span class="kw">COMMENT</span> <span class="st">&#39;订单表&#39;</span></span>
+<span id="cb77-7"><a href="#cb77-7" tabindex="-1"></a>PARTITIONED <span class="kw">BY</span> (dt STRING <span class="kw">COMMENT</span> <span class="st">&#39;日期分区yyyymmdd&#39;</span>)</span>
+<span id="cb77-8"><a href="#cb77-8" tabindex="-1"></a>CLUSTERED <span class="kw">BY</span> (order_id) SORTED <span class="kw">BY</span> (order_id) <span class="kw">INTO</span> <span class="dv">64</span> BUCKETS,</span>
+<span id="cb77-9"><a href="#cb77-9" tabindex="-1"></a>LIFECYCLE <span class="dv">365</span>;</span></code></pre></div>
+<p>上述<code>CLUSTERED BY</code>子句对<em>order_id</em>列进行hash，并按顺序将这些记录存储再不同的桶中。</p>
+<ul>
+<li><p>建议<code>CLUSTERED BY</code>和<code>SORTED BY</code>的对象列保持一致，以便于ODPS在查询时自动生成索引，加快执行速度。</p></li>
+<li><p>建议每个Bucket的数据大小在500MB到1GB之间。</p></li>
+</ul>
+</div>
+<div id="回收站" class="section level2">
+<h2>回收站</h2>
+<p>表/分区被删除或生命周期回收后，会进入回收站保存1-2天。</p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb78-1"><a href="#cb78-1" tabindex="-1"></a><span class="co">-- 获取logid</span></span>
+<span id="cb78-2"><a href="#cb78-2" tabindex="-1"></a>SHOW CHANGELOGS <span class="cf">FOR</span> <span class="kw">TABLE</span> mytable <span class="kw">PARTITION</span> (dt<span class="op">=</span><span class="dv">20250801</span>);</span>
+<span id="cb78-3"><a href="#cb78-3" tabindex="-1"></a></span>
+<span id="cb78-4"><a href="#cb78-4" tabindex="-1"></a><span class="co">-- 恢复指定的logid</span></span>
+<span id="cb78-5"><a href="#cb78-5" tabindex="-1"></a><span class="kw">UNDO</span> <span class="kw">TABLE</span> mytable <span class="kw">PARTITION</span> (dt<span class="op">=</span><span class="dv">20250801</span>) <span class="kw">TO</span> <span class="op">&lt;</span>logid<span class="op">&gt;</span>;</span></code></pre></div>
+</div>
+<div id="udf" class="section level2">
+<h2>UDF</h2>
+<p><a href="http://help.aliyun-inc.com/internaldoc/detail/27867.html">阿里云UDF开发内部文档</a>支持Python、Java开发。</p>
+<p>UDF开发资源Resources：（后面补充）。</p>
+</div>
+<div id="数据仓库" class="section level2">
+<h2>数据仓库</h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>层次</th>
+<th>缩写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>原始数据层</td>
+<td>ODS</td>
+<td>日级增量表、小时增量表、全量快照表、实时表；不做任何加工，数据永久保留</td>
+</tr>
+<tr class="even">
+<td>明细整合层</td>
+<td>DWD</td>
+<td>多表整合，通用，保存全量明细。</td>
+</tr>
+<tr class="odd">
+<td>汇总层</td>
+<td>DWS</td>
+<td>日汇总表、月汇总表、按业务要求汇总表</td>
+</tr>
+<tr class="even">
+<td>应用层</td>
+<td>ADM</td>
+<td>个性化、数据集市、BI报表、运营、算法</td>
+</tr>
+</tbody>
+</table>
+<div id="数据仓库命名规范" class="section level3">
+<h3>数据仓库命名规范</h3>
+<table>
+<thead>
+<tr class="header">
+<th>物理表名</th>
+<th>物理表含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ods_*_delta</td>
+<td>每个分区存储天增量</td>
+</tr>
+<tr class="even">
+<td>ods_*</td>
+<td>每个分区存储天全量</td>
+</tr>
+<tr class="odd">
+<td>ods_*_delta_hi</td>
+<td>每个分区存储当前小时增量</td>
+</tr>
+<tr class="even">
+<td>ods_*_delta_thi</td>
+<td>每个分区存储0点截至当前小时增量</td>
+</tr>
+<tr class="odd">
+<td>ods_*_delta_hd</td>
+<td>每个分区存储历史截止当前小时全量</td>
+</tr>
+<tr class="even">
+<td>dwd_*_di</td>
+<td>每个分区存储天增量</td>
+</tr>
+<tr class="odd">
+<td>dwd_*_dd</td>
+<td>每个分区存储天全量</td>
+</tr>
+<tr class="even">
+<td>dwd_*_da</td>
+<td>累计快照事实表</td>
+</tr>
+<tr class="odd">
+<td>dws_*_1d</td>
+<td>最近一天汇总表</td>
+</tr>
+<tr class="even">
+<td>dws_*_nd</td>
+<td>最近n天汇总表</td>
+</tr>
+<tr class="odd">
+<td>dws_*_cw</td>
+<td>自然周汇总表</td>
+</tr>
+<tr class="even">
+<td>dws_*_cm</td>
+<td>自然月汇总表</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="odps性能优化" class="section level2">
+<h2>ODPS性能优化</h2>
+<p><a href="http://udap.alibaba-inc.com/dataassets/personal/index">数据资产平台</a>查看资产算力消耗。
+<a href="https://tesla.alibaba-inc.com/maxc">sql作业队列查看平台</a>作业队列查看。</p>
+<div id="group-by数据倾斜优化" class="section level3">
+<h3><code>GROUP BY</code>数据倾斜优化</h3>
+<div class="sourceCode" id="cb79"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="kw">SET</span> odps.sql.groupby.skewindata<span class="op">=</span><span class="kw">true</span>;</span></code></pre></div>
+<p>防止在<code>GROUP BY</code>操作在遇到<strong>数据倾斜</strong>时任务进度被一直卡住在99%（少量REDUCE任务未完成）</p>
+</div>
+<div id="map一读多写" class="section level3">
+<h3>Map一读多写</h3>
+<div class="sourceCode" id="cb80"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a><span class="kw">FROM</span> mytable</span>
+<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a><span class="kw">INSERT</span> OVERWRITE <span class="kw">TABLE</span> mytable1 <span class="kw">PARTITION</span> (dt<span class="op">=</span><span class="dv">20250801</span>)</span>
+<span id="cb80-3"><a href="#cb80-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, name</span>
+<span id="cb80-4"><a href="#cb80-4" tabindex="-1"></a><span class="kw">WHERE</span> region<span class="op">=</span><span class="st">&#39;China&#39;</span></span>
+<span id="cb80-5"><a href="#cb80-5" tabindex="-1"></a><span class="kw">INSERT</span> OVERWRITE <span class="kw">TABLE</span> mytable2 <span class="kw">PARTITION</span> (dt<span class="op">=</span><span class="dv">20250801</span>)</span>
+<span id="cb80-6"><a href="#cb80-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, name</span>
+<span id="cb80-7"><a href="#cb80-7" tabindex="-1"></a><span class="kw">WHERE</span> region<span class="op">=</span><span class="st">&#39;Japan&#39;</span></span></code></pre></div>
+<p>一次读表多次写入，节省I/O资源。</p>
+</div>
+<div id="慎用distinct" class="section level3">
+<h3>慎用<code>DISTINCT</code></h3>
+</div>
+<div id="慎用全局排序" class="section level3">
+<h3>慎用全局排序</h3>
+</div>
 </div>
 </div>
 <div id="测试表" class="section level1 tabset">
 <h1 class="tabset">测试表</h1>
 <div id="student表" class="section level2">
 <h2><code>student</code>表</h2>
-<div class="sourceCode" id="cb75"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `student` (<span class="kw">id</span> BIGINT <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTO_INCREMENT, name <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>, sex ENUM(<span class="st">&#39;m&#39;</span>, <span class="st">&#39;f&#39;</span>), phone BIGINT, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), English <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> English<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> English<span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
-<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a></span>
-<span id="cb75-3"><a href="#cb75-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `student` (name, sex, phone, Chinese, English, Math)</span>
-<span id="cb75-4"><a href="#cb75-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
-<span id="cb75-5"><a href="#cb75-5" tabindex="-1"></a>(<span class="st">&#39;zt&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">15386648422</span>, <span class="fl">90.12</span>, <span class="fl">92.00</span>, <span class="dv">92</span>),</span>
-<span id="cb75-6"><a href="#cb75-6" tabindex="-1"></a>(<span class="st">&#39;Lucas&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">19833718892</span>, <span class="dv">100</span>, <span class="fl">60.0</span>, <span class="fl">00.00</span>),</span>
-<span id="cb75-7"><a href="#cb75-7" tabindex="-1"></a>(<span class="st">&#39;Bella&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">19766539910</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
-<span id="cb75-8"><a href="#cb75-8" tabindex="-1"></a>(<span class="st">&#39;Nancy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">13877461178</span>, <span class="fl">60.00</span>, <span class="dv">96</span>, <span class="dv">46</span>),</span>
-<span id="cb75-9"><a href="#cb75-9" tabindex="-1"></a>(<span class="st">&#39;Tom&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">13877461123</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
-<span id="cb75-10"><a href="#cb75-10" tabindex="-1"></a>(<span class="st">&#39;Jack&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="kw">NULL</span>, <span class="dv">41</span>, <span class="dv">29</span>, <span class="dv">99</span>),</span>
-<span id="cb75-11"><a href="#cb75-11" tabindex="-1"></a>(<span class="st">&#39;Lucy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">18622115566</span>,<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `student` (<span class="kw">id</span> BIGINT <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTO_INCREMENT, name <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>, sex ENUM(<span class="st">&#39;m&#39;</span>, <span class="st">&#39;f&#39;</span>), phone BIGINT, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), English <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> English<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> English<span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
+<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a></span>
+<span id="cb81-3"><a href="#cb81-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `student` (name, sex, phone, Chinese, English, Math)</span>
+<span id="cb81-4"><a href="#cb81-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
+<span id="cb81-5"><a href="#cb81-5" tabindex="-1"></a>(<span class="st">&#39;zt&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">15386648422</span>, <span class="fl">90.12</span>, <span class="fl">92.00</span>, <span class="dv">92</span>),</span>
+<span id="cb81-6"><a href="#cb81-6" tabindex="-1"></a>(<span class="st">&#39;Lucas&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">19833718892</span>, <span class="dv">100</span>, <span class="fl">60.0</span>, <span class="fl">00.00</span>),</span>
+<span id="cb81-7"><a href="#cb81-7" tabindex="-1"></a>(<span class="st">&#39;Bella&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">19766539910</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
+<span id="cb81-8"><a href="#cb81-8" tabindex="-1"></a>(<span class="st">&#39;Nancy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">13877461178</span>, <span class="fl">60.00</span>, <span class="dv">96</span>, <span class="dv">46</span>),</span>
+<span id="cb81-9"><a href="#cb81-9" tabindex="-1"></a>(<span class="st">&#39;Tom&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="dv">13877461123</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>),</span>
+<span id="cb81-10"><a href="#cb81-10" tabindex="-1"></a>(<span class="st">&#39;Jack&#39;</span>, <span class="st">&#39;m&#39;</span>, <span class="kw">NULL</span>, <span class="dv">41</span>, <span class="dv">29</span>, <span class="dv">99</span>),</span>
+<span id="cb81-11"><a href="#cb81-11" tabindex="-1"></a>(<span class="st">&#39;Lucy&#39;</span>, <span class="st">&#39;f&#39;</span>, <span class="dv">18622115566</span>,<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>);</span></code></pre></div>
 </div>
 <div id="exam表" class="section level2">
 <h2><code>exam</code>表</h2>
-<div class="sourceCode" id="cb76"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb76-1"><a href="#cb76-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `exam` (<span class="kw">id</span> BIGINT <span class="kw">DEFAULT</span> <span class="dv">7</span>, exam_time <span class="dt">DATE</span>, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> exam_score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
-<span id="cb76-2"><a href="#cb76-2" tabindex="-1"></a></span>
-<span id="cb76-3"><a href="#cb76-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `exam` (exam_time, Chinese, Math)</span>
-<span id="cb76-4"><a href="#cb76-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
-<span id="cb76-5"><a href="#cb76-5" tabindex="-1"></a>(<span class="st">&#39;2024-01-01&#39;</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
-<span id="cb76-6"><a href="#cb76-6" tabindex="-1"></a>(<span class="st">&#39;2024-02-01&#39;</span>, <span class="dv">69</span>, <span class="dv">85</span>),</span>
-<span id="cb76-7"><a href="#cb76-7" tabindex="-1"></a>(<span class="st">&#39;2024-03-11&#39;</span>, <span class="dv">12</span>, <span class="dv">91</span>),</span>
-<span id="cb76-8"><a href="#cb76-8" tabindex="-1"></a>(<span class="st">&#39;2024-04-01&#39;</span>, <span class="dv">54</span>, <span class="dv">54</span>),</span>
-<span id="cb76-9"><a href="#cb76-9" tabindex="-1"></a>(<span class="st">&#39;2024-05-01&#39;</span>, <span class="dv">91</span>, <span class="dv">31</span>),</span>
-<span id="cb76-10"><a href="#cb76-10" tabindex="-1"></a>(<span class="st">&#39;2024-06-21&#39;</span>, <span class="dv">92</span>, <span class="dv">21</span>),</span>
-<span id="cb76-11"><a href="#cb76-11" tabindex="-1"></a>(<span class="st">&#39;2024-07-31&#39;</span>, <span class="dv">89</span>, <span class="dv">100</span>),</span>
-<span id="cb76-12"><a href="#cb76-12" tabindex="-1"></a>(<span class="st">&#39;2024-08-17&#39;</span>, <span class="dv">90</span>, <span class="dv">100</span>),</span>
-<span id="cb76-13"><a href="#cb76-13" tabindex="-1"></a>(<span class="st">&#39;2024-09-18&#39;</span>, <span class="dv">95</span>, <span class="dv">80</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> `exam` (<span class="kw">id</span> BIGINT <span class="kw">DEFAULT</span> <span class="dv">7</span>, exam_time <span class="dt">DATE</span>, Chinese <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), Math <span class="dt">FLOAT</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="kw">CONSTRAINT</span> exam_score_check <span class="kw">CHECK</span> (Chinese<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Chinese <span class="op">&lt;=</span><span class="dv">100</span> <span class="kw">AND</span> Math<span class="op">&gt;=</span><span class="dv">0</span> <span class="kw">AND</span> Math<span class="op">&lt;=</span><span class="dv">100</span>));</span>
+<span id="cb82-2"><a href="#cb82-2" tabindex="-1"></a></span>
+<span id="cb82-3"><a href="#cb82-3" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> `exam` (exam_time, Chinese, Math)</span>
+<span id="cb82-4"><a href="#cb82-4" tabindex="-1"></a><span class="kw">VALUES</span></span>
+<span id="cb82-5"><a href="#cb82-5" tabindex="-1"></a>(<span class="st">&#39;2024-01-01&#39;</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
+<span id="cb82-6"><a href="#cb82-6" tabindex="-1"></a>(<span class="st">&#39;2024-02-01&#39;</span>, <span class="dv">69</span>, <span class="dv">85</span>),</span>
+<span id="cb82-7"><a href="#cb82-7" tabindex="-1"></a>(<span class="st">&#39;2024-03-11&#39;</span>, <span class="dv">12</span>, <span class="dv">91</span>),</span>
+<span id="cb82-8"><a href="#cb82-8" tabindex="-1"></a>(<span class="st">&#39;2024-04-01&#39;</span>, <span class="dv">54</span>, <span class="dv">54</span>),</span>
+<span id="cb82-9"><a href="#cb82-9" tabindex="-1"></a>(<span class="st">&#39;2024-05-01&#39;</span>, <span class="dv">91</span>, <span class="dv">31</span>),</span>
+<span id="cb82-10"><a href="#cb82-10" tabindex="-1"></a>(<span class="st">&#39;2024-06-21&#39;</span>, <span class="dv">92</span>, <span class="dv">21</span>),</span>
+<span id="cb82-11"><a href="#cb82-11" tabindex="-1"></a>(<span class="st">&#39;2024-07-31&#39;</span>, <span class="dv">89</span>, <span class="dv">100</span>),</span>
+<span id="cb82-12"><a href="#cb82-12" tabindex="-1"></a>(<span class="st">&#39;2024-08-17&#39;</span>, <span class="dv">90</span>, <span class="dv">100</span>),</span>
+<span id="cb82-13"><a href="#cb82-13" tabindex="-1"></a>(<span class="st">&#39;2024-09-18&#39;</span>, <span class="dv">95</span>, <span class="dv">80</span>);</span></code></pre></div>
 </div>
 </div>
 </div>
